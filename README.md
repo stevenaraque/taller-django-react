@@ -112,3 +112,11 @@ Cuando termines las 15 mini-tareas, puedes seguir con:
 ## 📄 Licencia
 
 El código está liberado bajo la licencia [MIT](./LICENSE) — úsalo libremente.
+
+## Qué contiene esta plantilla (actualizado)
+
+Además del esqueleto descrito arriba, la plantilla ya trae funcionando:
+
+- **Backend `tareas`**: modelo `Tarea` (titulo, descripcion, completada, creada), migraciones 0001+0002, serializer, ViewSet con router DRF bajo `api/tareas/` (lista, crear, detalle, actualizar, eliminar) y registro en el admin.
+- **Frontend `Frontend/`**: `App.jsx` que consume la API con `fetch`, `ListaTareas.jsx`, `Formulario.jsx` (crear) y `Cronometro.jsx` — un aparato que mide en pantalla los ms que tarda la consulta (se usa en el reto social "El Velocista").
+- El reto de la sesión 3 (completar, eliminar, editar, filtrar y estilos) queda intencionalmente SIN implementar: es para que lo construyan los estudiantes.
