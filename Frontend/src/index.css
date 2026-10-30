@@ -1,14 +1,137 @@
-/* Estilos base — los estudiantes los completarán */
-:root {
-  color-scheme: light dark;
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+/* CSS del taller: básico y PLANO a propósito.
+   Los estilos bonitos no vienen aquí — son reto de los estudiantes. */
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  font-family: system-ui, Arial, sans-serif;
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+/* ---- Header / footer ---- */
+.app-header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.app-subtitulo {
+  color: #52525b;
+  margin-top: 0;
+}
+
+/* ---- Cronometro (El Velocista) ---- */
+.cronometro {
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: center;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 2px dashed #a1a1aa;
+  border-radius: 8px;
+  background: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+.cronometro[data-corriendo='true'] {
+  border-color: #f59e0b;
+}
+.cronometro-numero {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1;
+}
+.cronometro-unidad {
+  font-size: 20px;
+  color: #52525b;
+}
+.cronometro-estado {
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  color: #52525b;
+}
+
+/* ---- Formulario ---- */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.formulario-input {
+  padding: 10px;
+  border: 1px solid #d4d4d8;
+  border-radius: 6px;
+  font-size: 15px;
+}
+.formulario-boton {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #18181b;
+  color: #ffffff;
+  font-size: 15px;
+  cursor: pointer;
+}
+.formulario-boton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* ---- Lista ---- */
+.lista-tareas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tarea {
+  padding: 12px;
+  margin-bottom: 8px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  background: #ffffff;
+}
+.tarea-titulo {
+  font-weight: 600;
+}
+.tarea-descripcion {
+  margin: 4px 0;
+  color: #52525b;
+}
+.tarea-estado,
+.tarea-fecha {
+  display: block;
+  font-size: 13px;
+  color: #71717a;
+}
+
+/* ---- Estados varias ---- */
+.app-error {
+  padding: 10px;
+  border-radius: 6px;
+  background: #fee2e2;
+  color: #991b1b;
+  text-align: center;
+}
+.app-vacio {
+  text-align: center;
+  color: #71717a;
+}
+.app-footer {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 13px;
+  color: #71717a;
+  border-top: 1px solid #e4e4e7;
+  padding-top: 12px;
 }
