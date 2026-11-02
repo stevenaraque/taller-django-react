@@ -15,3 +15,6 @@ dist/
 # Editor
 .vscode/
 .idea/
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm

@@ -1,68 +1,88 @@
-﻿import { useState, useEffect, useCallback } from 'react'
-import Cronometro from './Cronometro'
-import ListaTareas from './ListaTareas'
-import Formulario from './Formulario'
+﻿import { useState } from 'react'
+import Velocista from './modulos/Velocista'
+import Portero from './modulos/Portero'
+import Pentatlon from './modulos/Pentatlon'
 
-const API_URL = 'http://127.0.0.1:8000/api/tareas/'
+// El panel del taller. Cada modulo es una arena: pide algo tecnico concreto
+// al estudiante, mide el resultado y decide quien se gana el bombombun.
+// El docente elige la arena desde el panel de la izquierda.
+const MODULOS = [
+  {
+    id: 'velocista',
+    nombre: 'El Velocista',
+    dia: 'Día 1 · consulta',
+    lema: 'La consulta al backend más rápida del salón gana',
+    Componente: Velocista,
+  },
+  {
+    id: 'portero',
+    nombre: 'El Portero',
+    dia: 'Día 2 · CORS',
+    lema: 'La consola de F12 limpia vale un bombombun',
+    Componente: Portero,
+  },
+  {
+    id: 'pentatlon',
+    nombre: 'El Pentatlon',
+    dia: 'Día 3 · CRUD',
+    lema: 'Cinco verbos HTTP corridos contra un solo reloj',
+    Componente: Pentatlon,
+  },
+]
 
 function App() {
-  const [tareas, setTareas] = useState([])
-  const [ms, setMs] = useState(null)
-  const [error, setError] = useState(null)
+  const [activo, setActivo] = useState('velocista')
 
-  // Carga la lista midiendo el tiempo que tarda (ms se la pasa al Cronometro)
-  const cargarTareas = useCallback(async () => {
-    const inicio = performance.now()
-    try {
-      const respuesta = await fetch(API_URL)
-      if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`)
-      const datos = await respuesta.json()
-      setTareas(datos)
-      setMs(Math.round(performance.now() - inicio))
-    } catch (error) {
-      console.error('Error al cargar tareas:', error)
-      setError('No se pudo conectar con la API. ¿Está corriendo Django?')
-      setMs(Math.round(performance.now() - inicio))
-    }
-  }, [])
-
-  // Recarga desde un evento del usuario (ej: tras crear una tarea),
-  // reiniciando el cronometro para volver a medir.
-  function recargar() {
-    setMs(null)
-    setError(null)
-    cargarTareas()
-  }
-
-  // Al montar: primera carga. Los estados ya inician vacios, asi que no
-  // hace falta reset. (Los setState de cargarTareas ocurren tras el await,
-  // no de forma sincrona — el warning del linter aca es un falso positivo.)
-  useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect
-    cargarTareas()
-  }, [cargarTareas])
+  const modulo = MODULOS.find((item) => item.id === activo)
+  const ArenaActiva = modulo.Componente
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>Taller Django + React</h1>
-        <p className="app-subtitulo">Lista de tareas con API REST</p>
-      </header>
+    <div className="layout">
+      <aside>
+        <div className="marca">
+          <span className="marca-titulo">Taller Django + React</span>
+          <span className="marca-sub">Panel de modulos de prueba</span>
+        </div>
 
-      <Cronometro ms={ms} />
+        <nav className="panel-modulos">
+          {MODULOS.map((item) => (
+            <button
+              key={item.id}
+              className="hub-ficha"
+              data-activa={item.id === activo}
+              onClick={() => setActivo(item.id)}
+            >
+              <span className="hub-nombre">{item.nombre}</span>
+              <span className="hub-dia">{item.dia}</span>
+            </button>
+          ))}
+        </nav>
 
-      {error && <p className="app-error">{error}</p>}
+        <p className="lateral-pie">
+          API de Django en el puerto 8000,
+          <br />
+          React en el 5173 y
+          <br />
+          PostgreSQL guardando de verdad.
+        </p>
+      </aside>
 
-      <Formulario alCrear={recargar} />
+      <main className="arena">
+        <header className="arena-cabecera">
+          <span className="arena-dia">{modulo.dia}</span>
+          <h1 className="arena-titulo">{modulo.nombre}</h1>
+          <p className="arena-lema">{modulo.lema}</p>
+        </header>
 
-      {tareas.length === 0 && !error && (
-        <p className="app-vacio">Sin tareas todavía. ¡Crea la primera!</p>
-      )}
-      <ListaTareas tareas={tareas} />
+        <div className="arena-cuerpo">
+          <ArenaActiva />
+        </div>
 
-      <footer className="app-footer">
-        <p>Plantilla del taller — los retos de sesión 3 la extenderán.</p>
-      </footer>
+        <footer className="panel-pie">
+          La plantilla solo mide y verifica. El reto de estilos del día 3 es
+          donde los estudiantes dejan el panel a su gusto.
+        </footer>
+      </main>
     </div>
   )
 }

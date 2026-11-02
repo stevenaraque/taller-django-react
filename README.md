@@ -1,8 +1,8 @@
 # Taller Django + React
 
-Taller intensivo Full-Stack de **3 días · 18 horas**: crea tu primera aplicación completa con **Django REST Framework** (backend) y **React + Vite** (frontend), en **15 mini-tareas gamificadas**.
+Taller intensivo Full-Stack de **3 días · 18 horas**: los estudiantes aprenden **Django REST Framework** (backend), **React + Vite** (frontend) y **PostgreSQL** a través de **15 mini-tareas gamificadas** y 3 arenas de reto.
 
-El producto final: una app de lista de tareas (crear, ver, marcar como completada, editar y borrar) conectada de verdad — un frontend React consumiendo una API REST hecha por ti.
+El producto: un **panel multi-módulos**. La plantilla no entrega una app para llenar de tareas — entrega **arenas que miden a los estudiantes**: el ⏱️ **Velocista** (la consulta más rápida), el 🚪 **Portero** (primera consola limpia de errores CORS) y el 🏅 **Pentatlón CRUD** (cinco verbos HTTP contra el reloj). El CRUD de tareas es el entrenamiento; competir con los módulos es el deporte.
 
 ---
 
@@ -15,6 +15,7 @@ Necesitas tener instalado antes del taller:
 | Python | 3.14+ | `python --version` |
 | Node.js + npm | Node 18+ / npm 11+ | `node --version && npm --version` |
 | Git | cualquier versión reciente | `git --version` |
+| PostgreSQL | 18+ | `psql --version` o el servicio `postgresql-x64-18` |
 
 Si alguno de esos comandos falla, descarga e instala lo que falte antes del taller:
 - **Python** → <https://www.python.org/downloads/> (marca "Add Python to PATH" en Windows)
@@ -48,9 +49,15 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-El proyecto usa **Django 6.x** y funciona con Python 3.14+. Si la terminal deja de reconocer `python`, revisa que el venv siga activo (verás `(venv)` al inicio de la línea; para activarlo de nuevo: `venv\Scripts\activate`).
+El proyecto usa **Django 6.x + PostgreSQL** y funciona con Python 3.14+. Si la terminal deja de reconocer `python`, revisa que el venv siga activo (verás `(venv)` al inicio de la línea; para activarlo de nuevo: `venv\Scripts\activate`).
 
-Si todo salió bien, Django está corriendo en <http://localhost:8000> (sin la app de tareas todavía — la construyes tú en el taller 😉).
+**Antes del primer `migrate`** crea la base de datos (solo una vez):
+
+```bash
+psql -U postgres -c "CREATE DATABASE taller_django_react;"
+```
+
+La conexión (nombre de BD, usuario y contraseña) se lee desde variables de entorno opcionales `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST` y `DB_PORT` — si no las defines, usa los valores locales por defecto. Si todo salió bien, Django está corriendo en <http://localhost:8000> (sin la app de tareas todavía — la construyes tú en el taller 😉).
 
 ## 🌐 Cómo correr el Frontend
 
@@ -64,8 +71,8 @@ npm run dev
 
 Después abre tu navegador en <http://localhost:5173>.
 
-- Si aparece un "Hola, soy Steven" o algo parecido — perfecto. Lo demás se construye en el taller.
-- Recuerda que el **Backend** también debe estar corriendo en su propia terminal, porque hablan entre sí durante el taller.
+- Si aparece el **Panel de módulos** con su cronómetro — perfecto. Las arenas se juegan en el taller.
+- Recuerda que el **Backend** también debe estar corriendo en su propia terminal, porque el panel mide las consultas contra él.
 
 ## 🗂️ Estructura del proyecto
 
@@ -75,13 +82,18 @@ taller-django-react/
 │   ├── config/               ← configuración global del proyecto
 │   │   ├── settings.py       ← ajustes (aquí entra CORS en el taller)
 │   │   └── urls.py           ← rutas de la API (aquí entra la app `tareas`)
-│   ├── db.sqlite3            ← base de datos local (se crea con migrate)
 │   ├── manage.py             ← utilería de Django (migrate, runserver, ...)
 │   ├── requirements.txt      ← dependencias del backend
 │   └── venv/                 ← entorno virtual (NO se sube a git)
-└── Frontend/                 ← SPA con React + Vite
+└── Frontend/                 ← Panel de módulos con React + Vite
     ├── src/                  ← aquí viven los componentes React
-    │   ├── App.jsx           ← componente raíz (el que modificarás)
+    │   ├── App.jsx           ← el hub: alterna entre las arenas del taller
+    │   ├── modulos/          ← las arenas (cada una mide algo distinto)
+    │   │   ├── api.js        ← URL base + verificador de respuestas
+    │   │   ├── Velocista.jsx ← mide los ms del GET al backend
+    │   │   ├── Portero.jsx   ← detecta el bloqueo de CORS en el navegador
+    │   │   └── Pentatlon.jsx ← POST + GET + PATCH + PUT + DELETE contra reloj
+    │   ├── Cronometro.jsx    ← reloj compartido de "El Velocista"
     │   ├── main.jsx          ← punto de entrada
     │   └── index.css / App.css
     ├── public/               ← archivos estáticos (favicon, iconos)
@@ -94,13 +106,13 @@ taller-django-react/
 
 Los 3 días siguen esta progresión (cada día termina con la app avanzando un nivel):
 
-- **Día 1 — Backend** 🐍: creas la app `tareas` con el modelo `Tarea`, su serializer y las vistas `GET` / `POST` de la API con Django REST Framework.
-- **Día 2 — Frontend** ⚛️: conectas React con el backend usando `fetch`, configuras CORS, trabajas el estado con `useState` y construyes el formulario para crear tareas (`POST`).
-- **Día 3 — Interactividad** ✨: estado dinámico para marcar tareas como completadas, y eliminado (`DELETE`), edición (`PUT` / `PATCH`), filtro por estado, y **Reto Final**: pulir los estilos para que la app quede lista para presumir.
+- **Día 1 — Backend** 🐍: creas la app `tareas` con el modelo `Tarea`, su serializer y las vistas de la API con Django REST Framework. Arena en juego desde ya: el Velocista necesita tu `GET` respondiendo.
+- **Día 2 — Frontend** ⚛️: conectas React con el backend usando `fetch`, configuras **CORS** (la arena del Portero) y trabajas el estado con `useState` y el formulario de creación (`POST`).
+- **Día 3 — Interactividad** ✨: estado dinámico para completar tareas, y eliminado (`DELETE`), edición (`PUT` / `PATCH`), filtro por estado. Capítulo deportivo: corren el **Pentatlón CRUD** contra el reloj en el panel. **Reto Final**: pulir los estilos para el premio mayor.
 
 ## 👩‍🏫 Nota para instructores / estudiantes
 
-Este repositorio es la **Plantilla Base** del taller: contiene el esqueleto del proyecto (Django configurado + React funcionando + CORS listo), **pero no incluye la app `tareas` ni sus serializers** — esas piezas son las que construyen los estudiantes durante el taller, paso a paso con las 15 mini-tareas.
+Este repositorio es la **Plantilla Base** del taller: Django configurado con PostgreSQL, el panel multi-módulos funcionando y CORS listo. La CRUD fina (completar, editar, filtrar, estilos) y las arenas nuevas **se construyen durante el taller, paso a paso, con las 15 mini-tareas**.
 
 ### ¿Y después del taller?
 
@@ -117,6 +129,10 @@ El código está liberado bajo la licencia [MIT](./LICENSE) — úsalo librement
 
 Además del esqueleto descrito arriba, la plantilla ya trae funcionando:
 
-- **Backend `tareas`**: modelo `Tarea` (titulo, descripcion, completada, creada), migraciones 0001+0002, serializer, ViewSet con router DRF bajo `api/tareas/` (lista, crear, detalle, actualizar, eliminar) y registro en el admin.
-- **Frontend `Frontend/`**: `App.jsx` que consume la API con `fetch`, `ListaTareas.jsx`, `Formulario.jsx` (crear) y `Cronometro.jsx` — un aparato que mide en pantalla los ms que tarda la consulta (se usa en el reto social "El Velocista").
+- **Panel multi-módulos** en el frontend: `App.jsx` alterna entre las 3 arenas.
+- **Arena 🏃 Velocista** (`modulos/Velocista.jsx` + `Cronometro.jsx`): mide los ms del `GET` y anota cada intento del grupo.
+- **Arena 🚪 Portero** (`modulos/Portero.jsx`): detecta el bloqueo de CORS y muestra qué configurar — los instructores apagan el CORS y el primero en dejar la consola limpia gana.
+- **Arena 🏅 Pentatlón CRUD** (`modulos/Pentatlon.jsx`): corre los 5 verbos (`POST`, `GET`, `PATCH`, `PUT`, `DELETE`) seguidos y guarda la mejor ronda.
+- **Backend `tareas`**: modelo `Tarea` (titulo, descripcion, completada, creada), migraciones en PostgreSQL, serializer, `ViewSet` con router DRF bajo `api/tareas/` y registro en el admin.
+- La CRUD de tareas **no es la meta del taller**: es el material de entrenamiento que alimenta el Pentatlón.
 - El reto de la sesión 3 (completar, eliminar, editar, filtrar y estilos) queda intencionalmente SIN implementar: es para que lo construyan los estudiantes.

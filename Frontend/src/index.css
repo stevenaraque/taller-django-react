@@ -1,5 +1,20 @@
-/* CSS del taller: básico y PLANO a propósito.
-   Los estilos bonitos no vienen aquí — son reto de los estudiantes. */
+/* Estilos del panel — tema oscuro del taller.
+   El diseno esta deliberadamente sobrio: el reto de estilos de los
+   estudiantes es el que agrega lo llamativo, no este archivo. */
+
+:root {
+  --fondo: #0d1117;
+  --panel: #161c26;
+  --panel-claro: #1d2532;
+  --borde: #272e3d;
+  --borde-fuerte: #34404f;
+  --texto: #e8ebf1;
+  --texto-suave: #96a0b0;
+  --acento: #e2a63d;
+  --verde: #3fb27f;
+  --rojo: #e05f5f;
+  --celeste: #4cc3f7;
+}
 
 * {
   box-sizing: border-box;
@@ -7,25 +22,169 @@
 
 body {
   margin: 0;
-  font-family: system-ui, Arial, sans-serif;
-  background: #f4f4f5;
-  color: #18181b;
+  font-family: system-ui, 'Segoe UI', Arial, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
 }
 
-.app {
-  max-width: 640px;
+/* ---- Estructura general: lateral + arena ---- */
+.layout {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 28px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  padding: 32px 20px 56px;
+  min-height: 100vh;
+}
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
-/* ---- Header / footer ---- */
-.app-header {
-  text-align: center;
-  margin-bottom: 16px;
+.marca {
+  margin-bottom: 22px;
 }
-.app-subtitulo {
-  color: #52525b;
-  margin-top: 0;
+.marca-titulo {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.marca-sub {
+  display: block;
+  font-size: 12.5px;
+  color: var(--texto-suave);
+  margin-top: 2px;
+}
+
+.panel-modulos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hub-ficha {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--texto-suave);
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+}
+.hub-ficha:hover {
+  border-color: var(--borde-fuerte);
+  background: var(--panel-claro);
+}
+.hub-ficha[data-activa='true'] {
+  border-color: var(--acento);
+  color: var(--texto);
+  background: var(--panel-claro);
+}
+.hub-nombre {
+  display: block;
+  font-weight: 600;
+}
+.hub-dia {
+  display: block;
+  font-size: 12px;
+  margin-top: 2px;
+}
+.lateral-pie {
+  margin-top: 18px;
+  font-size: 12px;
+  color: var(--texto-suave);
+  line-height: 1.6;
+}
+
+/* ---- Arena (zona derecha) ---- */
+.arena {
+  min-width: 0;
+}
+.arena-cabecera {
+  border-bottom: 1px solid var(--borde-fuerte);
+  padding-bottom: 12px;
+  margin-bottom: 18px;
+}
+.arena-dia {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--acento);
+}
+.arena-titulo {
+  font-size: 22px;
+  margin: 4px 0 2px;
+}
+.arena-lema {
+  color: var(--texto-suave);
+  font-size: 14px;
+  margin: 0;
+}
+.arena-cuerpo {
+  display: grid;
+  gap: 18px;
+}
+
+.bloque {
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+.bloque-titulo {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texto-suave);
+  margin: 0 0 10px;
+}
+
+/* ---- Acciones ---- */
+.fila-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.boton {
+  padding: 9px 18px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: 8px;
+  background: var(--panel-claro);
+  color: var(--texto);
+  font-size: 14px;
+  cursor: pointer;
+}
+.boton:hover {
+  border-color: var(--acento);
+}
+.boton:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.campo-numero {
+  width: 64px;
+  padding: 8px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: 8px;
+  background: var(--fondo);
+  color: var(--texto);
+  font-size: 14px;
+}
+.campo-texto {
+  flex: 1;
+  min-width: 180px;
+  padding: 9px 10px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: 8px;
+  background: var(--fondo);
+  color: var(--texto);
+  font-size: 14px;
 }
 
 /* ---- Cronometro (El Velocista) ---- */
@@ -35,103 +194,159 @@ body {
   gap: 8px;
   align-items: baseline;
   justify-content: center;
-  padding: 16px;
-  margin-bottom: 16px;
-  border: 2px dashed #a1a1aa;
-  border-radius: 8px;
-  background: #ffffff;
+  padding: 18px;
+  border: 2px dashed var(--borde-fuerte);
+  border-radius: 12px;
+  background: var(--panel);
   font-variant-numeric: tabular-nums;
 }
 .cronometro[data-corriendo='true'] {
-  border-color: #f59e0b;
+  border-color: var(--acento);
 }
 .cronometro-numero {
-  font-size: 42px;
+  font-size: 46px;
   font-weight: 700;
   line-height: 1;
 }
 .cronometro-unidad {
   font-size: 20px;
-  color: #52525b;
+  color: var(--texto-suave);
 }
 .cronometro-estado {
   width: 100%;
   text-align: center;
   font-size: 13px;
-  color: #52525b;
+  color: var(--texto-suave);
 }
 
-/* ---- Formulario ---- */
-.formulario {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 24px;
+/* ---- Tablas de resultados ---- */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 13.5px;
 }
-.formulario-input {
-  padding: 10px;
-  border: 1px solid #d4d4d8;
-  border-radius: 6px;
-  font-size: 15px;
+.tabla th,
+.tabla td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--borde);
 }
-.formulario-boton {
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  background: #18181b;
-  color: #ffffff;
-  font-size: 15px;
-  cursor: pointer;
+.tabla thead th {
+  background: var(--panel-claro);
+  color: var(--texto-suave);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
 }
-.formulario-boton:disabled {
-  opacity: 0.6;
-  cursor: wait;
+.tabla tbody tr:last-child td {
+  border-bottom: none;
 }
-
-/* ---- Lista ---- */
-.lista-tareas {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.tabla .numero {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
-.tarea {
-  padding: 12px;
-  margin-bottom: 8px;
-  border: 1px solid #d4d4d8;
-  border-radius: 8px;
-  background: #ffffff;
-}
-.tarea-titulo {
+.fila-mejor td {
+  color: var(--verde);
   font-weight: 600;
 }
-.tarea-descripcion {
-  margin: 4px 0;
-  color: #52525b;
-}
-.tarea-estado,
-.tarea-fecha {
-  display: block;
-  font-size: 13px;
-  color: #71717a;
+.celda-suave {
+  color: var(--texto-suave);
+  font-size: 12.5px;
 }
 
-/* ---- Estados varias ---- */
-.app-error {
-  padding: 10px;
-  border-radius: 6px;
-  background: #fee2e2;
-  color: #991b1b;
-  text-align: center;
+/* ---- Estados ---- */
+.aviso {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13.5px;
 }
-.app-vacio {
-  text-align: center;
-  color: #71717a;
+.aviso[data-tipo='error'] {
+  background: #3a1e1e;
+  color: #f2b8b8;
+  border: 1px solid #6d3333;
 }
-.app-footer {
-  margin-top: 32px;
-  text-align: center;
+.aviso[data-tipo='ok'] {
+  background: #16302a;
+  color: #a3e2c8;
+  border: 1px solid #2c5c4c;
+}
+
+/* ---- Tarjetas de estadisticas ---- */
+.resumen-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+}
+.stat {
+  background: var(--panel-claro);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.stat-valor {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.stat-etiqueta {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+/* ---- Portero ---- */
+.origen-linea {
   font-size: 13px;
-  color: #71717a;
-  border-top: 1px solid #e4e4e7;
+  color: var(--texto-suave);
+  word-break: break-all;
+}
+.origen-linea b {
+  color: var(--texto);
+}
+.checklist {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--texto-suave);
+  font-size: 13.5px;
+}
+.checklist li {
+  margin-bottom: 6px;
+}
+.checklist code {
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--celeste);
+  font-family: Consolas, 'Cascadia Code', monospace;
+}
+
+/* ---- Pentatlon ---- */
+.pentatlon-condicion {
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin: 8px 0 0;
+}
+.asalto-estado {
+  font-size: 12px;
+}
+.asalto-estado[data-ok='true'] {
+  color: var(--verde);
+}
+.asalto-estado[data-ok='false'] {
+  color: var(--rojo);
+}
+
+/* ---- Pie del panel ---- */
+.panel-pie {
+  margin-top: 26px;
   padding-top: 12px;
+  border-top: 1px solid var(--borde);
+  font-size: 12.5px;
+  color: var(--texto-suave);
 }

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller Django + React — Qué vas a enseñar y por qué</title>
+<style>
+  :root {
+    --fondo: #0f172a;
+    --panel: #1e293b;
+    --panel2: #162234;
+    --texto: #e2e8f0;
+    --suave: #94a3b8;
+    --backend: #38bdf8;
+    --frontend: #4ade80;
+    --dia3: #fbbf24;
+    --rojo: #f87171;
+    --violeta: #a78bfa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    line-height: 1.65;
+    padding: 2.5rem 1rem 5rem;
+  }
+  .contenedor { max-width: 1020px; margin: 0 auto; }
+  header.hero {
+    text-align: center;
+    padding: 3rem 1.5rem 2.5rem;
+    border: 1px solid #334155;
+    border-radius: 20px;
+    background: linear-gradient(160deg, #1e293b 0%, #0f172a 70%);
+    margin-bottom: 3rem;
+  }
+  header.hero h1 { font-size: 2.3rem; margin-bottom: .6rem; }
+  header.hero h1 .glow { color: var(--backend); }
+  header.hero p { color: var(--suave); max-width: 640px; margin: 0 auto; }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin-top: 1.4rem; }
+  .chip {
+    font-size: .8rem; padding: .35rem .85rem; border-radius: 999px;
+    border: 1px solid #475569; color: var(--suave);
+  }
+  .chip b { color: var(--texto); font-weight: 600; }
+  h2 {
+    font-size: 1.5rem; margin: 2.6rem 0 1.1rem; padding-bottom: .45rem;
+    border-bottom: 2px solid #334155; display: flex; align-items: center; gap: .55rem;
+  }
+  h2 .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 10px; background: var(--backend);
+    color: #0f172a; font-size: 1rem; flex-shrink: 0;
+  }
+  section { margin-bottom: 1rem; }
+  .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .tarjeta {
+    background: var(--panel); border: 1px solid #334155; border-radius: 14px;
+    padding: 1.2rem 1.3rem;
+  }
+  .tarjeta h3 { font-size: 1.02rem; margin-bottom: .55rem; }
+  .tarjeta p, .tarjeta li { color: var(--suave); font-size: .92rem; }
+  .tarjeta ul { padding-left: 1.1rem; margin-top: .3rem; }
+  .tarjeta li { margin-bottom: .25rem; }
+  .t-backend { border-top: 3px solid var(--backend); }
+  .t-frontend { border-top: 3px solid var(--frontend); }
+  .t-bd { border-top: 3px solid var(--violeta); }
+  .t-premio { border-top: 3px solid var(--dia3); }
+  .t-rosa { border-top: 3px solid var(--rojo); }
+  code {
+    background: #0b1220; border: 1px solid #334155; border-radius: 6px;
+    padding: .08rem .38rem; font-size: .85em; color: #7dd3fc;
+    font-family: Consolas, 'Cascadia Code', monospace;
+  }
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 14px; overflow: hidden; border: 1px solid #334155; }
+  th, td { padding: .7rem .95rem; text-align: left; font-size: .9rem; }
+  thead th { background: #273449; color: var(--texto); font-weight: 600; }
+  tbody tr { border-top: 1px solid #283445; }
+  tbody tr:hover { background: #223047; }
+  td .badge {
+    display: inline-block; min-width: 2.1rem; text-align: center;
+    font-weight: 700; font-size: .8rem; padding: .15rem .5rem; border-radius: 8px;
+  }
+  .b1 { background: #0c4a6e; color: #7dd3fc; }
+  .b2 { background: #14532d; color: #86efac; }
+  .b3 { background: #713f12; color: #fcd34d; }
+  .dia { margin-bottom: 1.6rem; }
+  .dia-cabecera {
+    display: flex; align-items: center; gap: .8rem; flex-wrap: wrap;
+    padding: .85rem 1.2rem; border-radius: 12px 12px 0 0; font-weight: 600;
+  }
+  .dia1 > .dia-cabecera { background: #0c4a6e; }
+  .dia2 > .dia-cabecera { background: #14532d; }
+  .dia3 > .dia-cabecera { background: #713f12; }
+  .dia-cuerpo { background: var(--panel); border: 1px solid #334155; border-top: 0; border-radius: 0 0 12px 12px; padding: 1.1rem 1.2rem; }
+  .dia-info { display: flex; gap: 1.6rem; flex-wrap: wrap; color: var(--suave); font-size: .86rem; margin-bottom: .8rem; }
+  .dia-info strong { color: var(--texto); }
+  .lista-tareas { list-style: none; }
+  .lista-tareas li {
+    display: flex; gap: .8rem; align-items: flex-start;
+    padding: .55rem 0; border-top: 1px solid #283445; font-size: .93rem;
+  }
+  .lista-tareas li:first-child { border-top: 0; }
+  .lista-tareas .mini {
+    flex-shrink: 0; font-weight: 700; font-size: .78rem; width: 5.6rem;
+    padding: .12rem .4rem; border-radius: 7px; text-align: center; margin-top: .1rem;
+  }
+  .mini-1 { background: #0c4a6e; color: #7dd3fc; }
+  .mini-2 { background: #14532d; color: #86efac; }
+  .mini-3 { background: #713f12; color: #fcd34d; }
+  .lista-tareas .desc { color: var(--texto); }
+  .lista-tareas .desc small { display: block; color: var(--suave); font-size: .83rem; }
+  .callout {
+    background: var(--panel2); border: 1px solid #475569; border-left: 4px solid var(--dia3);
+    border-radius: 10px; padding: .95rem 1.15rem; margin-top: 1.2rem; font-size: .92rem; color: var(--suave);
+  }
+  .callout strong { color: var(--texto); }
+  .grid-check { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+  .check-verde { color: var(--frontend); font-weight: 700; }
+  .check-naranja { color: var(--dia3); font-weight: 700; }
+  footer { text-align: center; color: #64748b; font-size: .82rem; margin-top: 3.5rem; }
+  @media (max-width: 640px) {
+    header.hero h1 { font-size: 1.6rem; }
+    .dia-info { gap: .8rem; }
+    table, thead, tbody, tr { display: block; }
+    thead { display: none; }
+    tbody tr { border-radius: 10px; margin-bottom: .6rem; border: 1px solid #283445; }
+    td { display: flex; justify-content: space-between; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="contenedor">
+
+  <header class="hero">
+    <h1>Guía del taller: <span class="glow">Django + React</span></h1>
+    <p>Taller Full-Stack de <b>3 días · 18 horas</b> — los estudiantes construyen, paso a paso y con premios, una app de lista de tareas completa: React en el navegador conversando con una API REST en Django, respaldada por PostgreSQL.</p>
+    <div class="chips">
+      <span class="chip"><b>3</b> sesiones</span>
+      <span class="chip"><b>18</b> horas</span>
+      <span class="chip"><b>15</b> mini-tareas</span>
+      <span class="chip"><b>1</b> reto final con premio mayor</span>
+      <span class="chip">Base: Postgres <b>taller_django_react</b></span>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="num">1</span> El resultado final — lo que va en la pantalla al terminar</h2>
+    <div class="tarjetas">
+      <div class="tarjeta t-frontend">
+        <h3>⚛️ Frontend (localhost:5173)</h3>
+        <p>Una SPA en <b>React + Vite</b> donde cada estudiante ve <b>su propia app lista para presumir</b>: la escriben, la conectan y la decoran ellos.</p>
+        <ul>
+          <li>Formulario para crear tareas (POST)</li>
+          <li>Lista que pinta el JSON de la API</li>
+          <li>Completar, editar y eliminar cada tarea</li>
+          <li>Filtro lógico: ver solo pendientes</li>
+          <li>Estilos propios (reto final)</li>
+        </ul>
+      </div>
+      <div class="tarjeta t-backend">
+        <h3>🚀 Backend (localhost:8000)</h3>
+        <p>Una <b>API REST con Django REST Framework</b> construida por ellos: modelo, serializador y CRUD completo.</p>
+        <ul>
+          <li>Modelo <code>Tarea</code> en PostgreSQL</li>
+          <li>Juguete gratis: el Django Admin como panel</li>
+          <li>Operaciones reales: <code>GET / POST / PATCH / DELETE</code></li>
+          <li>Monitor social disponible: el <b>Cronometro</b> mide los ms de la consulta</li>
+        </ul>
+      </div>
+      <div class="tarjeta t-bd">
+        <h3>🐘 Datos (PostgreSQL 18)</h3>
+        <p>Base de datos <code>taller_django_react</code>: las tareas <b>quedan guardadas de verdad aunque cierren todo</b> — esa es la respuesta a la pregunta de apertura del taller.</p>
+        <ul>
+          <li>Django 6.1 conectado vía <code>psycopg</code></li>
+          <li>El modelo se migró con <code>makemigrations</code> + <code>migrate</code></li>
+          <li>SQLite local quedó a un lado: hoy toca Postgres</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span> Por qué enseño esto — el argumento de venta</h2>
+    <div class="tarjetas">
+      <div class="tarjeta t-rosa">
+        <h3>❓ arranca por la pregunta</h3>
+        <p>"Cierras la app: ¿dónde quedaron tus tareas?" — la sesión 1 apuesta a que salgan sentenciarlo ellos mismos (<b>A pantalla</b> / <b>B navegador</b> / <b>C servidor + BD</b>) y se respondan en los 3 días con la app convertida en evidencia.</p>
+      </div>
+      <div class="tarjeta t-premio">
+        <h3>🧠 democratiza el "full stack"</h3>
+        <p>Ver que <b>un puerto pide</b> (React), <b>otro responde</b> (Django) y <b>otro guarda</b> (Postgres) rompe la idea mágica: son 3 procesos normales que se hablan por HTTP + JSON.</p>
+      </div>
+      <div class="tarjeta t-frontend">
+        <h3>🎮 aprenden haciendo, no copiando</h3>
+        <p>La regla del juego: <b>"funciona y sabes decir qué hiciste y por qué"</b>. Los instructores dan pistas, no respuestas; quien gana el bombombún es quien explica.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span> El mapa de las 3 sesiones</h2>
+    <div class="dia dia1">
+      <div class="dia-cabecera"><span>🐍 DÍA 1 — Backend con DRF</span></div>
+      <div class="dia-cuerpo">
+        <div class="dia-info">
+          <span><strong>Horario:</strong> arranque y entorno (2h) → mini-tareas 1 a 5 → cierre (15 min)</span>
+          <span><strong>Meta:</strong> una API que responde JSON</span>
+          <span><strong>Stack:</strong> venv + Django 6.1 + DRF + PostgreSQL</span>
+        </div>
+        <ul class="lista-tareas">
+          <li><span class="mini mini-1">Mini 1</span><span class="desc">Crear el modelo <code>Tarea</code> y correr las migraciones<small>modelos <code>CharField</code> + <code>BooleanField</code>; en la plantilla además <code>descripcion</code> y <code>creada</code>; ORM = <code>makemigrations</code> + <code>migrate</code></small></span></li>
+          <li><span class="mini mini-1">Mini 2</span><span class="desc">Poblar datos desde el Django Admin<small><code>admin.site.register(Tarea)</code> + <code>createsuperuser</code> + crear 3 registros; de regalo ya hay superuser <code>steven</code></small></span></li>
+          <li><span class="mini mini-1">Mini 3</span><span class="desc">Crear el <code>TareaSerializer</code><small><code>ModelSerializer</code> con <code>fields</code>; el traductor de Python → JSON → Python</small></span></li>
+          <li><span class="mini mini-1">Mini 4</span><span class="desc">Vista GET: ver el JSON crudo en el navegador<small><code>api/tareas/</code>; en la plantilla es un <code>ModelViewSet</code> + router (se explica como versión simplificada con <code>@api_view</code>)</small></span></li>
+          <li><span class="mini mini-1">Mini 5</span><span class="desc">Vista POST: guardar y verificar<small>crear una tarea y reconsultar — primer ciclo CRUD completo</small></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="dia dia2">
+      <div class="dia-cabecera"><span>⚛️ DÍA 2 — React y conexión</span></div>
+      <div class="dia-cuerpo">
+        <div class="dia-info">
+          <span><strong>Horario:</strong> setup de React y CORS (2h) → mini-tareas 6 a 10 → cierre (15 min)</span>
+          <span><strong>Meta:</strong> React hablando con Django sin errores en consola</span>
+          <span><strong>Stack:</strong> Vite :5173 + <code>fetch</code> + <code>useState</code> + django-cors-headers</span>
+        </div>
+        <ul class="lista-tareas">
+          <li><span class="mini mini-2">Mini 6</span><span class="desc">Primer render: título gigante en :5173<small>componentes + JSX; la app es un árbol: <code>App</code> → <code>Formulario</code>, <code>ListaTareas</code>, <code>Cronometro</code></small></span></li>
+          <li><span class="mini mini-2">Mini 7</span><span class="desc">¡El Jefe CORS!<small>demo en vivo: el navegador bloquea la respuesta de :8000, se instala/activa <code>corsheaders</code>; objetivo: <code>fetch</code> sin error en consola (F12)</small></span></li>
+          <li><span class="mini mini-2">Mini 8</span><span class="desc"><code>useState</code> + <code>map</code>: pintar los títulos del JSON<small>las claves del estado en React + <code>key</code> en la lista</small></span></li>
+          <li><span class="mini mini-2">Mini 9</span><span class="desc">Formulario controlado<small><code>value</code> + <code>onChange</code> ligado al estado</small></span></li>
+          <li><span class="mini mini-2">Mini 10</span><span class="desc">POST final desde React<small><code>fetch</code> con método POST + JSON; crear y verla al recargar</small></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="dia dia3">
+      <div class="dia-cabecera"><span>✨ DÍA 3 — CRUD completo y reto final</span></div>
+      <div class="dia-cuerpo">
+        <div class="dia-info">
+          <span><strong>Horario:</strong> mini-tareas 11 a 14 → Reto Final (1h) → cierre y premio (1h)</span>
+          <span><strong>Meta:</strong> la app completa y con estilo</span>
+          <span><strong>Extra:</strong> reto social "El Velocista" (medir quién tiene la consulta más rápida)</span>
+        </div>
+        <ul class="lista-tareas">
+          <li><span class="mini mini-3">Mini 11</span><span class="desc">Estado dinámico: crear sin recargar la página<small>React suma la tarea a su estado tras el POST</small></span></li>
+          <li><span class="mini mini-3">Mini 12</span><span class="desc">DELETE: eliminar tarea<small><code>DELETE a api/tareas/id/</code> + quitarla del estado</small></span></li>
+          <li><span class="mini mini-3">Mini 13</span><span class="desc">PUT / PATCH: marcar como completada<small><code>completada</code> cambio en la BD + reflejo en pantalla</small></span></li>
+          <li><span class="mini mini-3">Mini 14</span><span class="desc">Filtro lógico de pendientes<small><code>tareas.filter((t) =&gt; !t.completada)</code></small></span></li>
+          <li><span class="mini mini-3">Mini 15</span><span class="desc">🏆 EL RETO FINAL: estilos<small>CSS, Tailwind o Bootstrap; la mejor interfaz la vota el grupo — <b>premio mayor</b></small></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      💡 <strong>Cómo aprenderán cada tema (las 5 fases)</strong>: 1️⃣ Problema real de la app → 2️⃣ Pregunta (proponen antes de explicar) → 3️⃣ Explicación línea por línea → 4️⃣ Mini-tarea (modifican y deciden) → 5️⃣ Verificación (leer errores con F12). <strong>Gamificación:</strong> una mini-tarea = un bombombún para el primero que la logre <em>y la explique</em>; el reto final lo vota todos.
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span> Qué trae la plantilla vs qué construyen los estudiantes</h2>
+    <div class="grid-check">
+      <div class="tarjeta">
+        <h3 class="check-verde">✔ Ya viene listo en la plantilla</h3>
+        <ul>
+          <li>Django 6.1 montado, <code>tareas</code> con modelo de 4 campos, migraciones 0001 + 0002</li>
+          <li>Router DRF en <code>api/tareas/</code> (lista, crear, detalle, actualizar, eliminar)</li>
+          <li>CORS listo para <code>localhost:5173</code></li>
+          <li>Conexión a PostgreSQL <code>taller_django_react</code> ( Postgres 18 con <code>psycopg</code>)</li>
+          <li>Frontend que ya consume la API: <code>App</code>, <code>Formulario</code>, <code>ListaTareas</code>, <code>Cronometro</code></li>
+          <li>Superuser <code>steven</code> para el demo del Admin</li>
+        </ul>
+      </div>
+      <div class="tarjeta">
+        <h3 class="check-naranja">✍️ Lo que ellos construirán durante el taller</h3>
+        <ul>
+          <li>Escribir el modelo y correr migraciones con criterio (mini 1)</li>
+          <li>Diseñar el serializer y las vistas que faltan (mini 3–5)</li>
+          <li>Armar los componentes React y el estado (mini 6, 8, 9)</li>
+          <li>Ganar a CORS con la configuración (mini 7)</li>
+          <li><b>Todo el Día 3</b>: completar, eliminar, editar, filtrar y estilizar —<br><b>queda a propósito sin implementar</b>, es la tarea final</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Plantilla del taller — instruidores Steven & Yesid · app Taller Django + React · Postgres 18 · basada en la presentación de 25 diapositivas
+  </footer>
+</div>
+</body>
+</html>
