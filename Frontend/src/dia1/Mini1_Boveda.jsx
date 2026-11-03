@@ -1,0 +1,108 @@
+// ============================================================
+// Mini1_Boveda.jsx — DÍA 1 · Mini 1 "La Bóveda"
+//
+// La primera misión NO es un reto de código: es encender la
+// bóveda (PostgreSQL 18) desde el archivo .env y verificar que
+// el backend respira en el :8000.
+//
+// TODO (RETO 1): el estudiante copia Backend/.env.example a
+// Backend/.env, llena sus datos reales y corre:
+//     python manage.py migrate
+//     python manage.py runserver
+// Cuando el motor PostgreSQL vive, la misión se aprueba sola.
+// ============================================================
+import { useState } from 'react'
+import MisionMarco from '../MisionMarco'
+import { API_URL, pedirOExplotar } from '../api'
+
+const INSTRUCCION =
+  'TODO (RETO 1): en Backend/, copia .env.example a .env y llena tus datos ' +
+  'reales (DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT). Después: ' +
+  'python manage.py migrate y python manage.py runserver. Sin .env, el ' +
+  'arranque se detiene con las instrucciones en la terminal.'
+
+// Sondear la batería de diagnóstico del backend: /api/estado/.
+async function sondearBateria() {
+  const { datos } = await pedirOExplotar(`${API_URL}/estado/`)
+  return datos
+}
+
+export default function Mini1Boveda({ desbloqueada, aprobada, alAprobar }) {
+  const [bateria, setBateria] = useState(null)
+  const [falla, setFalla] = useState(null)
+  const [sonando, setSonando] = useState(false)
+
+  async function sonar() {
+    setSonando(true)
+    setFalla(null)
+    try {
+      const datos = await sondearBateria()
+      setBateria(datos)
+      // Victorias: el motor vive Y es PostgreSQL (no SQLite).
+      if (datos.base_datos && datos.motor_bueno) alAprobar()
+    } catch (laRedRota) {
+      setFalla(laRedRota.message)
+    } finally {
+      setSonando(false)
+    }
+  }
+
+  return (
+    <MisionMarco
+      alias="Mini 1"
+      titulo="La Bóveda"
+      teoria="Proyecta la terminal: sin bóveda no hay nada que guardar. Explica qué es una variable de entorno y por qué la clave de PostgreSQL NUNCA vive en el código (subirla a un repositorio es regalarla)."
+      desbloqueada={desbloqueada}
+      aprobada={aprobada}
+    >
+      <p className="mision-instruccion">{INSTRUCCION}</p>
+
+      <div className="fila-acciones">
+        <button className="boton" onClick={sonar} disabled={sonando}>
+          {sonando ? 'Sondeando la bóveda...' : 'Sondear la bóveda'}
+        </button>
+        <span className="celda-suave">
+          consulta la batería /api/estado/ en el :8000
+        </span>
+      </div>
+
+      {falla && <div className="aviso" data-tipo="error">{falla}</div>}
+
+      {bateria && (
+        <table className="tabla" style={{ marginTop: 12 }}>
+          <thead>
+            <tr>
+              <th>Bandera</th>
+              <th>Estado</th>
+              <th>Lectura</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>base_datos</td>
+              <td data-ok={bateria.base_datos}>
+                {bateria.base_datos ? 'vivo' : 'muerto'}
+              </td>
+              <td className="celda-suave">
+                {bateria.base_datos
+                  ? 'el motor de la bóveda está vivo'
+                  : 'el motor no responde: revisa .env y el servicio postgresql-x64-18'}
+              </td>
+            </tr>
+            <tr>
+              <td>motor_bueno</td>
+              <td data-ok={bateria.motor_bueno}>
+                {bateria.motor_bueno ? 'vivo' : 'muerto'}
+              </td>
+              <td className="celda-suave">
+                {bateria.motor_bueno
+                  ? 'PostgreSQL confirmado (SQLite prohibido en el taller)'
+                  : 'el motor no es PostgreSQL'}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      )}
+    </MisionMarco>
+  )
+}
