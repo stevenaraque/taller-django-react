@@ -60,6 +60,7 @@ function Pentatlon() {
   const [asaltos, setAsaltos] = useState([])
   const [total, setTotal] = useState(null)
   const [tablero, setTablero] = useState(leerTablero())
+  const [validacion, setValidacion] = useState(null)
 
   const lider = tablero[0]
 
@@ -156,6 +157,31 @@ function Pentatlon() {
     setCorriendo(false)
   }
 
+  // Extra de la arena: el serializer tambien valida. Al enviar un cuerpo
+  // sin titulo, DRF contesta HTTP 400 con su dicta del error.
+  async function probarValidacion() {
+    const inicio = performance.now()
+    try {
+      const respuesta = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titulo: '' }),
+      })
+      const cuerpo = await respuesta.json()
+      setValidacion({
+        ms: Math.round(performance.now() - inicio),
+        codigo: respuesta.status,
+        detalle: JSON.stringify(cuerpo),
+      })
+    } catch (falla) {
+      setValidacion({
+        ms: Math.round(performance.now() - inicio),
+        codigo: 'sin respuesta',
+        detalle: falla.message,
+      })
+    }
+  }
+
   return (
     <section>
       <div className="bloque">
@@ -215,6 +241,37 @@ function Pentatlon() {
           </p>
         </div>
       )}
+
+      <div className="bloque">
+        <h4 className="bloque-titulo">La validacion del serializer</h4>
+        <div className="fila-acciones">
+          <button className="boton" onClick={probarValidacion}>
+            Apostar al HTTP 400
+          </button>
+          <span className="celda-suave">
+            un POST sin titulo: el serializer lo rechaza y el servidor
+            contesta un error controlado
+          </span>
+        </div>
+        {validacion && (
+          <table className="tabla" style={{ marginTop: 12 }}>
+            <thead>
+              <tr>
+                <th className="numero">ms</th>
+                <th className="numero">codigo</th>
+                <th>Lo que devolvio Django</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="numero">{validacion.ms}</td>
+                <td className="numero">{validacion.codigo}</td>
+                <td className="celda-suave">{validacion.detalle}</td>
+              </tr>
+            </tbody>
+          </table>
+        )}
+      </div>
 
       <div className="bloque">
         <h4 className="bloque-titulo">Tablero del salon</h4>

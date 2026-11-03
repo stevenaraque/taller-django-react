@@ -46,6 +46,11 @@ function Portero() {
         if (!respuesta.ok) throw new Error(`HTTP ${respuesta.status}`)
 
         let detalle = `HTTP ${respuesta.status}`
+        if (prueba.id === 'get') {
+          // El navegador consume el permiso (Access-Control-Allow-Origin) y
+          // no lo deja leer en JS: si la respuesta llego, fue autorizada.
+          detalle += ' · el navegador verifico el permiso y dejo pasar la respuesta'
+        }
         if (prueba.id === 'post') {
           const datos = await respuesta.clone().json()
           detalle = `HTTP ${respuesta.status} · creó la tarea id ${datos.id}`
@@ -144,6 +149,11 @@ function Portero() {
           <li>
             <code>CORS_ALLOWED_ORIGINS</code> incluyendo{' '}
             <code>http://localhost:5173</code> (el origen exacto de esta arena).
+          </li>
+          <li>
+            Para ver el permiso <b>de verdad</b> (fuera del navegador):
+            <code>curl -i -H "Origin: http://localhost:5173" http://127.0.0.1:8000/api/tareas/</code>
+            y buscar <code>access-control-allow-origin</code> en la respuesta.
           </li>
           <li>Cada cambio en settings.py pide reiniciar runserver.</li>
           <li>F12 → Console muestra el error completo; no lo adivine, lea todo.</li>
