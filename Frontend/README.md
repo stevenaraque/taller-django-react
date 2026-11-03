@@ -1,16 +1,30 @@
-# React + Vite
+# Frontend — Panel de Arenas
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Este frontend (React 19 + Vite) es el panel del taller. Es la **verificación visual**
+del progreso: cada misión, desde el Mini 1 hasta el Mini 15, está representada por un
+componente físico dentro de un acordeón por día.
 
-Currently, two official plugins are available:
+## Qué hace
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Muestra las **3 arenas** (Día 1 · El Velocista, Día 2 · El Portero, Día 3 · Pentatlón
+  Big Data) como acordeón de pasos.
+- Cada misión se aprueba solo cuando el backend responde lo esperado (HTTP 200 válido,
+  o el fallo elegante con la pista correcta para retos como el impulso).
+- Los **días futuros se bloquean** hasta completar los anteriores.
+- El botón **Modo instructor** desbloquea todas las misiones para ensayar.
 
-## React Compiler
+## Archivo clave
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `src/api.js` — única puerta HTTP del frontend. Clasifica los errores
+  (red / CORS / HTTP 400 / 404 / 405 / 500) y los convierte en pistas legibles.
+- `src/estadoMisiones.js` — tablero de progreso en `localStorage`.
+- `src/App.jsx` — hub de arenas, acordeón, candados.
 
-## Expanding the Oxlint configuration
+## Desarrollo
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+npm install
+npm run dev
+```
+
+El panel corre en `http://localhost:5173` y habla con el backend en `http://localhost:8000`.
