@@ -1,23 +1,17 @@
 """
-URL configuration for config project.
+URL configuration del taller (raíz). Monta el Admin de Django y la
+API de contratos que los estudiantes construyen durante los 3 días.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+DIA 3 - Mini 13 · La Aguja en el Pajar: el SearchFilter se configura
+DENTRO del ContratoViewSet (Backend/contratos/views.py.
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
 urlpatterns = [
+    # Panel administrativo (Mini 3: aqui nace el primer contrato a mano).
     path('admin/', admin.site.urls),
-    path('api/', include('tareas.urls')),
+
+    # API del taller: todas las rutas de la app `contratos`.
+    path('api/', include('contratos.urls')),
 ]
