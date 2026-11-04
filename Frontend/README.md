@@ -27,4 +27,7 @@ npm install
 npm run dev
 ```
 
-El panel corre en `http://localhost:5173` y habla con el backend en `http://localhost:8000`.
+El panel corre en `http://localhost:5173` y habla con el backend en
+`http://localhost:8000`. Las guías para desarrollar estan en
+[`docs/`](../docs/README.md), por ejemplo
+[Día 2 · El Portero](../docs/04-dia2-el-portero.md).

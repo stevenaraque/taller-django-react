@@ -16,7 +16,7 @@ misión automáticamente.
 | Herramienta | Versión mínima |
 |---|---|
 | Python | 3.14+ |
-| Node.js + npm | Node 18+ / npm 11+ |
+| Node.js + npm | Node 20.19+ / 22.12+ — Vite 8 no corre con Node 18 |
 | Git | última versión reciente |
 | PostgreSQL | 18+ |
 
@@ -97,6 +97,18 @@ taller-django-react/
 ```
 
 Ver carpetas `Backend/` y `Frontend/` para el detalle de archivos por misión.
+
+## Documentación
+
+Guías paso a paso para desarrollar el proyecto en [`docs/`](./docs/README.md):
+
+1. [Inicio rápido](./docs/01-inicio-rapido.md) — requisitos e instalación completa.
+2. [Arquitectura](./docs/02-arquitectura.md) — cómo encaja Django, React y el tablero.
+3. [Día 1 · El Velocista](./docs/03-dia1-el-velocista.md) — misiones 1 a 5.
+4. [Día 2 · El Portero](./docs/04-dia2-el-portero.md) — misiones 6 a 10.
+5. [Día 3 · Pentatlón Big Data](./docs/05-dia3-pentatlon-big-data.md) — misiones 11 a 15.
+6. [Dataset y datos masivos](./docs/06-dataset-y-datos-masivos.md) — generar datos SECOP II.
+7. [Solución de problemas](./docs/07-solucion-de-problemas.md) — diagnóstico rápido.
 
 ## Instructores
 
