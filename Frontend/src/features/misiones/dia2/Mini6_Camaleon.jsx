@@ -3,8 +3,7 @@ import MisionMarco from '../MisionMarco'
 import Camaleon from './Camaleon'
 
 const INSTRUCCION =
-  'Completa Camaleon.jsx para mostrar tu nombre en un h1 con la clase ' +
-  'titulo-gigante. Después verifica el componente.'
+  'Camaleon.jsx muestra un h1 con la clase titulo-gigante. Verifica el componente.'
 
 export default function Mini6Camaleon({ desbloqueada, aprobada, alAprobar }) {
   const camaleonRef = useRef(null)

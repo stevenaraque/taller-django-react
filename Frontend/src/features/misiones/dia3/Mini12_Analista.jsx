@@ -1,12 +1,11 @@
-// TODO (RETO 12) - Crear la vista y ruta de estadísticas.
 import { lazy, Suspense, useRef, useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import { API_URL, pedirOExplotar } from '../../../shared/api'
 const GraficaEstados = lazy(() => import('./GraficaEstados'))
 
 const INSTRUCCION =
-  'Crea la ruta de estadísticas y conecta por_estado con la gráfica en filas ' +
-  'con estado y contratos. Si por_estado es un objeto, conviértelo a una lista.'
+  'La ruta entrega métricas y contratos agrupados por estado y fecha. La ' +
+  'gráfica muestra el conteo de contratos por estado.'
 
 export default function Mini12Analista({ desbloqueada, aprobada, alAprobar }) {
   const graficaRef = useRef(null)
@@ -14,6 +13,7 @@ export default function Mini12Analista({ desbloqueada, aprobada, alAprobar }) {
   const [falla, setFalla] = useState(null)
   const [midiendo, setMidiendo] = useState(false)
   const [verificacion, setVerificacion] = useState(null)
+  const datosGrafica = filasPorEstado(informe?.por_estado)
 
   async function pedirMetricas() {
     if (midiendo) return
@@ -114,9 +114,8 @@ export default function Mini12Analista({ desbloqueada, aprobada, alAprobar }) {
       )}
 
       <div ref={graficaRef}>
-        {/* TODO (RETO 12) - Pasar informe.por_estado a la gráfica. */}
         <Suspense fallback={<p className="celda-suave">Cargando gráfica…</p>}>
-          <GraficaEstados />
+          <GraficaEstados datos={datosGrafica} />
         </Suspense>
       </div>
 

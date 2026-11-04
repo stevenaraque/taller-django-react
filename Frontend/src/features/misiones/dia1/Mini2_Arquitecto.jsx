@@ -1,10 +1,9 @@
-// TODO (RETO 2) - Crear y migrar el modelo Contrato.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import { API_URL, pedirOExplotar } from '../../../shared/api'
 
 const INSTRUCCION =
-  'TODO (RETO 2): abre Backend/contratos/models.py y crea el modelo ' +
+  'Abre Backend/contratos/models.py y revisa el modelo ' +
   'Contrato siguiendo la especificación SECOP II comentada ahí. Luego: ' +
   'python manage.py makemigrations contratos y python manage.py migrate.'
 

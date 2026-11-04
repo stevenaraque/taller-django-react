@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stack de Django — Guía de exposición</title>
+<style>
+  :root {
+    --bg: #0f172a; --panel: #111827; --card: #1e293b; --text: #e5e7eb;
+    --muted: #94a3b8; --accent: #38bdf8; --green: #22c55e; --yellow: #facc15;
+    --red: #ef4444; --border: #334155; --codebg: #0b1220;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font-size: 2.2rem; margin: 0 0 8px; color: var(--accent); }
+  h2 { font-size: 1.6rem; margin: 40px 0 12px; color: #67e8f9; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
+  h3 { font-size: 1.25rem; margin: 24px 0 8px; color: var(--yellow); }
+  p { margin: 8px 0; }
+  ul, ol { padding-left: 22px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  code { background: var(--codebg); color: #fde68a; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: 0.92em; }
+  pre { background: var(--codebg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+  pre code { background: transparent; padding: 0; color: #e2e8f0; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 14px 0; }
+  .say { background: #1f2937; border-left: 4px solid var(--green); padding: 12px 16px; margin: 10px 0; border-radius: 6px; font-style: italic; }
+  .say::before { content: "🗣️  "; font-style: normal; }
+  .warn { background: #451a03; border-left: 4px solid var(--red); padding: 12px 16px; margin: 10px 0; border-radius: 6px; }
+  .warn::before { content: "⚠️  "; }
+  .tip { background: #1e3a5f; border-left: 4px solid var(--accent); padding: 12px 16px; margin: 10px 0; border-radius: 6px; }
+  .tip::before { content: "💡  "; }
+  .ok { background: #14532d; border-left: 4px solid var(--green); padding: 12px 16px; margin: 10px 0; border-radius: 6px; }
+  .ok::before { content: "✅  "; }
+  .nav { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 0; z-index: 10; }
+  .nav a { color: var(--accent); margin-right: 14px; text-decoration: none; font-size: 0.9rem; }
+  .nav a:hover { text-decoration: underline; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+  th { background: #0f172a; }
+  footer { margin-top: 60px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🐍 Stack de Django — Guía de exposición</h1>
+  <p style="color:var(--muted)">Complemento de la exposición del Día 1. Explica qué es cada pieza del backend (Django + DRF + PostgreSQL) y cómo se conectan, con guion palabra por palabra, código y errores comunes. Basado en el proyecto real desarrollado: <code>taller-django-react</code>.</p>
+
+  <div class="nav">
+    <a href="#que">Qué es</a>
+    <a href="#estructura">Estructura</a>
+    <a href="#settings">settings.py</a>
+    <a href="#env">.env</a>
+    <a href="#models">models.py</a>
+    <a href="#migraciones">Migraciones</a>
+    <a href="#admin">admin.py</a>
+    <a href="#serializers">serializers.py</a>
+    <a href="#views">views.py</a>
+    <a href="#urls">urls.py</a>
+    <a href="#extras">Extras</a>
+    <a href="#errores">Errores</a>
+  </div>
+
+  <!-- ============ QUE ES ============ -->
+  <h2 id="que">1. Qué es el stack de Django</h2>
+  <div class="card">
+    <p>El stack de Django de este proyecto tiene cuatro piezas que trabajan juntas:</p>
+    <ul>
+      <li><strong>Django 6.1:</strong> el framework web en Python. Maneja las rutas, las vistas, el ORM y el Admin.</li>
+      <li><strong>Django REST Framework (DRF) 3.18:</strong> extiende Django para construir APIs que responden JSON. Aporta serializers, ViewSets y routers.</li>
+      <li><strong>PostgreSQL 18:</strong> la base de datos real donde se guardan los contratos. Prohibido usar SQLite en el taller.</li>
+      <li><strong>python-dotenv:</strong> lee <code>Backend/.env</code> y entrega las credenciales a Django sin escribirlas en el código.</li>
+    </ul>
+  </div>
+
+  <h3>Guion (di esto palabra por palabra)</h3>
+  <div class="say">«Django es el framework web en Python. No es solo una librería: es un conjunto de herramientas que ya resuelve lo aburrido: rutas, base de datos, seguridad, administración.»</div>
+  <div class="say">«Django REST Framework es un agregado que convierte Django en una fábrica de APIs. Sin DRF, tendríamos que escribir a mano la conversión a JSON y la validación.»</div>
+  <div class="say">«PostgreSQL es la base de datos real. No usamos SQLite porque el taller quiere que aprendan con el motor que usarán en producción.»</div>
+  <div class="say">«python-dotenv lee el archivo <code>.env</code> y le entrega las credenciales a Django. Las credenciales nunca se escriben en el código.»</div>
+
+  <div class="tip">Django sigue el patrón MVT (Modelo-Vista-Template). En una API REST, el Template se reemplaza por el JSON que responde la vista.</div>
+
+  <!-- ============ ESTRUCTURA ============ -->
+  <h2 id="estructura">2. Estructura del backend</h2>
+  <pre><code>Backend/
+  .env                    Datos locales de la base y la clave de Django
+  config/settings.py      Configuración de Django y conexión a PostgreSQL
+  config/urls.py          Rutas principales: Admin y API
+  contratos/              La única app del taller
+    models.py             El modelo Contrato
+    serializers.py        El serializer (validación y conversión)
+    views.py              Las vistas (EstadoJardin, ContratoViewSet, ...)
+    urls.py               Rutas de la app contratos
+    admin.py              Registro en Django Admin
+    paginacion.py         Clase de paginación propia
+    fuente_secop.py       Ayuda para leer SECOP II (datos.gov.co)
+    migrations/           Migraciones de la base
+    tests.py              Pruebas de la API  <h3>Guion (di esto palabra por palabra)</h3>
+  <div class="say">Â«Todo el backend vive en la carpeta <code>Backend/</code>. La configuraciÃ³n estÃ¡ en <code>config/settings.py</code>. La app <code>contratos/</code> es la Ãºnica app del taller: ahÃ­ estÃ¡n el modelo, el serializer, las vistas, las rutas y el Admin.Â»</div>
+  <div class="say">Â«<code>fuente_secop.py</code> es ayuda: lee el dataset de SECOP II desde datos.gov.co. <code>paginacion.py</code> es la clase de paginaciÃ³n propia. <code>migrations/</code> guarda los planos de la base de datos.Â»</div>
+
+  <!-- ============ SETTINGS ============ -->
+  <h2 id="settings">3. settings.py â€” la configuraciÃ³n</h2>
+  <p>El archivo mÃ¡s importante de Django. AquÃ­ se decide quÃ© apps estÃ¡n activas, quÃ© middleware se ejecuta, cÃ³mo se conecta la base y cÃ³mo responde la API.</p>
+
+  <h3>Guion</h3>
+  <div class="say">Â«settings.py es el cerebro de la configuraciÃ³n. AquÃ­ Django aprende quÃ© apps tiene, quÃ© middleware ejecuta, cÃ³mo se conecta a PostgreSQL y cÃ³mo pagina la API.Â»</div>
+  <div class="say">Â«Nunca escriban la contraseÃ±a en settings.py. La leen de <code>.env</code> con <code>os.environ</code>. Si alguien sube settings.py con la clave, la base queda expuesta.Â»</div>
+
+  <h3>CÃ³digo clave â€” conexiÃ³n a PostgreSQL</h3>
+  <pre><code>load_dotenv(BASE_DIR / '.env')
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['DB_NAME'],
+        'USER': os.environ['DB_USER'],
+        'PASSWORD': os.environ['DB_PASSWORD'],
+        'HOST': os.environ['DB_HOST'],
+        'PORT': os.environ['DB_PORT'],
+    },
+}</code></pre>
+
+  <h3>CÃ³digo clave â€” REST Framework y paginaciÃ³n</h3>
+  <pre><code>REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'contratos.paginacion.PaginacionContratos',
+}</code></pre>
+
+  <h3>INSTALLED_APPS y MIDDLEWARE</h3>
+  <pre><code>INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'contratos',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]</code></pre>
+
+  <div class="tip">En el Mini 9 (CORS) se agrega <code>'corsheaders'</code> a INSTALLED_APPS y <code>'corsheaders.middleware.CorsMiddleware'</code> al MIDDLEWARE, antes de CommonMiddleware.</div>
+
+  <h3>Errores comunes de settings.py</h3>
+  <table>
+    <tr><th>Error</th><th>Causa</th><th>SoluciÃ³n</th></tr>
+    <tr><td><code>KeyError: 'SECRET_KEY'</code></td><td>No existe <code>.env</code></td><td>Copiar <code>.env.example</code> a <code>.env</code>.</td></tr>
+    <tr><td><code>could not connect to server</code></td><td>PostgreSQL apagado</td><td>Iniciar el servicio postgresql-x64-18.</td></tr>
+    <tr><td>PaginaciÃ³n no funciona</td><td>No se reiniciÃ³ runserver tras cambiar settings</td><td>Reiniciar runserver (Django carga settings al arrancar).</td></tr>
+    <tr><td><code>ModuleNotFoundError: No module named 'contratos.paginacion'</code></td><td>No se creÃ³ el archivo paginacion.py</td><td>Crear <code>Backend/contratos/paginacion.py</code>.</td></tr>
+  </table>
+
+  <!-- ============ ENV ============ -->
+  <h2 id="env">4. Backend/.env â€” las credenciales</h2>
+  <div class="card">
+    <p>Archivo local que Git ignora. Contiene la clave secreta de Django y los datos de conexiÃ³n a PostgreSQL.</p>
+  </div>
+  <pre><code>SECRET_KEY=genera_una_clave_secreta
+DEBUG=True
+DB_NAME=taller_django_react
+DB_USER=postgres
+DB_PASSWORD=tu_clave_de_postgres
+DB_HOST=localhost
+DB_PORT=5432
+
+# Opcional: token de datos.gov.co para aumentar el lÃ­mite de solicitudes.
+SOCRATA_APP_TOKEN=</code></pre>
+
+  <div class="warn">Nunca subas <code>.env</code> al repositorio. Contiene tu clave de base de datos. Solo se sube <code>.env.example</code> con valores de ejemplo.</div>
+
+  <!-- ============ MODELS ============ -->
+  <h2 id="models">5. models.py â€” el ORM y el modelo</h2>
+  <p>Un modelo es una clase Python que describe una tabla de PostgreSQL. Cada atributo es una columna. Django traduce la clase a SQL con las migraciones (ORM).</p>
+
+  <h3>Guion</h3>
+  <div class="say">Â«Un modelo es una clase Python que describe una tabla. Cada campo de la clase es una columna de PostgreSQL. El ORM nos deja escribir Python y Django genera el SQL por nosotros.Â»</div>
+  <div class="say">Â«<code>CharField</code> es texto corto, <code>TextField</code> texto largo, <code>DecimalField</code> dinero con decimales, <code>DateField</code> fecha. <code>unique=True</code> evita duplicados.Â»</div>
+  <div class="say">Â«<code>__str__</code> hace que en el Admin se vea el identificador en vez de 'Contrato object (1)'. <code>Meta.ordering</code> ordena las consultas automÃ¡ticamente.Â»</div>
+
+  <h3>CÃ³digo completo (models.py)</h3>
+  <pre><code>from django.db import models
+
+
+class Contrato(models.Model):
+    id_contrato = models.CharField(max_length=60, unique=True)
+    entidad_compradora = models.CharField(max_length=180)
+    descripcion = models.TextField(blank=True)
+    valor_total = models.DecimalField(max_digits=16, decimal_places=2)
+    estado = models.CharField(max_length=20, default='Activo')
+    fecha_firma = models.DateField()
+
+    class Meta:
+        ordering = ['id_contrato']
+
+    def __str__(self):
+        return self.id_contrato
+  <h3>Errores comunes de models.py</h3>
+  <table>
+    <tr><th>Error</th><th>Causa</th><th>SoluciÃ³n</th></tr>
+    <tr><td><code>No changes detected</code> en makemigrations</td><td>El modelo no se guardÃ³ o tiene error de sintaxis</td><td>Revisar que la clase se llame <code>Contrato</code> y que estÃ© en <code>models.py</code>.</td></tr>
+    <tr><td>El estudiante renombrÃ³ la tabla</td><td>CambiÃ³ <code>db_table</code> o el nombre del modelo</td><td>No cambiar: la tabla debe llamarse <code>contratos_contrato</code>.</td></tr>
+    <tr><td>Campos con nombres distintos</td><td>UsÃ³ <code>entidad</code> en vez de <code>entidad_compradora</code></td><td>Los nombres deben coincidir exactamente (el panel y el serializer los usan).</td></tr>
+    <tr><td><code>tabla_contratos: false</code></td><td>La migraciÃ³n no se aplicÃ³</td><td>Ejecutar <code>python manage.py migrate</code>.</td></tr>
+  </table>
+
+  <!-- ============ MIGRACIONES ============ -->
+  <h2 id="migraciones">6. Migraciones â€” el plano de la base</h2>
+  <p>Una migraciÃ³n es un archivo Python que describe cÃ³mo crear o cambiar las tablas. <code>makemigrations</code> la genera a partir del modelo; <code>migrate</code> la aplica en PostgreSQL.</p>
+
+  <h3>Guion</h3>
+  <div class="say">Â«La migraciÃ³n es el plano de la tabla. <code>makemigrations</code> lee el modelo y escribe el plano. <code>migrate</code> ejecuta ese plano en PostgreSQL.Â»</div>
+  <div class="say">Â«Si cambian el modelo, generan una nueva migraciÃ³n. Nunca borren tablas a mano: siempre usen migrate.Â»</div>
+
+  <h3>Comandos</h3>
+  <pre><code>python manage.py makemigrations contratos
+python manage.py migrate
+  <h3>Errores comunes de migraciones</h3>
+  <table>
+    <tr><th>Error</th><th>Causa</th><th>SoluciÃ³n</th></tr>
+    <tr><td><code>No changes detected</code></td><td>El modelo no se guardÃ³ o tiene error de sintaxis</td><td>Revisar models.py y guardar.</td></tr>
+    <tr><td><code>table ... already exists</code></td><td>Se corriÃ³ migrate dos veces con cambios</td><td>No borrar tablas a mano; usar migrate normal.</td></tr>
+    <tr><td><code>relation "contratos_contrato" does not exist</code></td><td>No se aplicÃ³ la migraciÃ³n</td><td>Ejecutar <code>python manage.py migrate</code>.</td></tr>
+  </table>
+
+  <!-- ============ ADMIN ============ -->
+  <h2 id="admin">7. admin.py â€” Django Admin</h2>
+  <p>Panel de administraciÃ³n listo para usar en <code>/admin/</code>. Se registra el modelo con <code>@admin.register()</code> y se configura con <code>ModelAdmin</code>.</p>
+
+  <h3>Guion</h3>
+  <div class="say">Â«Django trae un panel de administraciÃ³n gratuito. Registrando el modelo, podemos ver, crear, editar y borrar registros sin programar una sola pantalla.Â»</div>
+  <div class="say">Â«Configuramos <code>list_display</code> para ver las columnas, <code>search_fields</code> para buscar y <code>list_filter</code> para filtrar. Con 5000 contratos reales, el Admin se convierte en la mesa de trabajo.Â»</div>
+
+  <h3>CÃ³digo completo (admin.py)</h3>
+  <pre><code>from django.contrib import admin
+from .models import Contrato
+
+
+@admin.register(Contrato)
+class ContratoAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_contrato',
+        'entidad_compradora',
+        'estado',
+        'valor_total',
+        'fecha_firma',
+    )
+    search_fields = ('id_contrato', 'entidad_compradora', 'descripcion')
+    list_filter = ('estado', 'fecha_firma')</code></pre>
+
+  <!-- ============ SERIALIZERS ============ -->
+  <h2 id="serializers">8. serializers.py â€” el traductor y el escudo</h2>
+  <p>Un serializer convierte objetos Python a JSON (para responder) y valida el JSON que llega (para crear o actualizar). <code>ModelSerializer</code> genera los campos automÃ¡ticamente a partir del modelo.</p>
+
+  <h3>Guion</h3>
+  <div class="say">Â«El serializer traduce en dos sentidos: de objeto Python a JSON cuando respondemos, y de JSON a datos validados cuando recibimos.Â»</div>
+  <div class="say">Â«<code>ModelSerializer</code> lee el modelo y genera los campos automÃ¡ticamente. No hay que escribirlos a mano.Â»</div>
+  <div class="say">Â«El escudo rechaza datos invÃ¡lidos antes de que toquen la base. Si envÃ­as <code>valor_total: "hola"</code>, Django responde 400 con el detalle del error.Â»</div>
+  <div class="say">Â«Con <code>extra_kwargs</code> imponemos que <code>valor_total</code> no acepte negativos (<code>min_value = 0</code>).Â»</div>
+
+  <h3>CÃ³digo completo (serializers.py)</h3>
+  <pre><code>from rest_framework import serializers
+from .models import Contrato
+
+
+class ContratoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contrato
+        fields = '__all__'
+        extra_kwargs = {'valor_total': {'min_value': 0}}</code></pre>
+
+  <!-- ============ VIEWS ============ -->
+  <h2 id="views">9. views.py â€” las vistas</h2>
+  <p>Las vistas deciden quÃ© hacer cuando llega una peticiÃ³n. En este proyecto hay cuatro vistas principales mÃ¡s el juez del taller.</p>
+
+  <h3>EstadoJardinView (el juez â€” viene lista, no se modifica)</h3>
+  <p>Responde <code>GET /api/estado/</code> con las banderas <code>base_datos</code>, <code>motor_bueno</code>, <code>tabla_contratos</code>, <code>contratos_registrados</code> y <code>modelo_en_admin</code>. El panel la usa para aprobar los minis automÃ¡ticamente.</p>
+
+  <h3>ContratoViewSet (CRUD automÃ¡tico)</h3>
+  <pre><code>from rest_framework import viewsets
+from .models import Contrato
+from .serializers import ContratoSerializer
+
+
+class ContratoViewSet(viewsets.ModelViewSet):
+    queryset = Contrato.objects.all()
+    serializer_class = ContratoSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id_contrato', 'entidad_compradora', 'descripcion']
+    ordering_fields = ['valor_total', 'fecha_firma']
+
+    def get_queryset(self):
+        queryset = Contrato.objects.all()
+        estado = self.request.query_params.get('estado')
+        if estado:
+            queryset = queryset.filter(estado__iexact=estado)
+        return queryset
+  <h3>InyeccionMasivaView (Mini 11 â€” La Avalancha)</h3>
+  <p>Recibe <code>cantidad</code>, descarga contratos reales de SECOP II por pÃ¡ginas con <code>consultar_pagina</code> y <code>fila_a_contrato</code> (ayuda en <code>fuente_secop.py</code>), evita repetir identificadores y guarda los nuevos con <code>bulk_create(batch_size=1000, ignore_conflicts=True)</code>. Responde con <code>creados</code>, <code>recibidos</code>, <code>omitidos</code>, <code>total</code>, <code>ms</code> y <code>por_segundo</code>.</p>
+
+  <h3>EstadisticasView (Mini 12 â€” El Analista)</h3>
+  <p>Usa <code>aggregate()</code> para calcular conteo, suma, promedio y mÃ¡ximo de <code>valor_total</code>. Usa <code>annotate()</code> para agrupar por estado y por fecha. Responde con <code>metricas</code>, <code>por_estado</code> y <code>por_dia</code>.</p>
+
+  <h3>LimpiezaMasivaView (Mini 15 â€” El Limpiador)</h3>
+  <p>Vista DELETE que exige <code>{"confirmar": true}</code> en el cuerpo. Sin confirmaciÃ³n responde 400 y no borra nada. Con confirmaciÃ³n borra todo con <code>QuerySet.delete()</code> y responde con <code>eliminados</code> y <code>ms</code>.</p>
+
+  <!-- ============ URLS ============ -->
+  <h2 id="urls">10. urls.py â€” las rutas</h2>
+  <p>El router genera las rutas CRUD automÃ¡ticamente. Las vistas manuales se agregan con <code>path()</code>.</p>
+
+  <h3>CÃ³digo completo (urls.py)</h3>
+  <pre><code>from django.urls import path
+from rest_framework.routers import DefaultRouter
+from .views import (
+    ContratoViewSet,
+    EstadisticasView,
+    EstadoJardinView,
+    InyeccionMasivaView,
+    LimpiezaMasivaView,
+)
+
+router = DefaultRouter()
+router.register('contratos', ContratoViewSet, basename='contrato')
+
+urlpatterns = [
+    path('estado/', EstadoJardinView.as_view(), name='estado-taller'),
+    path('contratos/inyeccion/', InyeccionMasivaView.as_view(), name='contratos-inyeccion'),
+    path('contratos/estadisticas/', EstadisticasView.as_view(), name='contratos-estadisticas'),
+    path('contratos/limpieza/', LimpiezaMasivaView.as_view(), name='contratos-limpieza'),
+    *router.urls,
+]</code></pre>
+
+  <div class="tip">El orden importa: las rutas especÃ­ficas (<code>contratos/inyeccion/</code>) deben ir antes de <code>*router.urls</code>, porque el router captura <code>contratos/&lt;id&gt;/</code> y podrÃ­a comerse la ruta.</div>
+
+  <!-- ============ EXTRAS ============ -->
+  <h2 id="extras">11. Piezas adicionales del stack</h2>
+
+  <h3>paginacion.py â€” paginaciÃ³n propia</h3>
+  <pre><code>from rest_framework.pagination import PageNumberPagination
+
+
+class PaginacionContratos(PageNumberPagination):
+    page_size = 50
+    page_size_query_param = 'page_size'
+    max_page_size = 200
+  <h3>fuente_secop.py â€” ayuda para leer SECOP II</h3>
+  <p>MÃ³dulo que viene listo (no es un reto). Ofrece dos funciones que el estudiante usa en el Mini 11:</p>
+  <ul>
+    <li><code>consultar_pagina(limite, desplazamiento)</code>: pide filas a la API de datos.gov.co.</li>
+    <li><code>fila_a_contrato(fila)</code>: convierte una fila del dataset en un objeto <code>Contrato</code> (o <code>None</code> si es invÃ¡lida).</li>
+  </ul>
+  <p>TambiÃ©n expone <code>URL_API</code>, <code>TAMANO_PAGINA</code> (5000) y <code>CAMPOS</code>.</p>
+
+  <h3>tests.py â€” pruebas de la API</h3>
+  <p>17 pruebas con <code>APITestCase</code>: modelo, CRUD, validaciÃ³n, paginaciÃ³n, bÃºsqueda, filtro por estado, ordenamiento, estadÃ­sticas, inyecciÃ³n masiva (con mocks de la fuente) y limpieza protegida. Se ejecutan con <code>python manage.py test</code>.</p>
+
+  <!-- ============ ERRORES ============ -->
+  <h2 id="errores">12. Errores comunes del stack completo</h2>
+  <table>
+    <tr><th>Error</th><th>Causa</th><th>SoluciÃ³n</th></tr>
+    <tr><td><code>KeyError: 'SECRET_KEY'</code></td><td>No existe <code>.env</code></td><td>Copiar <code>.env.example</code> a <code>.env</code>.</td></tr>
+    <tr><td><code>could not connect to server</code></td><td>PostgreSQL apagado</td><td>Iniciar el servicio postgresql-x64-18.</td></tr>
+    <tr><td><code>password authentication failed</code></td><td>Usuario o clave incorrectos</td><td>Revisar <code>DB_USER</code> y <code>DB_PASSWORD</code>.</td></tr>
+    <tr><td><code>FATAL: database ... does not exist</code></td><td>No se creÃ³ la base</td><td>Crearla en pgAdmin con el nombre exacto.</td></tr>
+    <tr><td><code>No changes detected</code> en makemigrations</td><td>El modelo no se guardÃ³</td><td>Revisar models.py y guardar.</td></tr>
+    <tr><td><code>table ... already exists</code></td><td>migrate dos veces con cambios</td><td>No borrar tablas a mano.</td></tr>
+    <tr><td>La ruta responde 404</td><td>No se conectaron las rutas del router</td><td>Agregar <code>*router.urls</code> a <code>urlpatterns</code>.</td></tr>
+    <tr><td>Cambios no se reflejan</td><td>Django no recargÃ³</td><td>Reiniciar runserver.</td></tr>
+    <tr><td>CORS bloquea la peticiÃ³n</td><td>CORS no configurado (Mini 9)</td><td>Agregar corsheaders a INSTALLED_APPS y MIDDLEWARE.</td></tr>
+    <tr><td><code>ModuleNotFoundError: No module named 'contratos.paginacion'</code></td><td>No se creÃ³ paginacion.py</td><td>Crear el archivo.</td></tr>
+    <tr><td><code>ModuleNotFoundError: No module named 'contratos.fuente_secop'</code></td><td>Falta el archivo de ayuda</td><td>Verificar que <code>fuente_secop.py</code> exista.</td></tr>
+    <tr><td>El escudo acepta datos invÃ¡lidos</td><td>Serializer no conectado al ViewSet</td><td>Verificar <code>serializer_class = ContratoSerializer</code>.</td></tr>
+  </table>
+
+  <footer>
+    Documento de exposiciÃ³n del stack de Django â€” Taller Django + React sobre SECOP II.
+    Basado en el proyecto local desarrollado (soluciÃ³n completa).
+  </footer>
+</div>
+</body>
+</html>

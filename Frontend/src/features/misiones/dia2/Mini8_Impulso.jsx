@@ -1,13 +1,10 @@
-// TODO (RETO 8) - Hacer el primer fetch desde un componente React.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import { API_URL, peticion } from '../../../shared/api'
 
 const INSTRUCCION =
-  'TODO (RETO 8): escribe tu primer fetch en un componente propio (mira ' +
-  'la pizarra). Abre F12 -> Console: el navegador bloqueó la respuesta ' +
-  'de otro origen. LEE el error completo: eso es lo que vas a ganar en ' +
-  'el Mini 9.'
+  'Haz una petición GET a la API y comprueba que React puede recibir la ' +
+  'respuesta de Django desde otro origen.'
 
 export default function Mini8Impulso({ desbloqueada, aprobada, alAprobar }) {
   const [resultado, setResultado] = useState(null)
@@ -20,18 +17,19 @@ export default function Mini8Impulso({ desbloqueada, aprobada, alAprobar }) {
     try {
       const { respuesta } = await peticion(`${API_URL}/contratos/`)
       setResultado({
-        bloqueado: false,
+        correcto: respuesta.ok,
         codigo: respuesta.status,
-        detalle: 'llegó una respuesta del :8000 — la puerta ya estaba abierta',
+        detalle: respuesta.ok
+          ? 'Django respondió y el navegador permitió leer la respuesta.'
+          : 'Django respondió con un error HTTP.',
       })
+      if (respuesta.ok) alAprobar()
     } catch (roto) {
-      // En esta misión, el bloqueo de CORS es el resultado esperado.
       setResultado({
-        bloqueado: true,
+        correcto: false,
         codigo: 'sin respuesta',
         detalle: roto.message,
       })
-      if (roto.tipo === 'cors') alAprobar()
     } finally {
       setLanzando(false)
     }
@@ -51,33 +49,19 @@ export default function Mini8Impulso({ desbloqueada, aprobada, alAprobar }) {
           {lanzando ? 'Impulsando...' : 'Impulsar el primer fetch'}
         </button>
         <span className="celda-suave">
-          GET /api/contratos/ desde el :5173 (se espera el BLOQUEO de CORS)
+          GET /api/contratos/ desde React (:5173)
         </span>
       </div>
 
       {resultado && (
         <div
           className="aviso"
-          data-tipo={resultado.bloqueado ? 'ok' : 'error'}
+          data-tipo={resultado.correcto ? 'ok' : 'error'}
           style={{ marginTop: 12 }}
         >
-          {resultado.bloqueado
-            ? `BLOQUEADO — victoria del impulso: ${resultado.detalle}`
-            : `Sorprendente, ya cruzó: HTTP ${resultado.codigo} — ${resultado.detalle}`}
+          HTTP {resultado.codigo} · {resultado.detalle}
         </div>
       )}
-
-      <pre className="mision-pizarra" style={{ marginTop: 12 }}>
-        {`// MiImpulso.jsx — TODO (RETO 8)
-export default function MiImpulso() {
-  async function impulso() {
-    const respuesta = await fetch(
-      'http://127.0.0.1:8000/api/contratos/'
-    )
-    // El navegador puede bloquear esta respuesta por CORS.
-  }
-}`}
-      </pre>
     </MisionMarco>
   )
 }

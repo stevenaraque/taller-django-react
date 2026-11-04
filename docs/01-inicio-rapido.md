@@ -82,7 +82,7 @@ python manage.py runserver
 ```
 
 `check` busca errores de configuración. `migrate` crea las tablas internas de
-Django. La tabla de contratos se creará cuando completes el Mini 2.
+Django y la tabla `contratos_contrato` del modelo.
 
 Deja esta terminal abierta. Django debe mostrar que está escuchando en el
 puerto 8000. Compruébalo en <http://127.0.0.1:8000/api/estado/>.
@@ -105,7 +105,7 @@ Deja la terminal abierta y visita <http://localhost:5173>.
 - Django responde en `http://127.0.0.1:8000/api/estado/`.
 - React muestra el taller en `http://localhost:5173`.
 - El Mini 1 se aprueba cuando PostgreSQL está conectado.
-- `tabla_contratos` seguirá en `false` hasta completar el Mini 2.
+- `tabla_contratos` debe aparecer en `true` después de ejecutar `migrate`.
 
 ## Documentación oficial
 

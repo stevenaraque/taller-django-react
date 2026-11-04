@@ -3,8 +3,8 @@ import MisionMarco from '../MisionMarco'
 import Contador from './Contador'
 
 const INSTRUCCION =
-  'Completa Contador.jsx con useState. El botón debe aumentar el número ' +
-  'en uno cada vez que lo pulses.'
+  'Contador.jsx usa useState para aumentar el número en uno cada vez que ' +
+  'pulsas el botón.'
 
 export default function Mini7Albannil({ desbloqueada, aprobada, alAprobar }) {
   const contadorRef = useRef(null)

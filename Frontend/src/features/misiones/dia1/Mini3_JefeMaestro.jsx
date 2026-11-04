@@ -1,13 +1,12 @@
-// TODO (RETO 3) - Registrar Contrato en Django Admin.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import { API_URL, pedirOExplotar } from '../../../shared/api'
 
 const INSTRUCCION =
-  'TODO (RETO 3): registra el modelo en Backend/contratos/admin.py (las ' +
-  'dos líneas están comentadas ahí arriba). Luego: python manage.py ' +
-  'createsuperuser, entra a http://127.0.0.1:8000/admin/ y crea UN (1) ' +
-  'contrato manualmente desde la interfaz visual.'
+  'En Backend/contratos/admin.py registra Contrato con un ModelAdmin ' +
+  'configurado (list_display, search_fields y list_filter) para buscarte ' +
+  'oficial en la mesa de trabajo. Luego: python manage.py createsuperuser, ' +
+  'entra a http://127.0.0.1:8000/admin/ y crea UN (1) contrato.'
 
 export default function Mini3JefeMaestro({ desbloqueada, aprobada, alAprobar }) {
   const [bateria, setBateria] = useState(null)

@@ -1,12 +1,12 @@
-// TODO (RETO 13) - Agregar SearchFilter al ContratoViewSet.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import { API_URL, pedirOExplotar } from '../../../shared/api'
 
 const INSTRUCCION =
-  'TODO (RETO 13): en el ContratoViewSet agrega filter_backends = [SearchFilter] ' +
-  "y search_fields (ficha en views.py). Después busca aquí una palabra y " +
-  'compara el tiempo con el GET completo.'
+  'En ContratoViewSet configura las tres herramientas: SearchFilter con los ' +
+  'campos id_contrato, entidad_compradora y descripcion; un filtro propio en ' +
+  'get_queryset() que reciba ?estado= y use estado__iexact; y OrderingFilter ' +
+  'con ordering_fields en valor_total y fecha_firma.'
 
 export default function Mini13AgujaPajar({ desbloqueada, aprobada, alAprobar }) {
   const [caza, setCaza] = useState('Ministerio')
@@ -14,6 +14,12 @@ export default function Mini13AgujaPajar({ desbloqueada, aprobada, alAprobar }) 
   const [falla, setFalla] = useState(null)
   const [nota, setNota] = useState(null)
   const [cazando, setCazando] = useState(false)
+
+  async function pedir(direccion) {
+    const { datos } = await pedirOExplotar(direccion)
+    const filas = Array.isArray(datos) ? datos : datos.results ?? []
+    return { datos, filas }
+  }
 
   async function buscar() {
     if (cazando) return
@@ -30,12 +36,72 @@ export default function Mini13AgujaPajar({ desbloqueada, aprobada, alAprobar }) 
     }
 
     try {
-      const { datos, ms } = await pedirOExplotar(`${API_URL}/contratos/?search=${encodeURIComponent(aguja)}`)
-      setResultado({ ms, total: datos.count ?? datos.length, aguja })
+      const { datos, filas } = await pedir(
+        `${API_URL}/contratos/?search=${encodeURIComponent(aguja)}`,
+      )
+      const coincidencias = datos.count ?? filas.length
+
+      // Segundo cazo: el filtro por estado debe devolver solo ese estado.
+      let filtro = null
+      let delEstado = 0
+      try {
+        const { datos: estadisticas } = await pedir(
+          `${API_URL}/contratos/estadisticas/`,
+        )
+        const estados = Object.keys(estadisticas.por_estado || {})
+        if (estados.length > 0) {
+          filtro = estados[0]
+          const { datos: filtrados, filas: copiaFiltrada } = await pedir(
+            `${API_URL}/contratos/?estado=${encodeURIComponent(filtro)}`,
+          )
+          delEstado = filtrados.count ?? copiaFiltrada.length
+          const todoDelEstado =
+            copiaFiltrada.length > 0 &&
+            copiaFiltrada.every(
+              (contrato) =>
+                String(contrato.estado).toLowerCase() === filtro.toLowerCase(),
+            )
+          if (!todoDelEstado) {
+            setFalla(
+              `El filtro ?estado=${filtro} devolvió contratos de otro estado. ` +
+                'Revisa get_queryset() en ContratoViewSet.',
+            )
+            return
+          }
+        }
+      } catch {
+        // Sin estadísticas el panel solo prueba la búsqueda.
+      }
+
+      // Tercer cazo: el ordenamiento de mayor a menor valor.
+      const { filas: ordenadas } = await pedir(
+        `${API_URL}/contratos/?ordering=-valor_total`,
+      )
+      const quedaOrdenado =
+        ordenadas.length < 2 ||
+        Number(ordenadas[0].valor_total) >= Number(ordenadas[1].valor_total)
+      if (!quedaOrdenado) {
+        setFalla(
+          'El ?ordering=-valor_total no queda de mayor a menor. Revisa OrderingFilter y ordering_fields.',
+        )
+        return
+      }
+
+      setResultado({
+        coincidencias,
+        filtro,
+        delEstado,
+        mayor: ordenadas[0]?.valor_total,
+        siguiente: ordenadas[1]?.valor_total,
+        aguja,
+      })
       alAprobar()
-      // La misión valida la respuesta de la API, aunque no haya coincidencias.
-      if ((datos.count ?? datos.length) === 0) {
-        setNota(`0 coincidencias para "${aguja}" — la aguja no encontró nada. Prueba otra palabra (Ministerio, Alcaldía, puente).`)
+
+      if (coincidencias === 0) {
+        setNota(
+          `0 coincidencias para "${aguja}" — la aguja no encontró nada. ` +
+            'Prueba otra palabra (Ministerio, Alcaldía, puente).',
+        )
       }
     } catch (laRedRota) {
       setFalla(laRedRota.message)
@@ -64,7 +130,7 @@ export default function Mini13AgujaPajar({ desbloqueada, aprobada, alAprobar }) 
         <button className="boton" onClick={buscar} disabled={cazando}>
           {cazando ? 'Cazando...' : 'Cazar la aguja'}
         </button>
-        <span className="celda-suave">GET /api/contratos/?search=</span>
+        <span className="celda-suave">search + estado + ordering</span>
       </div>
 
       {falla && <div className="aviso" data-tipo="error" style={{ marginTop: 12 }}>{falla}</div>}
@@ -73,12 +139,20 @@ export default function Mini13AgujaPajar({ desbloqueada, aprobada, alAprobar }) 
       {resultado && (
         <div className="resumen-stats" style={{ marginTop: 12 }}>
           <span className="stat">
-            <span className="stat-valor">{resultado.total}</span>
-            <span className="stat-etiqueta">contratos que coinciden</span>
+            <span className="stat-valor">{resultado.coincidencias}</span>
+            <span className="stat-etiqueta">coincidencias de la búsqueda</span>
           </span>
           <span className="stat">
-            <span className="stat-valor">{resultado.ms}</span>
-            <span className="stat-etiqueta">ms de la caza</span>
+            <span className="stat-valor">{resultado.filtro ?? '—'}</span>
+            <span className="stat-etiqueta">
+              primer estado ({resultado.delEstado} contratos vía ?estado=)
+            </span>
+          </span>
+          <span className="stat">
+            <span className="stat-valor">
+              {resultado.mayor ?? '—'} &gt; {resultado.siguiente ?? '—'}
+            </span>
+            <span className="stat-etiqueta">orden por valor_total</span>
           </span>
           <span className="stat">
             <span className="stat-valor">{resultado.aguja}</span>

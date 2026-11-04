@@ -1,12 +1,11 @@
 # Taller Django + React
 
 Taller de tres días para aprender a crear una API con Django y una interfaz
-con React. El modelo usa campos de contratos SECOP II; el generador crea datos
-sintéticos para practicar.
+con React. Esta copia de desarrollo contiene la implementación funcional de los
+retos y descarga contratos oficiales de SECOP II desde datos.gov.co.
 
-La plantilla no es una aplicación terminada. En cada reto, el estudiante
-escribe o completa una parte del código y usa el panel para comprobarla. El
-panel evalúa automáticamente cada reto.
+El panel permite recorrer las 15 misiones y comprobar los resultados de la API,
+los componentes y la gráfica. Las guías describen el objetivo de cada reto.
 
 ## Requisitos
 

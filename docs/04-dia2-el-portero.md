@@ -30,12 +30,11 @@ y [responder a eventos](https://react.dev/learn/responding-to-events).
 
 ## Mini 8: El Impulso
 
-Escribe en un componente propio un `fetch` a `GET /api/contratos/`. La misión
-espera que el navegador bloquee la respuesta porque CORS todavía no está
-configurado. Eso es parte del reto.
+Haz una petición `fetch` a `GET /api/contratos/`. En esta copia, CORS ya está
+configurado y la respuesta debe llegar desde Django.
 
-**Comprueba:** abre las herramientas del navegador con F12, elige **Console** y
-lee el error. El panel aprueba la misión cuando detecta el bloqueo.
+**Comprueba:** pulsa **Impulsar el primer fetch**. El panel aprueba la misión
+cuando la petición devuelve una respuesta HTTP exitosa.
 
 **Documentación:** [Fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch)
 y [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).

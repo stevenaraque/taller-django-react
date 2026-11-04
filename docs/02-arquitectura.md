@@ -26,8 +26,7 @@ Backend/
   .env                    Datos locales de la base y la clave de Django
   config/settings.py      Configuración de Django y conexión a PostgreSQL
   config/urls.py          Rutas principales: Admin y API
-  contratos/              Modelos, serializer, vistas y rutas de contratos
-  generar_datos.py        Generador de datos de prueba
+  contratos/              Modelos, serializer, vistas, rutas y comandos de contratos
 
 Frontend/src/
   app/                    Une las partes principales del panel

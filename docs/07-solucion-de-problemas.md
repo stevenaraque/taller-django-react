@@ -13,7 +13,7 @@ en la terminal de Django y busca el Mini relacionado en las guías.
 | La base de datos no existe | Comprueba `DB_NAME` o créala con pgAdmin. |
 | `base_datos` aparece en `false` | Django no logró conectarse. Revisa el servicio y `.env`. |
 | `motor_bueno` aparece en `false` | El taller requiere PostgreSQL. No cambies el motor a SQLite. |
-| `tabla_contratos` aparece en `false` | Completa el Mini 2 y ejecuta `makemigrations contratos` y `migrate`. |
+| `tabla_contratos` aparece en `false` | Ejecuta `python manage.py migrate` desde `Backend/`. |
 | Un cambio de `settings.py` no aparece | Detén `runserver` con Ctrl+C y vuelve a iniciarlo. |
 
 ## React no llega a Django
@@ -21,7 +21,7 @@ en la terminal de Django y busca el Mini relacionado en las guías.
 | Error o síntoma | Qué revisar |
 |---|---|
 | El panel no recibe respuesta | Comprueba que Django esté activo en el puerto 8000. |
-| Error CORS durante el Mini 8 | Es el resultado esperado de ese reto. |
+| Error CORS durante el Mini 8 | Reinicia Django y confirma que el origen del panel figure en `CORS_ALLOWED_ORIGINS`. |
 | Error CORS durante otros retos | Completa el Mini 9 y reinicia Django. Autoriza ambos orígenes: `localhost:5173` y `127.0.0.1:5173`. |
 | HTTP 404 en una ruta de un reto | Esa vista o ruta todavía no está implementada. Revisa la guía del Mini. |
 | HTTP 400 durante el Mini 4 | Es correcto: el serializer debe rechazar el JSON de prueba. |
@@ -40,8 +40,8 @@ en la terminal de Django y busca el Mini relacionado en las guías.
 
 | Error o síntoma | Qué revisar |
 |---|---|
-| El generador dice que no existe la tabla | Completa y migra el Mini 2. |
-| El generador falla por una clave duplicada | Ya existe una carga anterior. No lo repitas hasta limpiar los datos de prueba con el Mini 15. |
+| El comando descargar_secop dice que no existe la tabla | Completa y migra el Mini 2. |
+| El importador recibe filas que ya existen | Omite identificadores duplicados y continúa con la siguiente página. |
 | Las estadísticas están vacías | Carga datos de prueba y comprueba que la API devuelva `metricas`, `por_estado` y `por_dia`. |
 | La gráfica del Mini 12 sigue vacía | Es el reto: conecta los conteos de `informe.por_estado` con el prop `datos` de `GraficaEstados`. |
 | La búsqueda no filtra | En el Mini 13, configura `SearchFilter` y los campos buscables en `ContratoViewSet`. |

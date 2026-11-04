@@ -1,10 +1,9 @@
-// TODO (RETO 1) - Configurar .env y ejecutar las migraciones.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import { API_URL, pedirOExplotar } from '../../../shared/api'
 
 const INSTRUCCION =
-  'TODO (RETO 1): en Backend/, copia .env.example a .env y llena tus datos ' +
+  'En Backend/, copia .env.example a .env y llena tus datos ' +
   'reales (DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT). Después: ' +
   'python manage.py migrate y python manage.py runserver. Sin .env, el ' +
   'arranque se detiene con las instrucciones en la terminal.'

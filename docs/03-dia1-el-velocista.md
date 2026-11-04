@@ -48,34 +48,50 @@ cambies el nombre de la tabla `contratos_contrato`.
 
 **Archivo:** `Backend/contratos/admin.py`
 
-1. Importa `admin` de Django y el modelo `Contrato`.
-2. Registra el modelo para que aparezca en el sitio de administración.
-3. Crea un usuario administrador:
+1. Registra el modelo `Contrato` con un `ModelAdmin` propio y configura:
+
+   - `list_display`: al menos `id_contrato`, `entidad_compradora`,
+     `estado`, `valor_total` y `fecha_firma`.
+   - `search_fields`: para buscar por identificador, entidad o descripción.
+   - `list_filter`: para filtrar por `estado`.
+
+2. Crea tu usuario administrador:
 
    ```powershell
    python manage.py createsuperuser
    ```
 
-4. Abre <http://127.0.0.1:8000/admin/> e inicia sesión.
-5. Crea un contrato de prueba.
+3. Abre <http://127.0.0.1:8000/admin/>, entra y usa la lista que configuraste
+   para crear un contrato de prueba.
+
+Con los datos reales de SECOP II cargados, el Admin deja de ser una vista:
+queda como la mesa de trabajo para encontrar y revisar contratos por estado,
+entidad y valor.
 
 **Comprueba:** el panel debe mostrar `modelo_en_admin: true` y al menos un
 contrato.
 
-**Documentación:** [Django Admin](https://docs.djangoproject.com/en/6.1/ref/contrib/admin/).
+**Documentación:** [Django Admin](https://docs.djangoproject.com/en/6.1/ref/contrib/admin/) y
+[opciones de ModelAdmin](https://docs.djangoproject.com/en/6.1/ref/contrib/admin/#modeladmin-options).
 
 ## Mini 4: El Escudo
 
 **Archivo:** `Backend/contratos/serializers.py`
 
-Crea un `ModelSerializer` para `Contrato`. Un serializer convierte los objetos
-de Django a JSON y valida el JSON que recibe la API.
+1. Crea un `ModelSerializer` para `Contrato`. Un serializer convierte los
+   objetos de Django a JSON y valida el JSON que recibe la API.
+2. Escudo extra: en el `Meta`, usa `extra_kwargs` para que `valor_total`
+   sea `min_value = 0`. Ningún contrato negativo debería entrar a la base.
 
-**Comprueba:** el panel envía un valor incorrecto para `valor_total`. Django
-debe responder HTTP 400 con información del error. Si la ruta responde 404,
-completa primero el Mini 5 y vuelve a intentarlo.
+En el panel están los dos ataques: un JSON malformado y un contrato completo
+pero con `valor_total` negativo.
 
-**Documentación:** [ModelSerializer de DRF](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer).
+**Comprueba:** los dos ataques deben rebotar con HTTP 400 e información del
+error. Si la ruta responde 404, completa primero el Mini 5 y vuelve a
+intentarlo.
+
+**Documentación:** [ModelSerializer de DRF](https://www.django-rest-framework.org/api-guide/serializers/#modelserializer)
+y [validadores de campo](https://www.django-rest-framework.org/api-guide/validators/).
 
 ## Mini 5: El Velocista
 

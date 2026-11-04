@@ -1,13 +1,11 @@
-// TODO (RETO 10) - Consultar la API y mostrar los contratos.
 import { useRef, useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import { API_URL, pedirOExplotar } from '../../../shared/api'
 import Listado from './Listado'
 
 const INSTRUCCION =
-  'Completa Listado.jsx con useState, useEffect y fetch para mostrar contratos. ' +
-  'Usa datos.results si la respuesta está paginada. Cada li debe tener ' +
-  'data-id-contrato con el identificador del contrato y una key única.'
+  'Listado.jsx consulta la API con fetch, usa datos.results si la respuesta ' +
+  'está paginada y muestra el identificador único de cada contrato.'
 
 export default function Mini10Render({ desbloqueada, aprobada, alAprobar }) {
   const listadoRef = useRef(null)

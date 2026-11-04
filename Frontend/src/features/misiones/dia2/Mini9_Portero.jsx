@@ -1,13 +1,10 @@
-// TODO (RETO 9) - Configurar CORS en settings.py.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import { API_URL, peticion } from '../../../shared/api'
 
 const INSTRUCCION =
-  'TODO (RETO 9): en Backend/config/settings.py activa corsheaders ' +
-  '(INSTALLED_APPS + middleware + CORS_ALLOWED_ORIGINS) — el bloque ' +
-  'comentado ahí marca las tres líneas exactas. Reinicia el runserver ' +
-  'después de cada cambio en settings.py.'
+  'CORS está configurado en Backend/config/settings.py para los dos ' +
+  'orígenes locales del panel. Reinicia runserver si cambias settings.py.'
 
 export default function Mini9Portero({ desbloqueada, aprobada, alAprobar }) {
   const [resultados, setResultados] = useState([])

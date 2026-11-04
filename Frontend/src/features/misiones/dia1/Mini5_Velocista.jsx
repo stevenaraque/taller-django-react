@@ -1,13 +1,11 @@
-// TODO (RETO 5) - Crear ContratoViewSet y conectarlo al router.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import Cronometro from '../../../shared/Cronometro'
 import { API_URL, pedirOExplotar, peticion } from '../../../shared/api'
 
 const INSTRUCCION =
-  'TODO (RETO 5): enciende el ModelViewSet en Backend/contratos/views.py ' +
-  'y conecta el router en el mismo archivo urls.py de la app. Después ' +
-  'reinicia el runserver y lanza la prueba de esta misión.'
+  'El ModelViewSet y el router están en Backend/contratos/. Reinicia ' +
+  'runserver y lanza la prueba de esta misión.'
 
 export default function Mini5Velocista({ desbloqueada, aprobada, alAprobar }) {
   const [medicionColeccion, setMedicionColeccion] = useState(null)

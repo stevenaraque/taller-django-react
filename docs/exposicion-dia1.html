@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Día 1 — Exposición completa: El Velocista</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #111827;
+    --card: #1e293b;
+    --text: #e5e7eb;
+    --muted: #94a3b8;
+    --accent: #38bdf8;
+    --green: #22c55e;
+    --yellow: #facc15;
+    --red: #ef4444;
+    --border: #334155;
+    --codebg: #0b1220;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
+  h1 { font-size: 2.2rem; margin: 0 0 8px; color: var(--accent); }
+  h2 { font-size: 1.6rem; margin: 40px 0 12px; color: #67e8f9; border-bottom: 2px solid var(--border); padding-bottom: 6px; }
+  h3 { font-size: 1.25rem; margin: 24px 0 8px; color: var(--yellow); }
+  h4 { font-size: 1.05rem; margin: 16px 0 6px; color: #f9a8d4; }
+  p { margin: 8px 0; }
+  ul, ol { padding-left: 22px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  code { background: var(--codebg); color: #fde68a; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: 0.92em; }
+  pre { background: var(--codebg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 10px 0; }
+  pre code { background: transparent; padding: 0; color: #e2e8f0; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 14px 0; }
+  .say { background: #1f2937; border-left: 4px solid var(--green); padding: 12px 16px; margin: 10px 0; border-radius: 6px; font-style: italic; }
+  .say::before { content: "🗣️  "; font-style: normal; }
+  .warn { background: #451a03; border-left: 4px solid var(--red); padding: 12px 16px; margin: 10px 0; border-radius: 6px; }
+  .warn::before { content: "⚠️  "; }
+  .tip { background: #1e3a5f; border-left: 4px solid var(--accent); padding: 12px 16px; margin: 10px 0; border-radius: 6px; }
+  .tip::before { content: "💡  "; }
+  .ok { background: #14532d; border-left: 4px solid var(--green); padding: 12px 16px; margin: 10px 0; border-radius: 6px; }
+  .ok::before { content: "✅  "; }
+  .nav { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 0; z-index: 10; }
+  .nav a { color: var(--accent); margin-right: 14px; text-decoration: none; font-size: 0.9rem; }
+  .nav a:hover { text-decoration: underline; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+  th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+  th { background: #0f172a; }
+  .toc { background: var(--card); border-radius: 10px; padding: 16px 22px; margin: 20px 0; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .mini { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin: 22px 0; }
+  .mini h2 { margin-top: 0; }
+  footer { margin-top: 60px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📘 Día 1 — El Velocista: guía de exposición completa</h1>
+  <p style="color:var(--muted)">Documento para el instructor. Contiene, para cada mini del Día 1: el concepto, el guion palabra por palabra, los pasos exactos, el código a escribir, cómo verificar y los errores comunes. Duración estimada: 6 horas (18 h totales ÷ 3 días).</p>
+
+  <div class="nav">
+    <a href="#prep">Preparación</a>
+    <a href="#m1">Mini 1</a>
+    <a href="#m2">Mini 2</a>
+    <a href="#m3">Mini 3</a>
+    <a href="#m4">Mini 4</a>
+    <a href="#m5">Mini 5</a>
+    <a href="#cierre">Cierre</a>
+  </div>
+
+  <div class="toc">
+    <strong>Índice</strong>
+    <ul>
+      <li><a href="#prep">Preparación del día (antes de que lleguen los estudiantes)</a></li>
+      <li><a href="#m1">Mini 1 — La Bóveda (configurar PostgreSQL y Django)</a></li>
+      <li><a href="#m2">Mini 2 — El Arquitecto (modelo Contrato y migración)</a></li>
+      <li><a href="#m3">Mini 3 — El Jefe Maestro (Django Admin)</a></li>
+      <li><a href="#m4">Mini 4 — El Escudo (serializer y validación)</a></li>
+      <li><a href="#m5">Mini 5 — El Velocista (ViewSet, router y rutas)</a></li>
+      <li><a href="#cierre">Cierre del Día 1 y paso al Día 2</a></li>
+    </ul>
+  </div>
+
+  <!-- ================= PREPARACION ================= -->
+  <h2 id="prep">Preparación del día (antes de que lleguen los estudiantes)</h2>
+  <div class="card">
+    <h3>Objetivo de hoy</h3>
+    <p>Al final del Día 1 cada estudiante debe tener: PostgreSQL respondiendo, el modelo <code>Contrato</code> creado y migrado, el Admin configurado con al menos un contrato de prueba, un serializer que valide datos, y la API CRUD funcionando con <code>GET /api/contratos/</code> (200) y <code>GET /api/contratos/999999/</code> (404).</p>
+  </div>
+
+  <h3>Lo que debes tener listo antes de la clase</h3>
+  <ul>
+    <li>Django corriendo en tu equipo: <code>python manage.py runserver</code> (puerto 8000).</li>
+    <li>React corriendo: <code>npm run dev</code> (puerto 5173).</li>
+    <li>Base PostgreSQL <code>taller_django_react</code> con los 5000 contratos reales ya cargados (usarás el panel para mostrar).</li>
+    <li>La pantalla proyectada con el panel del taller abierto en el navegador.</li>
+    <li>Un navegador con F12 abierto para mostrar la pestaña Network.</li>
+  </ul>
+
+  <h3>Guion de apertura (di esto palabra por palabra)</h3>
+  <div class="say">«Hoy vamos a construir, desde cero, una API real sobre datos reales de contratos públicos colombianos. Cada mini que completen hoy desbloquea el siguiente. El panel que ven en pantalla es el juez: si la API responde lo que esperamos, la misión se aprueba sola. No hay botón manual ni ayuda del instructor en el panel.»</div>
+  <div class="say">«El proyecto tiene tres piezas: React en el navegador, Django en el servidor y PostgreSQL en la base de datos. React pide, Django responde, PostgreSQL guarda. Hoy dejamos lista la parte de Django y la base.»</div>
+  <div class="say">«Regla del día: primero lee la instrucción de la misión, luego abre el archivo que se indica, escribe, guarda, y pulsa el botón de verificación. Si falla, lee el error en la terminal de Django antes de pedir ayuda.»</div>
+
+  <h3>Errores de preparación que debes anticipar</h3>
+  <table>
+    <tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td><code>python: command not found</code></td><td>Python no está en el PATH</td><td>Reinstalar Python marcando «Add to PATH» y abrir terminal nueva.</td></tr>
+    <tr><td><code>npm: command not found</code></td><td>Node no está en el PATH</td><td>Reinstalar Node y abrir terminal nueva.</td></tr>
+    <tr><td>PowerShell bloquea <code>Activate.ps1</code></td><td>Política de ejecución</td><td><code>Set-ExecutionPolicy -Scope Process RemoteSigned</code></td></tr>
+    <tr><td><code>connection refused</code> en Django</td><td>PostgreSQL no está corriendo</td><td>Iniciar el servicio <code>postgresql-x64-18</code> desde services.msc.</td></tr>
+    <tr><td><code>SECRET_KEY</code> vacío</td><td>No se llenó <code>.env</code></td><td>Generar con <code>python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"</code></td></tr>
+  </table>
+
+  <!-- ================= MINI 1 ================= -->
+  <div class="mini" id="m1">
+  <h2>Mini 1 — La Bóveda</h2>
+  <p><strong>Archivos:</strong> <code>Backend/.env</code></p>
+  <p><strong>Duración estimada:</strong> 20-25 minutos.</p>
+
+  <h3>Concepto que debes explicar</h3>
+  <p>Django necesita saber a qué base de datos conectarse. Esa información (usuario, clave, host, puerto) no se escribe en el código porque sería inseguro compartirla. Se guarda en un archivo <code>.env</code> que cada persona tiene en su equipo y que Git ignora. Django lo lee al arrancar gracias a <code>python-dotenv</code>.</p>
+  <p>La misión comprueba dos cosas: que PostgreSQL responde (<code>base_datos: true</code>) y que el motor es PostgreSQL y no SQLite (<code>motor_bueno: true</code>). El taller prohíbe SQLite porque queremos que aprendan con el motor real que usarán en producción.</p>
+
+  <h3>Guion (di esto palabra por palabra)</h3>
+  <div class="say">«Vamos a abrir la bóveda: el archivo que guarda las credenciales de la base de datos. Copien <code>.env.example</code> como <code>.env</code> y reemplacen los valores de ejemplo con los de su PostgreSQL.»</div>
+  <div class="say">«La <code>SECRET_KEY</code> es la firma de Django. No la inventen: generémosla con el comando que está en la guía. <code>DEBUG=True</code> significa modo de desarrollo: Django muestra errores detallados. En producción se pone False.»</div>
+  <div class="say">«Ahora ejecutamos tres comandos en orden: <code>check</code> busca errores de configuración, <code>migrate</code> crea las tablas internas de Django, y <code>runserver</code> arranca el servidor en el puerto 8000.»</div>
+  <div class="say">«Abran <code>http://127.0.0.1:8000/api/estado/</code> en el navegador. Deben ver <code>base_datos: true</code> y <code>motor_bueno: true</code>. Si ven <code>false</code>, el problema está en el <code>.env</code>, no en el código.»</div>
+
+  <h3>Pasos exactos</h3>
+  <ol>
+    <li>Copiar <code>Backend/.env.example</code> a <code>Backend/.env</code>.</li>
+    <li>Completar <code>SECRET_KEY</code>, <code>DEBUG=True</code>, <code>DB_NAME=taller_django_react</code>, <code>DB_USER</code>, <code>DB_PASSWORD</code>, <code>DB_HOST=localhost</code>, <code>DB_PORT=5432</code>.</li>
+    <li>Activar el entorno virtual: <code>.\venv\Scripts\Activate.ps1</code>.</li>
+    <li>Ejecutar: <code>python manage.py check</code></li>
+    <li>Ejecutar: <code>python manage.py migrate</code></li>
+    <li>Ejecutar: <code>python manage.py runserver</code></li>
+    <li>Abrir una segunda terminal y arrancar React: <code>cd Frontend && npm install && npm run dev</code></li>
+    <li>En el panel, pulsar «Sondear la bóveda».</li>
+  </ol>
+
+  <h3>Código clave (settings.py — conexión a PostgreSQL)</h3>
+  <pre><code>load_dotenv(BASE_DIR / '.env')
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['DB_NAME'],
+        'USER': os.environ['DB_USER'],
+        'PASSWORD': os.environ['DB_PASSWORD'],
+        'HOST': os.environ['DB_HOST'],
+        'PORT': os.environ['DB_PORT'],
+    },
+}</code></pre>
+
+  <h3>Verificación</h3>
+  <div class="ok">El panel muestra <code>base_datos: vivo</code> y <code>motor_bueno: vivo</code>. La URL <code>http://127.0.0.1:8000/api/estado/</code> responde JSON con ambas banderas en <code>true</code>.</div>
+
+  <h3>Errores comunes del Mini 1</h3>
+  <table>
+    <tr><th>Error</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td><code>KeyError: 'SECRET_KEY'</code></td><td>No existe <code>.env</code></td><td>Copiar <code>.env.example</code> a <code>.env</code> y llenarlo.</td></tr>
+    <tr><td><code>could not connect to server</code></td><td>PostgreSQL apagado</td><td>Iniciar el servicio desde services.msc.</td></tr>
+    <tr><td><code>password authentication failed</code></td><td>Usuario o clave incorrectos</td><td>Revisar <code>DB_USER</code> y <code>DB_PASSWORD</code> en <code>.env</code>.</td></tr>
+    <tr><td><code>FATAL: database "taller_django_react" does not exist</code></td><td>No se creó la base</td><td>Crearla en pgAdmin con ese nombre exacto.</td></tr>
+    <tr><td><code>motor_bueno: false</code></td><td>Se usó SQLite o el motor no es PostgreSQL</td><td>Verificar que <code>ENGINE</code> diga <code>django.db.backends.postgresql</code>.</td></tr>
+    <tr><td>El panel no conecta</td><td>React no arrancó o Django no está en 8000</td><td>Verificar las dos terminales abiertas.</td></tr>
+  </table>
+  </div>
+
+  <!-- ================= MINI 2 ================= -->
+  <div class="mini" id="m2">
+  <h2>Mini 2 — El Arquitecto</h2>
+  <p><strong>Archivo:</strong> <code>Backend/contratos/models.py</code></p>
+  <p><strong>Duración estimada:</strong> 30-35 minutos.</p>
+
+  <h3>Concepto que debes explicar</h3>
+  <p>Un modelo en Django es una clase de Python que describe una tabla de la base de datos. Cada atributo de la clase es una columna. Django traduce esa clase a SQL con las migraciones. El modelo <code>Contrato</code> guarda seis campos que vienen del dataset SECOP II: identificador, entidad compradora, descripción, valor total, estado y fecha de firma.</p>
+  <p><code>__str__()</code> define cómo se muestra un contrato en el Admin y en la consola. <code>Meta.ordering</code> hace que las consultas salgan ordenadas por identificador, lo que simplifica la paginación y la búsqueda.</p>
+  <p>La migración es el archivo que Django genera para crear la tabla. <code>makemigrations</code> la genera, <code>migrate</code> la aplica en PostgreSQL. La tabla se llama <code>contratos_contrato</code> (app + modelo) y no debe renombrarse.</p>
+
+  <h3>Guion (di esto palabra por palabra)</h3>
+  <div class="say">«Ahora diseñamos la tabla donde vivirán los contratos. Un modelo es una clase Python que describe las columnas. Cada campo de la clase es una columna de PostgreSQL.»</div>
+  <div class="say">«Los seis campos vienen del dataset SECOP II: el identificador del contrato, la entidad que compra, la descripción u objeto, el valor total, el estado y la fecha de firma. No guardamos todo el dataset: solo lo que el taller necesita.»</div>
+  <div class="say">«<code>CharField</code> es texto corto, <code>TextField</code> texto largo, <code>DecimalField</code> dinero con decimales, <code>DateField</code> fecha. <code>unique=True</code> en el identificador evita duplicados.»</div>
+  <div class="say">«<code>__str__</code> hace que en el Admin se vea el identificador en vez de 'Contrato object (1)'. <code>Meta.ordering</code> ordena las consultas automáticamente.»</div>
+  <div class="say">«Ahora generamos la migración: <code>makemigrations contratos</code>. Django lee el modelo y escribe un archivo Python con las instrucciones SQL. Luego <code>migrate</code> ejecuta ese SQL en PostgreSQL.»</div>
+  <div class="say">«Comprueben en <code>/api/estado/</code>: <code>tabla_contratos</code> debe pasar a <code>true</code>. Si sigue en <code>false</code>, la migración no se aplicó.»</div>
+
+  <h3>Pasos exactos</h3>
+  <ol>
+    <li>Abrir <code>Backend/contratos/models.py</code>.</li>
+    <li>Escribir la clase <code>Contrato</code> con los seis campos.</li>
+    <li>Agregar <code>__str__()</code> que devuelva <code>self.id_contrato</code>.</li>
+    <li>Agregar <code>class Meta: ordering = ['id_contrato']</code>.</li>
+    <li>Ejecutar: <code>python manage.py makemigrations contratos</code></li>
+    <li>Ejecutar: <code>python manage.py migrate</code></li>
+    <li>En el panel, pulsar «Sondear» y verificar <code>tabla_contratos: true</code>.</li>
+  </ol>
+
+  <h3>Código completo (models.py)</h3>
+  <pre><code>from django.db import models
+
+
+class Contrato(models.Model):
+    id_contrato = models.CharField(max_length=60, unique=True)
+    entidad_compradora = models.CharField(max_length=180)
+    descripcion = models.TextField(blank=True)
+    valor_total = models.DecimalField(max_digits=16, decimal_places=2)
+    estado = models.CharField(max_length=20, default='Activo')
+    fecha_firma = models.DateField()
+
+    class Meta:
+        ordering = ['id_contrato']
+
+    def __str__(self):
+        return self.id_contrato</code></pre>
+
+  <h3>Verificación</h3>
+  <div class="ok">El panel muestra <code>tabla_contratos: true</code>. En pgAdmin, la tabla <code>contratos_contrato</code> existe con las columnas <code>id_contrato</code>, <code>entidad_compradora</code>, <code>descripcion</code>, <code>valor_total</code>, <code>estado</code>, <code>fecha_firma</code>.</div>
+
+  <h3>Errores comunes del Mini 2</h3>
+  <table>
+    <tr><th>Error</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td><code>No changes detected</code> en makemigrations</td><td>El modelo no se guardó o tiene error de sintaxis</td><td>Revisar que la clase se llame <code>Contrato</code> y que esté en <code>models.py</code>.</td></tr>
+    <tr><td><code>table contratos_contrato already exists</code></td><td>Se corrió migrate dos veces con cambios</td><td>No borrar tablas a mano; usar <code>migrate</code> normal.</td></tr>
+    <tr><td><code>ModuleNotFoundError: No module named 'contratos'</code></td><td>La app no está en INSTALLED_APPS</td><td>Agregar <code>'contratos'</code> a INSTALLED_APPS en settings.py.</td></tr>
+    <tr><td><code>tabla_contratos: false</code></td><td>La migración no se aplicó</td><td>Ejecutar <code>python manage.py migrate</code> y verificar.</td></tr>
+    <tr><td>El estudiante renombró la tabla</td><td>Cambió <code>db_table</code> o el nombre del modelo</td><td>No cambiar: la tabla debe llamarse <code>contratos_contrato</code>.</td></tr>
+    <tr><td>Campos con nombres distintos</td><td>Usó <code>entidad</code> en vez de <code>entidad_compradora</code></td><td>Los nombres deben coincidir exactamente con los de la guía (el panel y el serializer los usan).</td></tr>
+  </table>
+  </div>
+
+  <!-- ================= MINI 3 ================= -->
+  <div class="mini" id="m3">
+  <h2>Mini 3 — El Jefe Maestro</h2>
+  <p><strong>Archivo:</strong> <code>Backend/contratos/admin.py</code></p>
+  <p><strong>Duración estimada:</strong> 25-30 minutos.</p>
+
+  <h3>Concepto que debes explicar</h3>
+  <p>Django trae un panel de administración listo para usar en <code>/admin/</code>. Para que un modelo aparezca ahí, hay que registrarlo con <code>admin.site.register()</code> o con el decorador <code>@admin.register()</code>. Un <code>ModelAdmin</code> permite configurar qué columnas se ven, cómo se busca y cómo se filtra, para que el Admin sea útil con miles de contratos.</p>
+  <p>El juez del taller (<code>EstadoJardinView</code>) revisa si el modelo está registrado en <code>admin.site._registry</code>. Si está, <code>modelo_en_admin</code> es <code>true</code>. Además debe haber al menos un contrato creado manualmente (para que <code>contratos_registrados >= 1</code>).</p>
+
+  <h3>Guion (di esto palabra por palabra)</h3>
+  <div class="say">«Django trae un panel de administración gratuito en <code>/admin/</code>. Es la mesa de trabajo donde ustedes van a ver y crear contratos. Pero Django no sabe qué modelos mostrar hasta que se los registren.»</div>
+  <div class="say">«Vamos a registrar <code>Contrato</code> con un <code>ModelAdmin</code> propio. Configuramos <code>list_display</code> para ver las columnas importantes, <code>search_fields</code> para buscar por identificador, entidad o descripción, y <code>list_filter</code> para filtrar por estado y fecha.»</div>
+  <div class="say">«Ahora crean su usuario administrador con <code>createsuperuser</code>. Entren a <code>http://127.0.0.1:8000/admin/</code> e inicien sesión. Verán la lista de contratos. Crean uno de prueba a mano.»</div>
+  <div class="say">«Con los 5000 contratos reales de SECOP II cargados, el Admin deja de ser una vista vacía: se convierte en la herramienta para encontrar y revisar contratos por estado, entidad y valor.»</div>
+
+  <h3>Pasos exactos</h3>
+  <ol>
+    <li>Abrir <code>Backend/contratos/admin.py</code>.</li>
+    <li>Importar <code>admin</code> y <code>Contrato</code>.</li>
+    <li>Crear <code>ContratoAdmin(ModelAdmin)</code> con <code>list_display</code>, <code>search_fields</code> y <code>list_filter</code>.</li>
+    <li>Registrar con <code>@admin.register(Contrato)</code>.</li>
+    <li>Ejecutar: <code>python manage.py createsuperuser</code> (elegir usuario y clave).</li>
+    <li>Abrir <code>http://127.0.0.1:8000/admin/</code> e iniciar sesión.</li>
+    <li>Crear un contrato de prueba desde la interfaz.</li>
+    <li>En el panel, pulsar «Sonar el panel».</li>
+  </ol>
+
+  <h3>Código completo (admin.py)</h3>
+  <pre><code>from django.contrib import admin
+from .models import Contrato
+
+
+@admin.register(Contrato)
+class ContratoAdmin(admin.ModelAdmin):
+    list_display = (
+        'id_contrato',
+        'entidad_compradora',
+        'estado',
+        'valor_total',
+        'fecha_firma',
+    )
+    search_fields = ('id_contrato', 'entidad_compradora', 'descripcion')
+    list_filter = ('estado', 'fecha_firma')</code></pre>
+
+  <h3>Verificación</h3>
+  <div class="ok">El panel muestra <code>modelo_en_admin: true</code> y <code>contratos_registrados >= 1</code>. En <code>/admin/</code> se ve la lista con columnas, búsqueda y filtro por estado.</div>
+
+  <h3>Errores comunes del Mini 3</h3>
+  <table>
+    <tr><th>Error</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td><code>modelo_en_admin: false</code></td><td>No se registró el modelo</td><td>Agregar <code>@admin.register(Contrato)</code> en admin.py.</td></tr>
+    <tr><td>El Admin pide login pero no hay usuario</td><td>No se creó superuser</td><td>Ejecutar <code>python manage.py createsuperuser</code>.</td></tr>
+    <tr><td>El Admin muestra "Contrato object (1)"</td><td>Falta <code>__str__()</code> en el modelo</td><td>Agregar <code>def __str__(self): return self.id_contrato</code> en models.py.</td></tr>
+    <tr><td>No se ve el modelo en /admin/</td><td>Django no recargó</td><td>Reiniciar runserver (guardar admin.py suele recargar, pero a veces no).</td></tr>
+    <tr><td><code>contratos_registrados: 0</code></td><td>No se creó contrato manual</td><td>Crear uno desde el Admin antes de pulsar «Sonar».</td></tr>
+  </table>
+  </div>
+
+  <!-- ================= MINI 4 ================= -->
+  <div class="mini" id="m4">
+  <h2>Mini 4 — El Escudo</h2>
+  <p><strong>Archivo:</strong> <code>Backend/contratos/serializers.py</code></p>
+  <p><strong>Duración estimada:</strong> 25-30 minutos.</p>
+
+  <h3>Concepto que debes explicar</h3>
+  <p>Un serializer convierte objetos de Python a JSON (para responder) y valida el JSON que llega (para crear o actualizar). <code>ModelSerializer</code> genera automáticamente los campos a partir del modelo. El escudo rechaza datos inválidos antes de que toquen la base de datos: si envías <code>valor_total: "hola"</code>, Django responde 400 con el detalle del error.</p>
+  <p>Además, el escudo extra usa <code>extra_kwargs</code> para imponer <code>min_value = 0</code> en <code>valor_total</code>: un contrato no puede tener valor negativo. El panel lanza dos ataques seguidos: un JSON malformado y un contrato completo pero con valor negativo; los dos deben rebotar con 400.</p>
+
+  <h3>Guion (di esto palabra por palabra)</h3>
+  <div class="say">«Ahora construimos el escudo: el serializer. Su trabajo es traducir entre Python y JSON en las dos direcciones, y validar lo que entra.»</div>
+  <div class="say">«<code>ModelSerializer</code> lee el modelo y genera los campos automáticamente. No hay que escribirlos a mano.»</div>
+  <div class="say">«El escudo rechaza datos inválidos antes de que toquen la base. Si envías <code>valor_total: "hola"</code>, Django responde 400 con el detalle del error. Eso es lo que el panel comprueba.»</div>
+  <div class="say">«Escudo extra: con <code>extra_kwargs</code> imponemos que <code>valor_total</code> no acepte negativos. Un contrato no puede tener valor negativo. El panel lanza dos ataques: un JSON malformado y un contrato completo pero con valor negativo. Los dos deben rebotar.»</div>
+  <div class="say">«Si la ruta responde 404, es porque aún no completaron el Mini 5 (el ViewSet y la ruta). Completen el Mini 5 primero y vuelvan.»</div>
+
+  <h3>Pasos exactos</h3>
+  <ol>
+    <li>Abrir <code>Backend/contratos/serializers.py</code>.</li>
+    <li>Importar <code>serializers</code> y <code>Contrato</code>.</li>
+    <li>Crear <code>ContratoSerializer(serializers.ModelSerializer)</code> con <code>Meta</code>: <code>model = Contrato</code>, <code>fields = '__all__'</code>, <code>extra_kwargs = {'valor_total': {'min_value': 0}}</code>.</li>
+    <li>En el panel, pulsar «Los dos ataques».</li>
+  </ol>
+
+  <h3>Código completo (serializers.py)</h3>
+  <pre><code>from rest_framework import serializers
+from .models import Contrato
+
+
+class ContratoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contrato
+        fields = '__all__'
+        extra_kwargs = {'valor_total': {'min_value': 0}}</code></pre>
+
+  <h3>Verificación</h3>
+  <div class="ok">Los dos ataques responden HTTP 400. El panel muestra «bloqueado» en ambas filas de la tabla.</div>
+
+  <h3>Errores comunes del Mini 4</h3>
+  <table>
+    <tr><th>Error</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td>La ruta responde 404</td><td>No existe el ViewSet ni la ruta (Mini 5 pendiente)</td><td>Completar el Mini 5 primero.</td></tr>
+    <tr><td>El escudo acepta el JSON malformado (201 o 200)</td><td>El serializer no está conectado al ViewSet</td><td>Verificar que <code>serializer_class = ContratoSerializer</code> en el ViewSet.</td></tr>
+    <tr><td>El escudo acepta el valor negativo</td><td>Falta <code>extra_kwargs</code> con <code>min_value</code></td><td>Agregar <code>extra_kwargs = {'valor_total': {'min_value': 0}}</code>.</td></tr>
+    <tr><td>El ataque negativo responde 500</td><td>El serializer valida pero el ViewSet no maneja la excepción</td><td>DRF maneja la validación automáticamente; revisar que el ViewSet sea ModelViewSet.</td></tr>
+    <tr><td>El panel no aprueba aunque dé 400</td><td>El panel envía los dos ataques en secuencia y espera ambos 400</td><td>Revisar la consola del navegador (F12) por errores de CORS.</td></tr>
+  </table>
+  </div>
+
+  <!-- ================= MINI 5 ================= -->
+  <div class="mini" id="m5">
+  <h2>Mini 5 — El Velocista</h2>
+  <p><strong>Archivos:</strong> <code>Backend/contratos/views.py</code> y <code>Backend/contratos/urls.py</code></p>
+  <p><strong>Duración estimada:</strong> 30-35 minutos.</p>
+
+  <h3>Concepto que debes explicar</h3>
+  <p>Un <code>ModelViewSet</code> de DRF genera automáticamente las cinco operaciones CRUD (listar, crear, consultar, actualizar, borrar) para un modelo. Un <code>DefaultRouter</code> crea las rutas URL a partir del ViewSet. Juntos convierten ~50 líneas de código en ~5.</p>
+  <p>La misión comprueba dos cosas: <code>GET /api/contratos/</code> responde 200 (la colección existe) y <code>GET /api/contratos/999999/</code> responde 404 (el recurso fantasma no existe, lo que demuestra que la ruta de detalle funciona).</p>
+
+  <h3>Guion (di esto palabra por palabra)</h3>
+  <div class="say">«Ahora la parte veloz: un ViewSet genera las cinco operaciones CRUD automáticamente. Listar, crear, consultar, actualizar y borrar, todo en una clase.»</div>
+  <div class="say">«El router conecta esa clase a las URLs. En vez de escribir cada ruta a mano, el router las crea por nosotros.»</div>
+  <div class="say">«La prueba lanza dos peticiones: <code>GET /api/contratos/</code> debe dar 200 (la colección existe) y <code>GET /api/contratos/999999/</code> debe dar 404 (el recurso no existe). El 404 demuestra que la ruta de detalle funciona.»</div>
+  <div class="say">«Reinicien runserver después de cambiar urls.py, porque Django carga las rutas al arrancar.»</div>
+
+  <h3>Pasos exactos</h3>
+  <ol>
+    <li>Abrir <code>Backend/contratos/views.py</code>.</li>
+    <li>Importar <code>viewsets</code>, <code>Contrato</code> y <code>ContratoSerializer</code>.</li>
+    <li>Crear <code>ContratoViewSet(viewsets.ModelViewSet)</code> con <code>queryset = Contrato.objects.all()</code> y <code>serializer_class = ContratoSerializer</code>.</li>
+    <li>Abrir <code>Backend/contratos/urls.py</code>.</li>
+    <li>Crear <code>router = DefaultRouter()</code> y registrar: <code>router.register('contratos', ContratoViewSet, basename='contrato')</code>.</li>
+    <li>Agregar <code>*router.urls</code> a <code>urlpatterns</code>.</li>
+    <li>Reiniciar <code>runserver</code>.</li>
+    <li>En el panel, pulsar «Correr la arena del Velocista».</li>
+  </ol>
+
+  <h3>Código completo (views.py — ViewSet)</h3>
+  <pre><code>from rest_framework import viewsets
+from .models import Contrato
+from .serializers import ContratoSerializer
+
+
+class ContratoViewSet(viewsets.ModelViewSet):
+    queryset = Contrato.objects.all()
+    serializer_class = ContratoSerializer</code></pre>
+
+  <h3>CÃ³digo completo (urls.py)</h3>
+  <pre><code>from django.urls import path
+from rest_framework.routers import DefaultRouter
+from .views import ContratoViewSet
+
+router = DefaultRouter()
+router.register('contratos', ContratoViewSet, basename='contrato')
+
+urlpatterns = [
+    *router.urls,
+]</code></pre>
+
+  <h3>VerificaciÃ³n</h3>
+  <div class="ok"><code>GET /api/contratos/</code> responde HTTP 200 con una lista (vacÃ­a o con datos). <code>GET /api/contratos/999999/</code> responde HTTP 404. El panel aprueba la misiÃ³n.</div>
+
+  <h3>Errores comunes del Mini 5</h3>
+  <table>
+    <tr><th>Error</th><th>Causa</th><th>SoluciÃ³n</th></tr>
+    <tr><td>La ruta responde 404</td><td>No se conectaron las rutas del router en urls.py</td><td>Agregar <code>*router.urls</code> a <code>urlpatterns</code>.</td></tr>
+    <tr><td><code>GET /api/contratos/999999/</code> responde 200</td><td>El ViewSet no estÃ¡ registrado o el router no se usa</td><td>Verificar <code>router.register('contratos', ContratoViewSet, basename='contrato')</code>.</td></tr>
+    <tr><td>El panel no aprueba aunque dÃ© 200</td><td>El ViewSet no tiene <code>serializer_class</code></td><td>Agregar <code>serializer_class = ContratoSerializer</code>.</td></tr>
+    <tr><td>Cambios en urls.py no se reflejan</td><td>Django no recargÃ³ las rutas</td><td>Reiniciar runserver.</td></tr>
+    <tr><td>El frontend no conecta (CORS)</td><td>CORS no configurado aÃºn (Mini 9)</td><td>Volver al Mini 5 despuÃ©s del Mini 9.</td></tr>
+  </table>
+  </div>
+
+  <h2 id="cierre">Cierre del DÃ­a 1 y paso al DÃ­a 2</h2>
+  <div class="card">
+    <h3>Resumen de lo logrado hoy</h3>
+    <ul>
+      <li><strong>Mini 1:</strong> PostgreSQL conectado y Django arrancando en el puerto 8000.</li>
+      <li><strong>Mini 2:</strong> Modelo <code>Contrato</code> creado y migrado; tabla <code>contratos_contrato</code> en PostgreSQL.</li>
+      <li><strong>Mini 3:</strong> Admin configurado con lista, bÃºsqueda y filtro; al menos un contrato creado.</li>
+      <li><strong>Mini 4:</strong> Serializer que valida datos y rechaza negativos.</li>
+      <li><strong>Mini 5:</strong> API CRUD funcionando: <code>GET /api/contratos/</code> (200) y <code>GET /api/contratos/999999/</code> (404).</li>
+    </ul>
+  </div>
+
+  <h3>Guion de cierre (di esto palabra por palabra)</h3>
+  <div class="say">Â«Hoy dejamos lista la base y la API. MaÃ±ana conectamos el navegador con Django (CORS), creamos componentes React y mostramos los contratos en pantalla.Â»</div>
+  <div class="say">Â«El DÃ­a 2 se abre cuando los Minis 1, 2 y 3 estÃ©n aprobados. Si el Mini 4 o el Mini 5 quedÃ³ pendiente, vuelvan al DÃ­a 1 y compruÃ©benlo otra vez con CORS abierto (Mini 9).Â»</div>
+  <div class="say">Â«Guarden su progreso: las aprobaciones estÃ¡n en el navegador (localStorage). No borren el historial ni cambien de navegador.Â»</div>
+
+  <h3>Checklist antes de cerrar</h3>
+  <ul>
+    <li>Los 5 minis del DÃ­a 1 estÃ¡n aprobados en el panel.</li>
+    <li>Django responde en <code>http://127.0.0.1:8000/api/estado/</code> con <code>tabla_contratos: true</code> y <code>modelo_en_admin: true</code>.</li>
+    <li>React muestra el taller en <code>http://localhost:5173</code>.</li>
+    <li>La terminal de Django no muestra errores rojos.</li>
+  </ul>
+
+  <footer>
+    Documento de exposiciÃ³n del DÃ­a 1 â€” Taller Django + React sobre SECOP II.
+    GuÃ­a basada en el proyecto local desarrollado (soluciÃ³n completa).
+  </footer>
+</div>
+</body>
+</html>

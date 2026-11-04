@@ -1,61 +1,62 @@
-# Datos de prueba
+# Datos de SECOP II
 
-El modelo usa campos inspirados en los contratos de SECOP II. El generador
-crea **datos sintéticos con Faker**; no descarga contratos reales. Sirven para
-practicar búsquedas, estadísticas y carga masiva.
+El proyecto descarga contratos reales de la plataforma de datos abiertos de
+Colombia. El dataset contiene millones de filas; el importador consulta solo la
+cantidad que necesitas y no guarda columnas personales que el taller no usa.
 
-## Campos del modelo
+## Fuente y atribución
 
-| Campo | Tipo de Django | Qué guarda |
+- Dataset: [SECOP II - Contratos Electrónicos](https://www.datos.gov.co/d/jbjy-vk9h)
+- API: <https://www.datos.gov.co/resource/jbjy-vk9h.json>
+- Identificador: `jbjy-vk9h`
+- Fuente: Agencia Nacional de Contratación Pública - Colombia Compra Eficiente.
+- Licencia de los datos: [Creative Commons Attribution-ShareAlike 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
+Al compartir copias de estos datos, conserva esta atribución y la licencia.
+
+## Campos que guarda el taller
+
+| Campo del modelo | Campo de SECOP II | Uso |
 |---|---|---|
-| `id_contrato` | `CharField(max_length=60, unique=True)` | Identificador único |
-| `entidad_compradora` | `CharField(max_length=180)` | Entidad que compra |
-| `descripcion` | `TextField(blank=True)` | Objeto del contrato |
-| `valor_total` | `DecimalField(max_digits=16, decimal_places=2)` | Valor en dinero |
-| `estado` | `CharField(max_length=20, default='Activo')` | Activo, Terminado o Suspendido |
-| `fecha_firma` | `DateField()` | Día en que se firmó |
+| `id_contrato` | `id_contrato` | Identificador único del contrato |
+| `entidad_compradora` | `nombre_entidad` | Entidad que compra |
+| `descripcion` | `objeto_del_contrato` o `descripcion_del_proceso` | Objeto del contrato |
+| `valor_total` | `valor_del_contrato` | Valor registrado |
+| `estado` | `estado_contrato` | Estado del contrato |
+| `fecha_firma` | `fecha_de_firma` | Fecha de firma |
 
-Estos campos se usan para construir el modelo del [Mini 2](03-dia1-el-velocista.md),
-buscar contratos y calcular estadísticas.
+## Descargar contratos
 
-## Antes de generar datos
-
-1. Completa el Mini 2.
-2. Crea y aplica la migración:
-
-   ```powershell
-   python manage.py makemigrations contratos
-   python manage.py migrate
-   ```
-
-3. Entra en `Backend/` con el entorno virtual activo y ejecuta:
-
-   ```powershell
-   python generar_datos.py
-   ```
-
-El comando genera 50.000 contratos. Para generar menos, indica la cantidad:
+Desde `Backend/`, con el entorno virtual activo y la base preparada, ejecuta:
 
 ```powershell
-python generar_datos.py 10000
+python manage.py migrate
+python manage.py descargar_secop
 ```
 
-## Qué hace el generador
+Por defecto, el comando descarga 5000 contratos. Para pedir otra cantidad, usa:
 
-- Comprueba que exista la tabla `contratos_contrato`.
-- Crea valores de prueba en español.
-- Inserta los contratos en lotes con `bulk_create()`.
-- Muestra el tiempo de creación y el total de registros.
+```powershell
+python manage.py descargar_secop 10000
+```
 
-## Si necesitas repetir la carga
+El límite por consulta es de 5000 filas. Para cantidades mayores, el importador
+avanza por páginas. Omite los identificadores que ya existen, para que puedas
+ejecutarlo más de una vez sin duplicar contratos.
 
-El generador usa los mismos identificadores cada vez. Si lo ejecutas de nuevo
-sin borrar los registros anteriores, PostgreSQL rechazará los identificadores
-duplicados.
+El Mini 11 usa estas mismas funciones de `fuente_secop.py` desde el panel. Si
+el importador recibe filas que ya están en tu base, las omite y continúa con la
+siguiente página: por eso puedes ejecutarlo más de una vez sin duplicar
+contratos.
 
-Cuando el Mini 15 esté implementado, úsalo para borrar los datos de prueba
-antes de volver a ejecutar el generador. **No uses el Mini 15 si la tabla
-contiene datos que quieras conservar.**
+## Token opcional
 
-**Documentación:** [Faker](https://faker.readthedocs.io/en/master/) y
-[`bulk_create()` de Django](https://docs.djangoproject.com/en/6.1/ref/models/querysets/#bulk-create).
+La API permite consultas públicas limitadas sin token. Si datos.gov.co aplica un
+límite, solicita un App Token y guárdalo en `Backend/.env` como
+`SOCRATA_APP_TOKEN`. No lo escribas en el código ni lo subas al repositorio.
+
+## Tamaño del dataset
+
+El portal publica millones de contratos. El taller no descarga el dataset
+completo: usa páginas de hasta 5000 filas para que la base local y el navegador
+puedan trabajar con una cantidad manejable.

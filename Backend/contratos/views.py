@@ -1,8 +1,17 @@
 """Vistas de la API de contratos."""
+import time
+from urllib.error import URLError
+
 from django.apps import apps
 from django.db import connection
+from django.db.models import Avg, Count, Max, Sum
+from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from .models import Contrato
+from .serializers import ContratoSerializer
+from .fuente_secop import TAMANO_PAGINA, consultar_pagina, fila_a_contrato
 
 
 # ==============================================================================
@@ -89,19 +98,170 @@ def _referencia_modelo(modelo):
     return f'{modelo._meta.app_label}.{modelo._meta.model_name}'
 
 
-# TODO (RETO 5) - Crear ContratoViewSet y conectarlo al router.
+class ContratoViewSet(viewsets.ModelViewSet):
+    queryset = Contrato.objects.all()
+    serializer_class = ContratoSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id_contrato', 'entidad_compradora', 'descripcion']
+    ordering_fields = ['valor_total', 'fecha_firma']
+
+    def get_queryset(self):
+        queryset = Contrato.objects.all()
+        estado = self.request.query_params.get('estado')
+        if estado:
+            queryset = queryset.filter(estado__iexact=estado)
+        return queryset
 
 
-# TODO (RETO 11) - Crear la vista de inyección masiva con bulk_create.
+def descargar_contratos(cantidad):
+    """Descarga contratos de SECOP II por páginas y guarda los nuevos."""
+
+    if not isinstance(cantidad, int) or isinstance(cantidad, bool):
+        raise ValueError('La cantidad debe ser un número entero.')
+    if not 1 <= cantidad <= 50000:
+        raise ValueError('La cantidad debe estar entre 1 y 50000.')
+
+    inicio = time.perf_counter()
+    creados = 0
+    recibidos = 0
+    omitidos = 0
+    desplazamiento = 0
+
+    while creados < cantidad:
+        faltan = cantidad - creados
+        filas = consultar_pagina(min(TAMANO_PAGINA, faltan), desplazamiento)
+        if not filas:
+            break
+
+        recibidos += len(filas)
+        desplazamiento += len(filas)
+        contratos = []
+        ids_vistos = set()
+
+        for fila in filas:
+            contrato = fila_a_contrato(fila)
+            if not contrato or contrato.id_contrato in ids_vistos:
+                omitidos += 1
+                continue
+            contratos.append(contrato)
+            ids_vistos.add(contrato.id_contrato)
+
+        ids = [contrato.id_contrato for contrato in contratos]
+        existentes = set(
+            Contrato.objects.filter(id_contrato__in=ids)
+            .values_list('id_contrato', flat=True)
+        )
+        nuevos = [
+            contrato
+            for contrato in contratos
+            if contrato.id_contrato not in existentes
+        ]
+        omitidos += len(contratos) - len(nuevos)
+        nuevos = nuevos[:faltan]
+
+        Contrato.objects.bulk_create(
+            nuevos,
+            batch_size=1000,
+            ignore_conflicts=True,
+        )
+        creados += len(nuevos)
+
+        if len(filas) < min(TAMANO_PAGINA, faltan):
+            break
+
+    ms = round((time.perf_counter() - inicio) * 1000, 2)
+    por_segundo = round(creados / max(ms / 1000, 0.001), 2)
+    return {
+        'creados': creados,
+        'recibidos': recibidos,
+        'omitidos': omitidos,
+        'total': Contrato.objects.count(),
+        'ms': ms,
+        'por_segundo': por_segundo,
+    }
 
 
-# TODO (RETO 12) - Crear la vista de estadísticas con aggregate y annotate.
+class InyeccionMasivaView(APIView):
+    def post(self, request):
+        cantidad = (
+            request.data.get('cantidad')
+            if hasattr(request.data, 'get')
+            else None
+        )
+        if not isinstance(cantidad, int) or isinstance(cantidad, bool):
+            return Response(
+                {'cantidad': 'Escribe un número entero entre 1 y 50000.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not 1 <= cantidad <= 50000:
+            return Response(
+                {'cantidad': 'La cantidad debe estar entre 1 y 50000.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            informe = descargar_contratos(cantidad)
+        except (URLError, TimeoutError, ValueError):
+            return Response(
+                {'detalle': 'No se pudo descargar datos de SECOP II.'},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        codigo = status.HTTP_201_CREATED if informe['creados'] else status.HTTP_200_OK
+        return Response(informe, status=codigo)
 
 
-# TODO (RETO 13) - Agregar SearchFilter al ContratoViewSet.
+class EstadisticasView(APIView):
+    def get(self, request):
+        metricas = Contrato.objects.aggregate(
+            total_contratos=Count('id'),
+            suma_valor_total=Sum('valor_total'),
+            promedio_valor_total=Avg('valor_total'),
+            maximo_valor_total=Max('valor_total'),
+        )
+        estados = Contrato.objects.values('estado').annotate(
+            contratos=Count('id'),
+            suma=Sum('valor_total'),
+        ).order_by('estado')
+        por_estado = {
+            fila['estado']: {
+                'contratos': fila['contratos'],
+                'suma': fila['suma'],
+            }
+            for fila in estados
+        }
+        dias = Contrato.objects.values('fecha_firma').annotate(
+            contratos=Count('id'),
+        ).order_by('fecha_firma')
+        por_dia = [
+            {
+                'fecha': fila['fecha_firma'].isoformat(),
+                'contratos': fila['contratos'],
+            }
+            for fila in dias
+        ]
+
+        return Response({
+            'metricas': metricas,
+            'por_estado': por_estado,
+            'por_dia': por_dia,
+        })
 
 
-# TODO (RETO 14) - Activar la paginación global en settings.py.
+class LimpiezaMasivaView(APIView):
+    def delete(self, request):
+        confirmar = (
+            request.data.get('confirmar')
+            if hasattr(request.data, 'get')
+            else None
+        )
+        if confirmar is not True:
+            return Response(
+                {'detalle': 'Envía {"confirmar": true} para borrar la tabla completa.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-
-# TODO (RETO 15) - Crear la vista de borrado masivo.
+        inicio = time.perf_counter()
+        eliminados, _ = Contrato.objects.all().delete()
+        ms = round((time.perf_counter() - inicio) * 1000, 2)
+        return Response({'eliminados': eliminados, 'ms': ms})

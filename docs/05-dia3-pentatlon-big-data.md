@@ -4,19 +4,41 @@ Hoy practicarás cinco tareas con muchos contratos. Antes de empezar, confirma
 que el Mini 2 está hecho y que existe la tabla `contratos_contrato`. El Mini 12
 necesita al menos un contrato para comprobar la gráfica.
 
-Para cargar datos de prueba, sigue [Datos de prueba](06-dataset-y-datos-masivos.md).
-No ejecutes el generador dos veces sobre los mismos datos: sus identificadores
-se repiten.
+Para descargar contratos reales, sigue [Datos de SECOP II](06-dataset-y-datos-masivos.md).
+El importador omite los identificadores que ya existen en la base.
 
 ## Mini 11: La Avalancha
 
 **Archivos:** `Backend/contratos/views.py` y `Backend/contratos/urls.py`.
 
-Crea `InyeccionMasivaView`. Debe recibir `cantidad`, crear contratos con
-`bulk_create()` por lotes y responder con `creados`, `ms` y `por_segundo`.
+Tu trabajo es escribir `InyeccionMasivaView` con este comportamiento:
 
-**Comprueba:** el panel envía un POST a `/api/contratos/inyeccion/`. Prueba
-primero con una cantidad pequeña.
+1. `cantidad` debe ser un entero entre 1 y 50000; si no, responde `400`.
+2. Pide filas al dataset con `consultar_pagina(limite, desplazamiento)`, la
+   función que viene lista en `fuente_secop.py`. Usa `TAMANO_PAGINA` como
+   tamaño de página y ve avanzando `desplazamiento` hasta reunir `cantidad`
+   contratos nuevos o hasta que la API no entregue más filas.
+3. Convierte cada fila con `fila_a_contrato(fila)`. Si devuelve `None`, la fila
+   es inválida y se omite.
+4. Comprueba con la base qué `id_contrato` ya existen para no repetirlos y
+   guarda los nuevos con `bulk_create()` usando `batch_size=1000` y
+   `ignore_conflicts=True`.
+5. Mide el tiempo con `time.perf_counter()`, calcula `por_segundo` y responde
+   con `creados`, `recibidos`, `omitidos`, `total`, `ms` y `por_segundo`.
+6. Registra la ruta `contratos/inyeccion/` en `urls.py`.
+
+Escribe la lógica en una función `descargar_contratos(cantidad)` en el mismo
+`views.py` y deja que la vista solo valide y la llame: así funcionan igual el
+panel y el comando `python manage.py descargar_secop`, que importa esa
+función.
+
+**Comprueba:** pulsa **Descargar contratos**. Primera vez, descarga algo
+pequeño (por ejemplo 100). El panel muestra cuántas filas recibió la API,
+cuántos contratos nuevos entraron y cuántos hay en PostgreSQL.
+
+El comando `python manage.py descargar_secop` (para cargar datos fuera del
+panel) usa el mismo módulo de ayuda que este reto. Puedes escribir la vista
+primero y copiarte de tu propia solución, o al revés.
 
 **Documentación:** [`bulk_create()` en Django](https://docs.djangoproject.com/en/6.1/ref/models/querysets/#bulk-create).
 
@@ -51,23 +73,38 @@ y [gráficas Recharts](https://recharts.github.io/en-US/guide/).
 
 **Archivo:** `Backend/contratos/views.py`, en `ContratoViewSet`.
 
-Activa `SearchFilter` y configura la búsqueda en `id_contrato`,
-`entidad_compradora` y `descripcion`.
+Configura las tres herramientas de filtrado del ViewSet:
 
-**Comprueba:** busca, por ejemplo, `Ministerio` en
-`GET /api/contratos/?search=Ministerio`.
+1. `filter_backends` con `SearchFilter` y `OrderingFilter`.
+2. `search_fields`: `id_contrato`, `entidad_compradora` y `descripcion`.
+3. Un filtro propio por estado: en `get_queryset()`, si llega el parámetro
+   `?estado=`, filtra con `estado__iexact=estado`. Así el usuario puede pedir,
+   por ejemplo, solo los contratos `Cerrado`.
+4. `ordering_fields`: `valor_total` y `fecha_firma`, para que
+   `?ordering=-valor_total` ordene de mayor a menor.
 
-**Documentación:** [búsqueda de DRF](https://www.django-rest-framework.org/api-guide/filtering/#searchfilter).
+**Comprueba:** pulsa **Cazar la aguja**. El panel hace tres pruebas seguidas:
+la búsqueda, un `?estado=` que debe devolver solo contratos de ese estado y un
+`?ordering=-valor_total` que debe quedar ordenado de mayor a menor.
+
+**Documentación:** [búsqueda de DRF](https://www.django-rest-framework.org/api-guide/filtering/#searchfilter),
+[get_queryset](https://www.django-rest-framework.org/api-guide/generic-views/#overriding-queryset-methods)
+y [OrderingFilter](https://www.django-rest-framework.org/api-guide/filtering/#orderingfilter).
 
 ## Mini 14: El Regulador
 
-**Archivo:** `Backend/config/settings.py`.
+**Archivos:** `Backend/contratos/paginacion.py` y `Backend/config/settings.py`.
 
-Configura la paginación global con `PageNumberPagination` y un tamaño de página
-de 50. Después reinicia `runserver`.
+1. Crea `contratos/paginacion.py` con una clase que herede de
+   `PageNumberPagination`, con `page_size = 50` y
+   `page_size_query_param = 'page_size'`. Así el cliente puede pedir páginas
+   más pequeñas con `?page_size=5`.
+2. Apunta `DEFAULT_PAGINATION_CLASS` en `settings.py` a tu clase y reinicia
+   `runserver`.
 
-**Comprueba:** el listado cambia de una lista a un objeto con `count`, `next`,
-`previous` y `results`. En React, los contratos quedan dentro de `results`.
+**Comprueba:** el panel revisa el objeto con `count`, `next`, `previous` y
+`results`, y luego verifica que `?page_size=5` realmente recorte la página a
+cinco filas.
 
 **Documentación:** [paginación de DRF](https://www.django-rest-framework.org/api-guide/pagination/).
 
@@ -75,14 +112,18 @@ de 50. Después reinicia `runserver`.
 
 **Archivos:** `Backend/contratos/views.py` y `Backend/contratos/urls.py`.
 
-Crea una vista DELETE que borre los contratos de prueba con una llamada a
-`QuerySet.delete()`. El panel pide confirmar antes de enviar la petición.
+Crea una vista DELETE con dos comportamientos:
 
-**Atención:** esta acción borra todos los contratos de esa tabla. Úsala solo
-con datos de prueba.
+1. Si llega sin `{"confirmar": true}` en el cuerpo, responde `400` y **no
+   borra nada**. Borrar todos los contratos es una acción que se pide antes.
+2. Con la confirmación, borra con `QuerySet.delete()` y responde con
+   `eliminados` (el conteo) y `ms`.
 
-**Comprueba:** el panel cuenta los contratos antes y después. Tras el borrado,
-el conteo debe ser cero.
+**Comprueba:** el panel primero lanza un DELETE sin confirmación y exige 400;
+luego lanza el DELETE confirmado y cuenta los contratos antes y después.
+
+**Atención:** esta vista borra todos los contratos, reales o de prueba. Úsala
+solo con la base del taller.
 
 **Documentación:** [`delete()` en Django](https://docs.djangoproject.com/en/6.1/ref/models/querysets/#delete).
 

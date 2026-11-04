@@ -1,12 +1,14 @@
-// TODO (RETO 11) - Crear la vista y ruta de inyección masiva.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import { API_URL, peticion } from '../../../shared/api'
 
 const INSTRUCCION =
-  'TODO (RETO 11): escribe InyeccionMasivaView en Backend/contratos/views.py ' +
-  '(la ficha está comentada ahí) y su ruta contratos/inyeccion/ en urls.py. ' +
-  'La vista debe usar bulk_create con batch_size y responder {creados, ms, por_segundo}.'
+  'En Backend/contratos/views.py escribe InyeccionMasivaView: valida cantidad ' +
+  '(entero de 1 a 50000), pide las páginas con consultar_pagina y convierte las ' +
+  'filas con fila_a_contrato (las dos funciones ya existen en fuente_secop.py), ' +
+  'guarda los nuevos con bulk_create(batch_size=1000, ignore_conflicts=True), ' +
+  'mide el tiempo y responde con creados, recibidos, omitidos, total, ms y ' +
+  'por_segundo. Registra la ruta contratos/inyeccion/ en urls.py.'
 
 export default function Mini11Avalancha({ desbloqueada, aprobada, alAprobar }) {
   const [cantidad, setCantidad] = useState(5000)
@@ -35,12 +37,12 @@ export default function Mini11Avalancha({ desbloqueada, aprobada, alAprobar }) {
 
       if (!respuesta.ok) {
         setFalla(
-          respuesta.status === 404
-            ? 'HTTP 404 · la ruta /api/contratos/inyeccion/ todavía no existe: escribe el RETO 11 en Backend/contratos/views.py y su ruta en urls.py.'
-            : `HTTP ${respuesta.status} · la avalancha no cruzó el puerto 8000 con ese código: revisa la terminal de Django.`,
+          respuesta.status === 502
+            ? 'No se pudo consultar datos.gov.co. Revisa la conexión e inténtalo de nuevo.'
+            : `HTTP ${respuesta.status} · revisa la terminal de Django.`,
         )
       }
-      if (respuesta.ok && cuerpo.creados > 0) alAprobar()
+      if (respuesta.ok && (cuerpo.creados > 0 || cuerpo.total > 0)) alAprobar()
     } catch (error) {
       setFalla(error instanceof Error ? error.message : String(error))
     } finally {
@@ -59,7 +61,7 @@ export default function Mini11Avalancha({ desbloqueada, aprobada, alAprobar }) {
 
       <div className="fila-acciones">
         <label className="celda-suave">
-          Registros para la avalancha:
+          Contratos reales para descargar:
           <input
             type="number"
             min={100}
@@ -74,10 +76,10 @@ export default function Mini11Avalancha({ desbloqueada, aprobada, alAprobar }) {
           />
         </label>
         <button className="boton" onClick={lanzarAvalancha} disabled={avalanchando}>
-          {avalanchando ? 'Avalanchando...' : 'Lanzar la avalancha'}
+          {avalanchando ? 'Descargando...' : 'Descargar contratos'}
         </button>
         <span className="celda-suave">
-          POST /api/contratos/inyeccion/ · bulk_create divide y vencerá
+          datos.gov.co · SECOP II · batch_size 1000
         </span>
       </div>
 
@@ -86,8 +88,16 @@ export default function Mini11Avalancha({ desbloqueada, aprobada, alAprobar }) {
       {informe && (
         <div className="resumen-stats" style={{ marginTop: 12 }}>
           <span className="stat">
-            <span className="stat-valor">{informe.creados ?? informe.codigo}</span>
-            <span className="stat-etiqueta">contratos creados</span>
+            <span className="stat-valor">{informe.recibidos ?? informe.codigo}</span>
+            <span className="stat-etiqueta">filas recibidas de SECOP II</span>
+          </span>
+          <span className="stat">
+            <span className="stat-valor">{informe.creados ?? '—'}</span>
+            <span className="stat-etiqueta">contratos nuevos</span>
+          </span>
+          <span className="stat">
+            <span className="stat-valor">{informe.total ?? '—'}</span>
+            <span className="stat-etiqueta">contratos en PostgreSQL</span>
           </span>
           <span className="stat">
             <span className="stat-valor">{informe.ms ?? '—'}</span>

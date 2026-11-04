@@ -1,12 +1,13 @@
-// TODO (RETO 14) - Activar la paginación global en settings.py.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
 import { API_URL, pedirOExplotar } from '../../../shared/api'
 
 const INSTRUCCION =
-  'TODO (RETO 14): descomenta el bloque REST_FRAMEWORK al final de ' +
-  'Backend/config/settings.py (PageNumberPagination con PAGE_SIZE 50) y ' +
-  'reinicia el runserver. Después presiona "Verificar el caudal".'
+  'En Backend/contratos/paginacion.py crea una clase que herede de ' +
+  'PageNumberPagination con page_size=50 y page_size_query_param="page_size". ' +
+  'Apúntala en REST_FRAMEWORK (settings.py) y reinicia runserver. El panel ' +
+  'comprueba el objeto {count, next, previous, results} y que ?page_size=5 ' +
+  'entregue solo 5 filas.'
 
 export default function Mini14Regulador({ desbloqueada, aprobada, alAprobar }) {
   const [estadoCaudal, setEstadoCaudal] = useState(null)
@@ -20,10 +21,22 @@ export default function Mini14Regulador({ desbloqueada, aprobada, alAprobar }) {
 
     try {
       const { datos, ms } = await pedirOExplotar(`${API_URL}/contratos/`)
-      const paginado = datos && typeof datos === 'object' && !Array.isArray(datos) && 'results' in datos
-      setEstadoCaudal({ paginado, datos, ms })
+      const paginado =
+        datos && typeof datos === 'object' && !Array.isArray(datos) && 'results' in datos
 
-      if (paginado) alAprobar()
+      // Si la base tiene al menos 6 filas, la página debe poder comprimirse a 5.
+      const total = datos.count ?? 0
+      let regulable = null
+      if (paginado && total > 5) {
+        const golpecito = await pedirOExplotar(`${API_URL}/contratos/?page_size=5`)
+        const cortado = Array.isArray(golpecito.datos)
+          ? golpecito.datos
+          : golpecito.datos.results ?? []
+        regulable = cortado.length === 5
+      }
+
+      setEstadoCaudal({ paginado, regulable, total, datos, ms })
+      if (paginado && regulable !== false) alAprobar()
     } catch (laRedRota) {
       setFalla(laRedRota.message)
     } finally {
@@ -55,9 +68,15 @@ export default function Mini14Regulador({ desbloqueada, aprobada, alAprobar }) {
       {falla && <div className="aviso" data-tipo="error" style={{ marginTop: 12 }}>{falla}</div>}
 
       {estadoCaudal && (
-        <div className="aviso" data-tipo={estadoCaudal.paginado ? 'ok' : 'error'} style={{ marginTop: 12 }}>
+        <div
+          className="aviso"
+          data-tipo={estadoCaudal.paginado && estadoCaudal.regulable !== false ? 'ok' : 'error'}
+          style={{ marginTop: 12 }}
+        >
           {estadoCaudal.paginado
-            ? `Regulado: la API responde con count y results. Página de ${listado.length} contratos · conteo global ${estadoCaudal.datos.count} · ${estadoCaudal.ms} ms.`
+            ? estadoCaudal.regulable === false
+              ? 'El listado está paginado, pero ?page_size=5 no recortó la página. Configura page_size_query_param en tu clase de paginación.'
+              : `Regulado: la API responde con count y results. Página de ${listado.length} contratos · conteo global ${estadoCaudal.datos.count} · ${estadoCaudal.ms} ms.`
             : `AVISO: el listado llegó CRUDO (${estadoCaudal.datos.length} filas). Sin paginación el frontend colapsa con 50k registros.`}
         </div>
       )}
