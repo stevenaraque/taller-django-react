@@ -1,17 +1,7 @@
-// ============================================================
-// Mini11_Avalancha.jsx — DÍA 3 · Mini 11 "La Avalancha" (Asalto 1)
-//
-// La misión de ALTO RENDIMIENTO: lanzar la inyección masiva con
-// bulk_create contra el backend y medir los ms de la avalancha.
-//
-// TODO (RETO 11): el estudiante escribe InyeccionMasivaView en
-// Backend/contratos/views.py (instrucciones comentadas ahí) y
-// la ruta en urls.py. El panel envía {"cantidad": N} y pinta
-// la velocidad (registros por segundo).
-// ============================================================
+// TODO (RETO 11) - Crear la vista y ruta de inyección masiva.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
-import { API_URL, peticion, FallaApi } from '../api'
+import { API_URL, peticion } from '../../../shared/api'
 
 const INSTRUCCION =
   'TODO (RETO 11): escribe InyeccionMasivaView en Backend/contratos/views.py ' +
@@ -24,7 +14,6 @@ export default function Mini11Avalancha({ desbloqueada, aprobada, alAprobar }) {
   const [falla, setFalla] = useState(null)
   const [avalanchando, setAvalanchando] = useState(false)
 
-  // Lanzar la avalancha y medir: POST /api/contratos/inyeccion/.
   async function lanzarAvalancha() {
     if (avalanchando) return
     setAvalanchando(true)
@@ -37,16 +26,23 @@ export default function Mini11Avalancha({ desbloqueada, aprobada, alAprobar }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cantidad }),
       })
-      const cuerpo = await respuesta.json()
+      const cuerpo = await respuesta.json().catch(() => ({}))
       setInforme({
         codigo: respuesta.status,
         ms,
         ...cuerpo,
       })
-      // VICTORIA: la avalancha fabricó registros de verdad.
+
+      if (!respuesta.ok) {
+        setFalla(
+          respuesta.status === 404
+            ? 'HTTP 404 · la ruta /api/contratos/inyeccion/ todavía no existe: escribe el RETO 11 en Backend/contratos/views.py y su ruta en urls.py.'
+            : `HTTP ${respuesta.status} · la avalancha no cruzó el puerto 8000 con ese código: revisa la terminal de Django.`,
+        )
+      }
       if (respuesta.ok && cuerpo.creados > 0) alAprobar()
-    } catch (roto) {
-      setFalla(fallaElegante(roto))
+    } catch (error) {
+      setFalla(error instanceof Error ? error.message : String(error))
     } finally {
       setAvalanchando(false)
     }
@@ -56,7 +52,6 @@ export default function Mini11Avalancha({ desbloqueada, aprobada, alAprobar }) {
     <MisionMarco
       alias="Mini 11"
       titulo="La Avalancha"
-      teoria="El concepto del asalto 1: UNA ida al motor por LOTE de mil filas, no una ida por fila. Un save() por registro son 50.000 viajes; bulk_create los colapsa en lotes. Proyecta los registros por segundo del panel: esa es la métrica del día."
       desbloqueada={desbloqueada}
       aprobada={aprobada}
     >
@@ -72,7 +67,10 @@ export default function Mini11Avalancha({ desbloqueada, aprobada, alAprobar }) {
             step={500}
             className="campo-numero"
             value={cantidad}
-            onChange={(evento) => setCantidad(Math.min(50000, Math.max(100, Number(evento.target.value) || 100)))}
+            onChange={(evento) => {
+              const valor = Number(evento.target.value) || 100
+              setCantidad(Math.min(50000, Math.max(100, valor)))
+            }}
           />
         </label>
         <button className="boton" onClick={lanzarAvalancha} disabled={avalanchando}>
@@ -103,11 +101,4 @@ export default function Mini11Avalancha({ desbloqueada, aprobada, alAprobar }) {
       )}
     </MisionMarco>
   )
-}
-
-// Traductor elegante: si la ruta no existe (404) o falla otra cosa,
-// la misión muestra el mensaje claro sin stack trace.
-function fallaElegante(falla) {
-  const mensaje = falla instanceof FallaApi ? falla.message : String(falla)
-  return mensaje
 }

@@ -1,20 +1,7 @@
-// ============================================================
-// Mini9_Portero.jsx — DÍA 2 · Mini 9 "El Portero"
-//
-// Abre la puerta CORS: el estudiante activa corsheaders en
-// settings.py (RETO 9) y la consola de F12 queda LIMPIA.
-//
-// TODO (RETO 9): tres pasos en Backend/config/settings.py
-// (INSTALLED_APPS, middleware y CORS_ALLOWED_ORIGINS) — las
-// instrucciones exactas están comentadas ahí.
-//
-// El panel corre el diagnóstico: OPTIONS (la conversación
-// previa) y GET (el permiso ya pagado). Aprueba cuando el GET
-// responde 200 de verdad, cruzando del 5173 al 8000.
-// ============================================================
+// TODO (RETO 9) - Configurar CORS en settings.py.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
-import { API_URL, peticion } from '../api'
+import { API_URL, peticion } from '../../../shared/api'
 
 const INSTRUCCION =
   'TODO (RETO 9): en Backend/config/settings.py activa corsheaders ' +
@@ -26,13 +13,11 @@ export default function Mini9Portero({ desbloqueada, aprobada, alAprobar }) {
   const [resultados, setResultados] = useState([])
   const [corriendo, setCorriendo] = useState(false)
 
-  // Diagnóstico en dos tiempos: preflight y permiso real.
   async function correrDiagnostico() {
     if (corriendo) return
     setCorriendo(true)
     setResultados([])
 
-    // 1. OPTIONS: la conversación previa (preflight) del navegador.
     try {
       const preflight = await peticion(`${API_URL}/contratos/`, { method: 'OPTIONS' })
       setResultados((lista) => lista.concat({
@@ -50,7 +35,7 @@ export default function Mini9Portero({ desbloqueada, aprobada, alAprobar }) {
       }))
     }
 
-    // 2. GET: el uso real de la puerta por el estudiante.
+    // El navegador envía OPTIONS antes del GET en una petición CORS.
     try {
       const permiso = await peticion(`${API_URL}/contratos/`)
       setResultados((lista) => lista.concat({
@@ -76,7 +61,6 @@ export default function Mini9Portero({ desbloqueada, aprobada, alAprobar }) {
     <MisionMarco
       alias="Mini 9"
       titulo="El Portero"
-      teoria="El preflight OPTIONS es la conversación previa que el navegador tiene con Django ANTES de mandar el dato verdadero. Explica que NO se ve en el tablero del fetch: se ve en F12 → Network. El permiso concedido es el Access-Control-Allow-Origin."
       desbloqueada={desbloqueada}
       aprobada={aprobada}
     >

@@ -1,17 +1,7 @@
-// ============================================================
-// Mini13_AgujaPajar.jsx — DÍA 3 · Mini 13 "La Aguja en el Pajar"
-//
-// Asalto 3: buscar UNA aguja entre miles de contratos con el
-// SearchFilter del DRF — sin escribir SQL y sin tocar el
-// frontend.
-//
-// TODO (RETO 13): en Backend/contratos/views.py agrega las dos
-// variables del ContratoViewSet (filter_backends + search_fields,
-// ficha comentada en el bloque del RETO 13 ahí).
-// ============================================================
+// TODO (RETO 13) - Agregar SearchFilter al ContratoViewSet.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
-import { API_URL, pedirOExplotar } from '../api'
+import { API_URL, pedirOExplotar } from '../../../shared/api'
 
 const INSTRUCCION =
   'TODO (RETO 13): en el ContratoViewSet agrega filter_backends = [SearchFilter] ' +
@@ -22,12 +12,14 @@ export default function Mini13AgujaPajar({ desbloqueada, aprobada, alAprobar }) 
   const [caza, setCaza] = useState('Ministerio')
   const [resultado, setResultado] = useState(null)
   const [falla, setFalla] = useState(null)
+  const [nota, setNota] = useState(null)
   const [cazando, setCazando] = useState(false)
 
   async function buscar() {
     if (cazando) return
     setCazando(true)
     setFalla(null)
+    setNota(null)
     setResultado(null)
 
     const aguja = caza.trim()
@@ -38,11 +30,13 @@ export default function Mini13AgujaPajar({ desbloqueada, aprobada, alAprobar }) 
     }
 
     try {
-      // El SearchFilter vive en la query ?search=  — ni una línea de SQL.
       const { datos, ms } = await pedirOExplotar(`${API_URL}/contratos/?search=${encodeURIComponent(aguja)}`)
       setResultado({ ms, total: datos.count ?? datos.length, aguja })
-      // VICTORIA: la búsqueda respondió desde los 50k registros.
       alAprobar()
+      // La misión valida la respuesta de la API, aunque no haya coincidencias.
+      if ((datos.count ?? datos.length) === 0) {
+        setNota(`0 coincidencias para "${aguja}" — la aguja no encontró nada. Prueba otra palabra (Ministerio, Alcaldía, puente).`)
+      }
     } catch (laRedRota) {
       setFalla(laRedRota.message)
     } finally {
@@ -54,7 +48,6 @@ export default function Mini13AgujaPajar({ desbloqueada, aprobada, alAprobar }) 
     <MisionMarco
       alias="Mini 13"
       titulo="La Aguja en el Pajar"
-      teoria="Antes del reto, muestra el GET completo: miles de contratos volcados en el navegador y la búsqueda a mano. Después enciende el SearchFilter y repite: el ILIKE lo genera el ORM. Sin SQL, sin frontend nuevo."
       desbloqueada={desbloqueada}
       aprobada={aprobada}
     >
@@ -75,6 +68,7 @@ export default function Mini13AgujaPajar({ desbloqueada, aprobada, alAprobar }) 
       </div>
 
       {falla && <div className="aviso" data-tipo="error" style={{ marginTop: 12 }}>{falla}</div>}
+      {nota && <div className="aviso" style={{ marginTop: 12 }}>{nota}</div>}
 
       {resultado && (
         <div className="resumen-stats" style={{ marginTop: 12 }}>

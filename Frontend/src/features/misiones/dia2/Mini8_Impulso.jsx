@@ -1,17 +1,7 @@
-// ============================================================
-// Mini8_Impulso.jsx — DÍA 2 · Mini 8 "El Impulso"
-//
-// El PRIMER fetch desde React: la petición se lanza y el
-// navegador HA DE BLOQUEARLA — el backend todavía no abrió la
-// puerta CORS. Ver el rojo con razón ES la victoria.
-//
-// TODO (RETO 8): el estudiante escribe su primer fetch en un
-// componente propio (la pizarra muestra la base); la misión
-// se aprueba automáticamente cuando el panel detecta el bloqueo.
-// ============================================================
+// TODO (RETO 8) - Hacer el primer fetch desde un componente React.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
-import { API_URL, peticion } from '../api'
+import { API_URL, peticion } from '../../../shared/api'
 
 const INSTRUCCION =
   'TODO (RETO 8): escribe tu primer fetch en un componente propio (mira ' +
@@ -23,7 +13,6 @@ export default function Mini8Impulso({ desbloqueada, aprobada, alAprobar }) {
   const [resultado, setResultado] = useState(null)
   const [lanzando, setLanzando] = useState(false)
 
-  // El impulso: lanzar el fetch y chocar de frente con CORS.
   async function impulso() {
     setLanzando(true)
     setResultado(null)
@@ -36,8 +25,7 @@ export default function Mini8Impulso({ desbloqueada, aprobada, alAprobar }) {
         detalle: 'llegó una respuesta del :8000 — la puerta ya estaba abierta',
       })
     } catch (roto) {
-      // fetch solo lanza cuando la petición no cruzó el puerto:
-      // ese es el bloqueo EXACTO que esta misión quiere ver (CORS).
+      // En esta misión, el bloqueo de CORS es el resultado esperado.
       setResultado({
         bloqueado: true,
         codigo: 'sin respuesta',
@@ -53,7 +41,6 @@ export default function Mini8Impulso({ desbloqueada, aprobada, alAprobar }) {
     <MisionMarco
       alias="Mini 8"
       titulo="El Impulso"
-      teoria="Dos orígenes distintos (React en 5173 y Django en 8000) activan la política de mismo origen del navegador: por eso existe CORS. Proyecta F12 → Console y LEE el error completo con la clase: saber nombrar el problema ES la habilidad del día."
       desbloqueada={desbloqueada}
       aprobada={aprobada}
     >
@@ -87,7 +74,7 @@ export default function MiImpulso() {
     const respuesta = await fetch(
       'http://127.0.0.1:8000/api/contratos/'
     )
-    // el navegador la BLOQUEA: la consola de F12 lo cuenta
+    // El navegador puede bloquear esta respuesta por CORS.
   }
 }`}
       </pre>

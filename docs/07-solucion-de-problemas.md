@@ -1,77 +1,62 @@
-# 07 · Solución de problemas
+# Solución de problemas
 
-Tabla de diagnóstico rápido por síntoma, con la misión y el archivo donde vive
-cada ajuste. Antes de todo: verifique que ambos servicios estén vivos
-(backend en el 8000, frontend en el 5173) y mire las pistas del panel
-`api.js` y de la terminal de Django — tanto el panel como el taller convierten
-los errores en pistas a propósito.
+Revisa estas causas comunes. Si el problema continúa, copia el error que aparece
+en la terminal de Django y busca el Mini relacionado en las guías.
 
-## Arriba: síntomas y diagnósticos
+## Django y PostgreSQL
 
-### El backend no arranca
+| Error o síntoma | Qué revisar |
+|---|---|
+| `KeyError: 'SECRET_KEY'` | Agrega `SECRET_KEY` a `Backend/.env`. |
+| `KeyError: 'DB_NAME'` u otra clave `DB_...` | Agrega esa variable a `Backend/.env` y vuelve a iniciar Django. |
+| Django no conecta a PostgreSQL | Comprueba que el servicio PostgreSQL esté activo. Revisa `DB_HOST`, `DB_PORT`, `DB_USER` y `DB_PASSWORD`. |
+| La base de datos no existe | Comprueba `DB_NAME` o créala con pgAdmin. |
+| `base_datos` aparece en `false` | Django no logró conectarse. Revisa el servicio y `.env`. |
+| `motor_bueno` aparece en `false` | El taller requiere PostgreSQL. No cambies el motor a SQLite. |
+| `tabla_contratos` aparece en `false` | Completa el Mini 2 y ejecuta `makemigrations contratos` y `migrate`. |
+| Un cambio de `settings.py` no aparece | Detén `runserver` con Ctrl+C y vuelve a iniciarlo. |
 
-| Síntoma | Causa probable | Dónde |
-|---|---|---|
-| "Falta la variable X en el archivo Backend/.env" | `.env` no creado o incompleto | Mini 1: copie `.env.example` a `.env` y llene las variables |
-| No conecta a la base de datos (`base_datos: false`) | Servicio de PostgreSQL apagado, clave mal, puerto distinto | `.env` (DB_HOST, DB_PORT), servicio de Postgres |
-| `motor_bueno: false` con base viva | `DATABASES` apuntando a SQLite | El taller prohíbe SQLite; el motor debe ser `django.db.backends.postgresql` (settings.py no lo cambia usted: revise que el `.env` cargó) |
-| Mensaje de migración no aplicada | RETO 1 o 2 incompleto | `python manage.py migrate` (y `makemigrations contratos` en el RETO 2) |
-| El programa arranca pero la llave es el placeholder | `SECRET_KEY` sigue siendo `TODO_GENERA_UNA_CLAVE_SECRETA`: el arranque solo valida que exista, no que cambie, pero una llave conocida anula la seguridad | Mini 1: genere una propia con el comando comentado en `.env.example` |
+## React no llega a Django
 
-### El panel no se comunica con el backend
+| Error o síntoma | Qué revisar |
+|---|---|
+| El panel no recibe respuesta | Comprueba que Django esté activo en el puerto 8000. |
+| Error CORS durante el Mini 8 | Es el resultado esperado de ese reto. |
+| Error CORS durante otros retos | Completa el Mini 9 y reinicia Django. Autoriza ambos orígenes: `localhost:5173` y `127.0.0.1:5173`. |
+| HTTP 404 en una ruta de un reto | Esa vista o ruta todavía no está implementada. Revisa la guía del Mini. |
+| HTTP 400 durante el Mini 4 | Es correcto: el serializer debe rechazar el JSON de prueba. |
+| HTTP 405 | La ruta existe, pero no acepta ese método. Comprueba si el reto pide GET, POST o DELETE. |
+| HTTP 500 | Lee el último error de la terminal de Django. Ahí aparece la línea que falló. |
 
-| Síntoma | Causa probable | Dónde |
-|---|---|---|
-| "La petición no cruzó el puerto" (tipo `cors`) | runserver apagado, URL mal o CORS cerrado | Verificar 8000 vivo; si estamos en Mini 8 ES el fallo esperado; para pasarlo, RETO 9 |
-| Error de CORS en F12 solo en `/api/contratos/` | RETO 9 no aplicado o `runserver` no reiniciado | `Backend/config/settings.py`: `INSTALLED_APPS` + `MIDDLEWARE` (antes de CommonMiddleware) + `CORS_ALLOWED_ORIGINS` |
-| OPTIONS falla pero GET manual en el 8000 funciona | Origen del panel no autorizado | Agregar `http://localhost:5173` y `http://127.0.0.1:5173` |
-| La petición llega a una ruta que no existe (404 crudo) | Rutas del RETO 5 / 11-15 no encendidas | `Backend/contratos/urls.py` y el bloque correspondiente en `views.py` |
+## Retos de React
 
-### Respuestas HTTP "malas" que son victoria
+| Error o síntoma | Qué revisar |
+|---|---|
+| El contador no cambia en pantalla | Usa `setState` para cambiar el estado; cambiar una variable normal no redibuja el componente. |
+| La lista queda vacía después del Mini 14 | Con paginación, la lista está en `datos.results`. |
+| React muestra un aviso sobre `key` | En el `map()`, usa `contrato.id_contrato` como `key`. |
 
-| Código | Qué significó | Qué hacer |
-|---|---|---|
-| HTTP 400 bien formado | El serializer rechazó datos malformados | Es la **victoria** del Mini 4; si persiste en un flujo normal, revise qué campo no cumple |
-| HTTP 405 | Verbo HTTP no permitido en esa ruta | Rutas/comments quizá sin montar (RETO 5) o verbo distinto al de la ficha |
-| HTTP 404 | Recurso o ruta inexistente | Normal en `999999` del Mini 5; si llega en el listado, revise el include del router |
-| HTTP 500 | Excepción en la vista | Ver la terminal de Django: el traceback completo vive ahí |
+## Retos del Día 3
 
-### Errores del Día 2 (React)
+| Error o síntoma | Qué revisar |
+|---|---|
+| El generador dice que no existe la tabla | Completa y migra el Mini 2. |
+| El generador falla por una clave duplicada | Ya existe una carga anterior. No lo repitas hasta limpiar los datos de prueba con el Mini 15. |
+| Las estadísticas están vacías | Carga datos de prueba y comprueba que la API devuelva `metricas`, `por_estado` y `por_dia`. |
+| La gráfica del Mini 12 sigue vacía | Es el reto: conecta los conteos de `informe.por_estado` con el prop `datos` de `GraficaEstados`. |
+| La búsqueda no filtra | En el Mini 13, configura `SearchFilter` y los campos buscables en `ContratoViewSet`. |
+| El listado trae todos los contratos | Completa el Mini 14 y reinicia Django. Con paginación, React debe leer `results`. |
+| El Mini 15 da error | Revisa la vista DELETE y su ruta. Úsala solo con datos de prueba: borra toda la tabla. |
 
-| Síntoma | Causa probable | Dónde |
-|---|---|---|
-| Cambia el valor pero no la pantalla | No se llamó al `setState` | Mini 7: el ciclo es clic → setState → re-render |
-| El `map()` no renderiza nada con paginación activa | El JSON regulado trae los datos en `results` | RETO 10 + Mini 14: usar `datos.results` |
-| `key` warning en React | Key inestable en el `map` | Usar `contrato.id_contrato` (única por diseño) |
+## Progreso del panel
 
-### Errores del Día 3 (Big Data)
+El progreso se guarda en `localStorage`, dentro del navegador. No se guarda en
+PostgreSQL. Cambiar de navegador o borrar los datos del sitio reinicia el
+tablero. El botón **Reiniciar progreso** borra las aprobaciones de este
+navegador.
 
-| Síntoma | Causa probable | Dónde |
-|---|---|---|
-| `generar_datos.py` se detiene avisando que falta la tabla | RETO 2 sin migrar | Migrar primero; el script no crea la tabla por usted |
-| Estadísticas llegan vacías | El dataset aún no se inyectó | Correr `python generar_datos.py` antes del Día 3 |
-| `InyeccionMasivaView` devuelve 500 | Excepción dentro del bulk_create (tipos, Decimal, unique) | Ficha del RETO 11 en `views.py`; la terminal de Django dice la línea |
-| La búsqueda del Mini 13 no filtra | Falta `filter_backends` o `search_fields` | RETO 13: las dos variables de clase del `ContratoViewSet` |
-| El listado aplasta el navegador | RETO 14 sin aplicar | Descomentar `REST_FRAMEWORK` en `settings.py` y reiniciar runserver |
-| El Limpiador devuelve 500 | `delete()` con bucles o ruta sin montar | RETO 15: una sola llamada `Contrato.objects.all().delete()` |
+## Para aprender más
 
-## Progreso perdido en el panel
-
-El progreso vive en `localStorage` del navegador (no en el backend):
-
-- Clave de misiones: `taller-secop-misiones-aprobadas` (lista de números).
-- Clave del Modo instructor: `taller-secop-modo-instructor`.
-
-Si se cambia de navegador o de computador, el tablero arranca en cero: para
-ensayar use el botón **Modo instructor**, que desbloquea todo sin trucos.
-
-## Recordatorio de arranque diario
-
-1. Terminal 1 (backend): `cd Backend`, venv activado, `python manage.py runserver`.
-2. Terminal 2 (frontend): `cd Frontend`, `npm run dev`.
-3. Si el código cambia en `settings.py` (RETOS 9 y 14), **reinicie el
-   runserver**: los cambios de settings no aplican solos.
-
-Y cuando el panel señale una pista que no se entiende, consulte
-[Arquitectura](02-arquitectura.md): la sección de `api.js` explica cada tipo de
-`FallaApi` y dónde rompió la cadena fetch → respuesta.
+- [Errores de Django](https://docs.djangoproject.com/en/6.1/ref/exceptions/)
+- [Serializers de DRF](https://www.django-rest-framework.org/api-guide/serializers/)
+- [CORS en MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)

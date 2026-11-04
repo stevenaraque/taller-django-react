@@ -1,112 +1,115 @@
-# 01 · Inicio rápido
+# Inicio rápido
 
-Guía de instalación completa para poder ejecutar el proyecto antes del
-Día 1. Si ya corrió el `runserver` y el panel arrancó, salte a
-[Arquitectura](02-arquitectura.md).
+Sigue estos pasos una vez para preparar tu equipo. Después podrás iniciar el
+backend y el frontend con los comandos de la sección «Arrancar cada día».
 
-## Requisitos
+## 1. Instala los programas necesarios
 
-| Herramienta | Versión mínima | Para qué se usa |
-|---|---|---|
-| Python | 3.14+ | Backend (Django 6 + DRF) |
-| Node.js + npm | Node 20.19+ / 22.12+ — Vite 8 no corre con Node 18 | Frontend (React 19 + Vite 8) |
-| Git | reciente | Clonar y versionar |
-| PostgreSQL | 18+ | La "bóveda" (base de datos obligatoria) |
+- [Python 3.14](https://www.python.org/downloads/)
+- [Node.js 20.19+ o 22.12+](https://nodejs.org/)
+- [PostgreSQL 18](https://www.postgresql.org/download/) y
+  [pgAdmin](https://www.pgadmin.org/download/)
+- [Git](https://git-scm.com/downloads)
 
-## Paso 0 · PostgreSQL
+Comprueba que Python y Node funcionan:
 
-El taller **no usa SQLite** (es el criterio de rechazo #1: la batería de
-diagnóstico verifica que el motor sea PostgreSQL).
+```powershell
+python --version
+node --version
+npm --version
+```
 
-1. Instale PostgreSQL 18 y deje el servicio corriendo.
-2. Cree una base de datos propia del taller, por ejemplo `taller_django_react`.
-3. Tenga a la mano usuario y contraseña locales (normalmente `postgres`).
+## 2. Crea la base de datos
 
-## Paso 1 · Backend
+La base de datos es donde PostgreSQL guarda los contratos.
 
-```bash
+1. Abre pgAdmin y conéctate a PostgreSQL con tu usuario.
+2. En el panel izquierdo, haz clic derecho en **Databases**.
+3. Elige **Create > Database**.
+4. Escribe `taller_django_react` y guarda.
+
+Usaremos ese nombre en el paso siguiente.
+
+## 3. Prepara Django
+
+Abre PowerShell en la carpeta del proyecto y ejecuta:
+
+```powershell
 cd Backend
 python -m venv venv
-venv\Scripts\activate        # Windows
-pip install -r requirements.txt
+.\venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
 ```
 
-> Notas: en Linux/macOS el activate es `source venv/bin/activate`.
-> Si PowerShell bloquea `activate` por políticas de ejecución, ejecute
-> primero `Set-ExecutionPolicy -Scope Process RemoteSigned`.
+El entorno virtual (`venv`) mantiene las librerías de este proyecto separadas
+de las de otros proyectos. Si PowerShell bloquea la activación, ejecuta esto
+en la misma terminal y vuelve a intentarlo:
 
-## Paso 2 · El `.env` (Mini 1 · La Bóveda)
-
-Las credenciales **viven exclusivamente** en `Backend/.env` (cargadas con
-`python-dotenv`). `settings.py` no contiene ningún dato de conexión y si falta
-una variable el arranque se detiene con instrucciones en la terminal, no con un
-traceback.
-
-```bash
-copy .env.example .env   # Windows
-# o: cp .env.example .env
+```powershell
+Set-ExecutionPolicy -Scope Process RemoteSigned
 ```
 
-Edite `Backend/.env` con sus datos reales:
+## 4. Completa `Backend/.env`
 
-| Variable | Qué poner |
-|---|---|
-| `SECRET_KEY` | Llave de Django. Genere una nueva en la terminal: `python manage.py shell -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
-| `DEBUG` | `True` en desarrollo local, `False` en producción |
-| `DB_NAME` | Nombre de la base de datos creada en el Paso 0 |
-| `DB_USER` | Usuario de PostgreSQL (normalmente `postgres`) |
-| `DB_PASSWORD` | Su clave local; **nunca se sube al repositorio** |
-| `DB_HOST` | `localhost` |
-| `DB_PORT` | `5432` por defecto |
+Abre `.env` y reemplaza los valores de ejemplo:
 
-## Paso 3 · Migrar y arrancar
+- `SECRET_KEY`: clave privada de Django. Para generar una, ejecuta desde
+  `Backend/` con el entorno virtual activo:
 
-```bash
+  ```powershell
+  python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+  ```
+
+- `DEBUG=True`: modo de desarrollo local.
+- `DB_NAME=taller_django_react`: nombre de la base que creaste.
+- `DB_USER` y `DB_PASSWORD`: usuario y clave de PostgreSQL.
+- `DB_HOST=localhost` y `DB_PORT=5432`: valores locales habituales.
+
+No compartas ni subas `.env`: contiene tu clave de base de datos.
+
+`settings.py` carga este archivo y le entrega los valores a Django. Más detalle
+en [Conexión a PostgreSQL](02-arquitectura.md#conexión-a-postgresql).
+
+## 5. Prepara la base e inicia Django
+
+Desde `Backend/`, con `venv` activo:
+
+```powershell
+python manage.py check
 python manage.py migrate
-python manage.py runserver    # http://127.0.0.1:8000
+python manage.py runserver
 ```
 
-Al arrancar debe levantarse sin errores. La ruta
-`http://127.0.0.1:8000/api/estado/` responde la batería de diagnóstico.
-Con el backend corriendo y PostgreSQL conectado, el Mini 1 se aprueba
-solo desde el panel.
+`check` busca errores de configuración. `migrate` crea las tablas internas de
+Django. La tabla de contratos se creará cuando completes el Mini 2.
 
-> En la plantilla fresca la única vista activa es esa batería: el resto de
-> rutas se encienden con los RETOS 5 y 11-15 (ver [Día 1](03-dia1-el-velocista.md)
-> y [Día 3](05-dia3-pentatlon-big-data.md)).
+Deja esta terminal abierta. Django debe mostrar que está escuchando en el
+puerto 8000. Compruébalo en <http://127.0.0.1:8000/api/estado/>.
 
-## Paso 4 · Frontend
+## 6. Prepara y arranca React
 
-En otra terminal:
+Abre una segunda terminal en la carpeta del proyecto:
 
-```bash
+```powershell
 cd Frontend
 npm install
-npm run dev    # http://localhost:5173
+npm run dev
 ```
 
-El panel muestra las 3 arenas con el acordeón de misiones. Los días futuros
-quedan bloqueados hasta completar los anteriores; el botón **Modo instructor**
-desbloquea todo para ensayar la clase.
+`npm install` solo hace falta la primera vez o cuando cambian las dependencias.
+Deja la terminal abierta y visita <http://localhost:5173>.
 
-## Paso 5 · Datos masivos (herramienta de instructores)
+## 7. Comprueba el inicio
 
-```bash
-cd Backend
-python generar_datos.py          # 50.000 contratos con Faker + bulk_create
-python generar_datos.py 10000    # tanda más pequeña
-```
+- Django responde en `http://127.0.0.1:8000/api/estado/`.
+- React muestra el taller en `http://localhost:5173`.
+- El Mini 1 se aprueba cuando PostgreSQL está conectado.
+- `tabla_contratos` seguirá en `false` hasta completar el Mini 2.
 
-Requiere el RETO 2 terminado (el modelo `Contrato` migrado). Detalle completo
-en [Dataset y datos masivos](06-dataset-y-datos-masivos.md).
+## Documentación oficial
 
-## Verificación final
-
-| Chequeo | Resultado esperado |
-|---|---|
-| `http://127.0.0.1:8000/api/estado/` | JSON con las banderas iniciales: `false` en las de diagnóstico y el conteo de contratos en `0` |
-| `http://localhost:5173` | Panel de arena con Mini 1 desbloqueado y aprobable |
-| Terminal del backend | Sin errores de conexión ni variables faltantes |
-
-Con los tres verdes, el proyecto está listo para el
-[Día 1 · El Velocista](03-dia1-el-velocista.md).
+- [Entornos virtuales de Python](https://docs.python.org/3/library/venv.html)
+- [Instalación de Django](https://docs.djangoproject.com/en/6.1/intro/install/)
+- [Guía de Vite](https://vite.dev/guide/)
+- [Tutorial de PostgreSQL](https://www.postgresql.org/docs/current/tutorial.html)

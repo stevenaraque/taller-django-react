@@ -1,20 +1,7 @@
-// ============================================================
-// Mini2_Arquitecto.jsx — DÍA 1 · Mini 2 "El Arquitecto"
-//
-// La misión del MODELO: el estudiante construye el modelo
-// Contrato (dataset SECOP II) en Backend/contratos/models.py
-// y lo migra a PostgreSQL.
-//
-// TODO (RETO 2): escribir el modelo siguiendo la especificación
-// de la parte comentada del models.py, luego:
-//     python manage.py makemigrations contratos
-//     python manage.py migrate
-// La misión se aprueba sola cuando la tabla `contratos_contrato`
-// existe en la bóveda (la batería la busca por nombre).
-// ============================================================
+// TODO (RETO 2) - Crear y migrar el modelo Contrato.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
-import { API_URL, pedirOExplotar } from '../api'
+import { API_URL, pedirOExplotar } from '../../../shared/api'
 
 const INSTRUCCION =
   'TODO (RETO 2): abre Backend/contratos/models.py y crea el modelo ' +
@@ -44,7 +31,6 @@ export default function Mini2Arquitecto({ desbloqueada, aprobada, alAprobar }) {
     <MisionMarco
       alias="Mini 2"
       titulo="El Arquitecto"
-      teoria="Proyecta una fila REAL del SECOP II y explica cada tipo de campo (CharField, TextField, DecimalField, DateField) como 'qué guardo aquí y cuánta memoria gasta'. La migración es la orden que construye el almacén."
       desbloqueada={desbloqueada}
       aprobada={aprobada}
     >

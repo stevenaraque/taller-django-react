@@ -1,20 +1,7 @@
-// ============================================================
-// Mini3_JefeMaestro.jsx — DÍA 1 · Mini 3 "El Jefe Maestro"
-//
-// El estudiante registra el modelo en el Admin y crea el
-// PRIMER contrato a mano desde la interfaz visual (sin una
-// línea de API).
-//
-// TODO (RETO 3): en Backend/contratos/admin.py registra el
-// modelo Contrato (la instrucción exacta está comentada ahí),
-// crea un superusuario, entra a /admin/ y crea 1 contrato.
-//
-// La misión se aprueba sola cuando la batería ve el modelo en
-// el Admin y al menos un contrato guardado en la bóveda.
-// ============================================================
+// TODO (RETO 3) - Registrar Contrato en Django Admin.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
-import { API_URL, pedirOExplotar } from '../api'
+import { API_URL, pedirOExplotar } from '../../../shared/api'
 
 const INSTRUCCION =
   'TODO (RETO 3): registra el modelo en Backend/contratos/admin.py (las ' +
@@ -33,7 +20,6 @@ export default function Mini3JefeMaestro({ desbloqueada, aprobada, alAprobar }) 
     try {
       const { datos } = await pedirOExplotar(`${API_URL}/estado/`)
       setBateria(datos)
-      // El Jefe Maestro gana con las TRES banderas encendidas.
       if (
         datos.tabla_contratos &&
         datos.modelo_en_admin &&
@@ -52,7 +38,6 @@ export default function Mini3JefeMaestro({ desbloqueada, aprobada, alAprobar }) 
     <MisionMarco
       alias="Mini 3"
       titulo="El Jefe Maestro"
-      teoria="El Admin es la suite de gestión que Django fabrica sola. Registra el modelo EN VIVO (una línea) y muestra la tabla en el panel visual. El estudiante crea su primer contrato SIN escribir API: ese dato manual es el semillero de la avalancha del RETO 11."
       desbloqueada={desbloqueada}
       aprobada={aprobada}
     >

@@ -1,40 +1,30 @@
-// ============================================================
-// Mini12_Analista.jsx — DÍA 3 · Mini 12 "El Analista" (Asalto 2)
-//
-// El panel del analista: pide /api/contratos/estadisticas/ y
-// pinta las métricas agregadas que la bóveda calculó en una
-// SOLA ida (aggregate para la suma global; annotate para el
-// conteo por estado y por día).
-//
-// TODO (RETO 12): el estudiante escribe EstadisticasView en
-// Backend/contratos/views.py y la ruta en urls.py.
-// ============================================================
-import { useState } from 'react'
+// TODO (RETO 12) - Crear la vista y ruta de estadísticas.
+import { lazy, Suspense, useRef, useState } from 'react'
 import MisionMarco from '../MisionMarco'
-import { API_URL, pedirOExplotar } from '../api'
+import { API_URL, pedirOExplotar } from '../../../shared/api'
+const GraficaEstados = lazy(() => import('./GraficaEstados'))
 
 const INSTRUCCION =
-  'TODO (RETO 12): escribe EstadisticasView en Backend/contratos/views.py ' +
-  '(aggregate + annotate, ficha comentada ahí) y la ruta ' +
-  'contratos/estadisticas/ en urls.py.'
+  'Crea la ruta de estadísticas y conecta por_estado con la gráfica en filas ' +
+  'con estado y contratos. Si por_estado es un objeto, conviértelo a una lista.'
 
 export default function Mini12Analista({ desbloqueada, aprobada, alAprobar }) {
+  const graficaRef = useRef(null)
   const [informe, setInforme] = useState(null)
   const [falla, setFalla] = useState(null)
   const [midiendo, setMidiendo] = useState(false)
+  const [verificacion, setVerificacion] = useState(null)
 
-  // Sondear el informe del analista: GET /api/contratos/estadisticas/.
   async function pedirMetricas() {
     if (midiendo) return
     setMidiendo(true)
     setFalla(null)
     setInforme(null)
+    setVerificacion(null)
 
     try {
       const { datos, ms } = await pedirOExplotar(`${API_URL}/contratos/estadisticas/`)
       setInforme({ ...datos, ms })
-      // VICTORIA: el ORM ya devolvió las dos piezas del análisis.
-      if (datos.por_estado && datos.metricas) alAprobar()
     } catch (laRedRota) {
       setFalla(laRedRota.message)
     } finally {
@@ -42,11 +32,50 @@ export default function Mini12Analista({ desbloqueada, aprobada, alAprobar }) {
     }
   }
 
+  function verificarGrafica() {
+    const figura = graficaRef.current?.querySelector('figure')
+    const esperados = filasPorEstado(informe?.por_estado)
+    let datosRecibidos = []
+
+    try {
+      datosRecibidos = JSON.parse(figura?.dataset.estados || '[]')
+    } catch {
+      datosRecibidos = []
+    }
+
+    const recibidos = filasPorEstado(datosRecibidos)
+    const hayContratos = esperados.some((fila) => fila.contratos > 0)
+    const datosCorrectos =
+      hayContratos &&
+      esperados.length === recibidos.length &&
+      esperados.every((fila, indice) => {
+        return (
+          fila.estado === recibidos[indice]?.estado &&
+          fila.contratos === Number(recibidos[indice]?.contratos)
+        )
+      })
+
+    if (datosCorrectos) {
+      alAprobar()
+      setVerificacion({
+        ok: true,
+        mensaje: 'La gráfica coincide con los contratos por estado.',
+      })
+      return
+    }
+
+    setVerificacion({
+      ok: false,
+      mensaje: hayContratos
+        ? 'Conecta a la gráfica los estados y conteos del informe.'
+        : 'No hay contratos para comparar. Crea uno o carga datos de prueba.',
+    })
+  }
+
   return (
     <MisionMarco
       alias="Mini 12"
       titulo="El Analista"
-      teoria="Proyecta SQL y ORM en paralelo: la misma métrica son 10 líneas de SQL o 1 línea de aggregate(). El annotate agrupa sin escribir GROUP BY a mano. Este es el panel táctico del Analista: los milisegundos no mienten."
       desbloqueada={desbloqueada}
       aprobada={aprobada}
     >
@@ -84,6 +113,27 @@ export default function Mini12Analista({ desbloqueada, aprobada, alAprobar }) {
         </div>
       )}
 
+      <div ref={graficaRef}>
+        {/* TODO (RETO 12) - Pasar informe.por_estado a la gráfica. */}
+        <Suspense fallback={<p className="celda-suave">Cargando gráfica…</p>}>
+          <GraficaEstados />
+        </Suspense>
+      </div>
+
+      <button
+        className="boton"
+        onClick={verificarGrafica}
+        disabled={!informe || midiendo}
+      >
+        Verificar la gráfica
+      </button>
+
+      {verificacion && (
+        <div className="aviso" data-tipo={verificacion.ok ? 'ok' : 'error'}>
+          {verificacion.mensaje}
+        </div>
+      )}
+
       {informe?.por_estado && (
         <table className="tabla" style={{ marginTop: 12 }}>
           <thead>
@@ -108,10 +158,21 @@ export default function Mini12Analista({ desbloqueada, aprobada, alAprobar }) {
   )
 }
 
-// Un número muy grande llena el panel: se formatea con separadores
-// de miles (es-CO) para que la suma se lea de un vistazo.
 function formatearMil(valor) {
   if (valor === null || valor === undefined) return '—'
   const numero = Number(valor)
   return Number.isNaN(numero) ? '—' : numero.toLocaleString('es-CO')
+}
+
+function filasPorEstado(porEstado) {
+  const filas = Array.isArray(porEstado)
+    ? porEstado.map((fila) => [fila.estado, fila])
+    : Object.entries(porEstado || {})
+
+  return filas
+    .map(([estado, fila]) => ({
+      estado,
+      contratos: Number(fila?.contratos ?? fila),
+    }))
+    .sort((primera, segunda) => primera.estado.localeCompare(segunda.estado))
 }

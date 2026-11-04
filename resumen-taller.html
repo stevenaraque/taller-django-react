@@ -147,7 +147,7 @@ footer { text-align: center; color: #64748b; font-size: .82rem; margin-top: 3.5r
   <h2><span class="num">3</span> El mapa de las 15 mini-tareas</h2>
 
   <div class="dia dia1">
-    <div class="dia-cabecera"><span>🐍 DÍA 1 — El Velocista (Backend Django &amp; Postgres)</span></div>
+    <div class="dia-cabecera"><span>DÍA 1 — El Velocista (Backend Django &amp; Postgres)</span></div>
     <div class="dia-cuerpo">
       <ul class="lista-minis">
         <li><span class="mini mini-1">Mini 1</span><span class="desc"><b>La Bóveda</b><small>.env + python-dotenv: la conexión a PostgreSQL 18 vive exclusivamente fuera del código. SQLite queda PROHIBIDO.</small></span></li>
@@ -160,7 +160,7 @@ footer { text-align: center; color: #64748b; font-size: .82rem; margin-top: 3.5r
   </div>
 
   <div class="dia dia2">
-    <div class="dia-cabecera"><span>⚛️ DÍA 2 — El Portero (React &amp; CORS)</span></div>
+    <div class="dia-cabecera"><span>DÍA 2 — El Portero (React &amp; CORS)</span></div>
     <div class="dia-cuerpo">
       <ul class="lista-minis">
         <li><span class="mini mini-2">Mini 6</span><span class="desc"><b>El Camaleón</b><small>primer componente escrito por el estudiante (título gigante en :5173, sin boilerplate de Vite).</small></span></li>
@@ -173,11 +173,11 @@ footer { text-align: center; color: #64748b; font-size: .82rem; margin-top: 3.5r
   </div>
 
   <div class="dia dia3">
-    <div class="dia-cabecera"><span>🏅 DÍA 3 — Pentatlón Big Data (Alto Rendimiento)</span></div>
+    <div class="dia-cabecera"><span>DÍA 3 — Pentatlón Big Data (Alto Rendimiento)</span></div>
     <div class="dia-cuerpo">
       <ul class="lista-minis">
         <li><span class="mini mini-3">Mini 11</span><span class="desc"><b>La Avalancha</b><small>Asalto 1: <code>bulk_create(batch_size=1000)</code> desde <code>InyeccionMasivaView</code>; el panel mide los ms y los registros por segundo.</small></span></li>
-        <li><span class="mini mini-3">Mini 12</span><span class="desc"><b>El Analista</b><small>Asalto 2: <code>aggregate</code> (Sum, Avg, Max, Count) y <code>annotate</code> (conteo por estado y por día) en <code>EstadisticasView</code>.</small></span></li>
+        <li><span class="mini mini-3">Mini 12</span><span class="desc"><b>El Analista</b><small>Asalto 2: <code>aggregate</code> y <code>annotate</code> en <code>EstadisticasView</code>; el estudiante conecta los conteos por estado con una gráfica de barras horizontal.</small></span></li>
         <li><span class="mini mini-3">Mini 13</span><span class="desc"><b>La Aguja en el Pajar</b><small>Asalto 3: <code>SearchFilter</code> con <code>search_fields</code> en el ContratoViewSet; caza por <code>?search=</code> entre los 50k.</small></span></li>
         <li><span class="mini mini-3">Mini 14</span><span class="desc"><b>El Regulador</b><small>Asalto 4: paginación global (<code>PageNumberPagination</code>, PAGE_SIZE 50) descomentada en settings.py.</small></span></li>
         <li><span class="mini mini-3">Mini 15</span><span class="desc"><b>El Limpiador</b><small>Asalto 5: <code>QuerySet.delete()</code> en UNA sentencia desde <code>LimpiezaMasivaView</code>; cierre con cronómetro.</small></span></li>
@@ -186,8 +186,8 @@ footer { text-align: center; color: #64748b; font-size: .82rem; margin-top: 3.5r
   </div>
 
   <div class="callout">
-    💡 <strong>Cómo aprenderán cada tema (las 5 fases)</strong>: 1️⃣ Problema real del dataset → 2️⃣ Pregunta (proponen antes de explicar) → 3️⃣ Explicación de la teoría (bloque <b>⏸ INSTRUCTORES</b>) → 4️⃣ Mini-tarea (el estudiante escribe donde marca <code>TODO (RETO n)</code>) → 5️⃣ Verificación (el panel aprueba, F12 para leer los errores HTTP 400/404/CORS).
-    <strong>Gamificación</strong>: misión aprobada = bombombún; los días futuros quedan bloqueados hasta completar los anteriores. El <strong>modo instructor</strong> desbloquea todo para ensayar la clase.
+    <strong>Cada misión</strong>: indica la tarea, el archivo que debes completar y cómo verificar el resultado. El panel aprueba automáticamente cuando la comprobación pasa.
+    <strong>Progreso</strong>: los días se abren al aprobar las misiones anteriores.
   </div>
 </section>
 
@@ -196,8 +196,8 @@ footer { text-align: center; color: #64748b; font-size: .82rem; margin-top: 3.5r
   <table>
     <thead>
       <tr>
-        <th>✔ Ya viene listo (andamiaje)</th>
-        <th>✍️ Lo escriben los estudiantes</th>
+        <th>Ya viene listo (andamiaje)</th>
+        <th>Lo escriben los estudiantes</th>
       </tr>
     </thead>
     <tbody>
@@ -205,9 +205,9 @@ footer { text-align: center; color: #64748b; font-size: .82rem; margin-top: 3.5r
         <td>
           <ul>
             <li>Backend Django 6.1 montado con app <code>contratos</code> y batería <code>/api/estado/</code> activa.</li>
-            <li>Panel React: 3 arenas + acordeón de 15 misiones + candados por día + modo instructor.</li>
+            <li>Panel React: 3 arenas, navegación de 15 misiones y progreso guardado en el navegador.</li>
             <li>Manejo elegante de errores HTTP 400/404/CORS centralizado en <code>api.js</code>.</li>
-            <li><code>generar_datos.py</code>: 50k contratos con Faker + bulk_create (herramienta docente).</li>
+            <li><code>generar_datos.py</code>: 50k contratos de prueba con Faker + bulk_create.</li>
             <li>Cronómetro del Velocista y tablero de misiones en localStorage.</li>
           </ul>
         </td>
@@ -227,13 +227,13 @@ footer { text-align: center; color: #64748b; font-size: .82rem; margin-top: 3.5r
   </table>
 
   <div class="callout" style="margin-top:1.2rem">
-    ⚠️ <strong>Criterios de rechazo del proyecto</strong>: nada de SQLite, ninguna credencial en el código,
+    <strong>Criterios de rechazo del proyecto</strong>: nada de SQLite, ninguna credencial en el código,
     ninguna solución de reto entregada gratis, ninguna librería compleja en el frontend y ningún componente
     React con lógica pesada de negocio — el trabajo grande lo hace el ORM de Django.
   </div>
 </section>
 
-<footer>Plantilla del taller — instructores Steven &amp; Yesid · Plataforma de Arenas SECOP II · Django 6.1 + DRF + PostgreSQL 18 + React 19</footer>
+<footer>Taller de Steven &amp; Yesid · Plataforma de Arenas SECOP II · Django 6.1 + DRF + PostgreSQL 18 + React 19</footer>
 </div>
 </body>
 </html>

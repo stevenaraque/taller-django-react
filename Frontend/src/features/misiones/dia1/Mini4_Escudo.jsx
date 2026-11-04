@@ -1,21 +1,7 @@
-// ============================================================
-// Mini4_Escudo.jsx — DÍA 1 · Mini 4 "El Escudo"
-//
-// El serializer es el guardia de la puerta: recibe JSON, lo
-// revisa campo por campo, y si algo no cumple responde HTTP 400
-// sin que la basura toque la base de datos.
-//
-// TODO (RETO 4): escribir el ContratoSerializer en
-// Backend/contratos/serializers.py (instrucciones comentadas ahí).
-//
-// La misión lanza UN JSON malformado a propósito; se aprueba SOLO
-// cuando Django responde HTTP 400 bien formado (con su dictado
-// de errores). Hasta que la ruta del RETO 5 exista, la prueba
-// queda "sin ruta" — el propio panel lo explica.
-// ============================================================
+// TODO (RETO 4) - Crear el ModelSerializer de Contrato.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
-import { API_URL, peticion } from '../api'
+import { API_URL, peticion } from '../../../shared/api'
 
 const INSTRUCCION =
   'TODO (RETO 4): escribe el ContratoSerializer en ' +
@@ -28,7 +14,6 @@ export default function Mini4Escudo({ desbloqueada, aprobada, alAprobar }) {
   const [falla, setFalla] = useState(null)
   const [lanzando, setLanzando] = useState(false)
 
-  // El ataque del escudo: JSON malformado + Content-Type json.
   async function atacarEscudo() {
     setLanzando(true)
     setFalla(null)
@@ -49,7 +34,6 @@ export default function Mini4Escudo({ desbloqueada, aprobada, alAprobar }) {
         cuerpo,
       })
 
-      // VICTORIA: el serializer devolvió el HTTP 400 con su dictado.
       if (respuesta.status === 400) alAprobar()
     } catch (laRedRota) {
       setFalla(laRedRota.message)
@@ -62,7 +46,6 @@ export default function Mini4Escudo({ desbloqueada, aprobada, alAprobar }) {
     <MisionMarco
       alias="Mini 4"
       titulo="El Escudo"
-      teoria='Este es el punto perfecto para explicar "Django no confía en el exterior". Proyecta el JSON malformado y muestra cómo el serializer lo filtra ANTES de la base de datos. Nota didáctica: la prueba necesita la ruta del Mini 5; si responde "sin ruta", corre el RETO 5 y vuelve.'
       desbloqueada={desbloqueada}
       aprobada={aprobada}
     >

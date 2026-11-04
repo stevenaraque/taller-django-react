@@ -1,18 +1,7 @@
-// ============================================================
-// Mini14_Regulador.jsx — DÍA 3 · Mini 14 "El Regulador" (Asalto 4)
-//
-// La paginación global protege la arena: 50.000 contratos en un
-// JSON aplastan la red y el navegador. El estudiante descomenta
-// el bloque REST_FRAMEWORK en settings.py (RETO 14) y toda la
-// API regula su caudal.
-//
-// El panel compara la respuesta antes/despues: crudo (lista) vs
-// regulado ({count, next, previous, results}). Aprueba cuando
-// ve el caudal regulado por primera vez.
-// ============================================================
+// TODO (RETO 14) - Activar la paginación global en settings.py.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
-import { API_URL, pedirOExplotar } from '../api'
+import { API_URL, pedirOExplotar } from '../../../shared/api'
 
 const INSTRUCCION =
   'TODO (RETO 14): descomenta el bloque REST_FRAMEWORK al final de ' +
@@ -34,7 +23,6 @@ export default function Mini14Regulador({ desbloqueada, aprobada, alAprobar }) {
       const paginado = datos && typeof datos === 'object' && !Array.isArray(datos) && 'results' in datos
       setEstadoCaudal({ paginado, datos, ms })
 
-      // VICTORIA: la API reguló el caudal por primera vez.
       if (paginado) alAprobar()
     } catch (laRedRota) {
       setFalla(laRedRota.message)
@@ -43,15 +31,13 @@ export default function Mini14Regulador({ desbloqueada, aprobada, alAprobar }) {
     }
   }
 
-  const listado = estadoCaudal
-    ? Array.isArray(estadoCaudal.datos) ? estadoCaudal.datos : estadoCaudal.datos?.results || []
-    : []
+  const datos = estadoCaudal?.datos
+  const listado = Array.isArray(datos) ? datos : datos?.results || []
 
   return (
     <MisionMarco
       alias="Mini 14"
       titulo="El Regulador"
-      teoria="Sin regulador, un GET trae TODOS los contratos: con 50.000 filas la red y el navegador se ahogan. PageNumberPagination corta en 50 filas y agrega count plus los links de navegación. Se configura UNA vez y protege TODA la API."
       desbloqueada={desbloqueada}
       aprobada={aprobada}
     >

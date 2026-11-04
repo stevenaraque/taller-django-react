@@ -1,19 +1,7 @@
-// ============================================================
-// Mini1_Boveda.jsx — DÍA 1 · Mini 1 "La Bóveda"
-//
-// La primera misión NO es un reto de código: es encender la
-// bóveda (PostgreSQL 18) desde el archivo .env y verificar que
-// el backend respira en el :8000.
-//
-// TODO (RETO 1): el estudiante copia Backend/.env.example a
-// Backend/.env, llena sus datos reales y corre:
-//     python manage.py migrate
-//     python manage.py runserver
-// Cuando el motor PostgreSQL vive, la misión se aprueba sola.
-// ============================================================
+// TODO (RETO 1) - Configurar .env y ejecutar las migraciones.
 import { useState } from 'react'
 import MisionMarco from '../MisionMarco'
-import { API_URL, pedirOExplotar } from '../api'
+import { API_URL, pedirOExplotar } from '../../../shared/api'
 
 const INSTRUCCION =
   'TODO (RETO 1): en Backend/, copia .env.example a .env y llena tus datos ' +
@@ -21,7 +9,6 @@ const INSTRUCCION =
   'python manage.py migrate y python manage.py runserver. Sin .env, el ' +
   'arranque se detiene con las instrucciones en la terminal.'
 
-// Sondear la batería de diagnóstico del backend: /api/estado/.
 async function sondearBateria() {
   const { datos } = await pedirOExplotar(`${API_URL}/estado/`)
   return datos
@@ -38,7 +25,6 @@ export default function Mini1Boveda({ desbloqueada, aprobada, alAprobar }) {
     try {
       const datos = await sondearBateria()
       setBateria(datos)
-      // Victorias: el motor vive Y es PostgreSQL (no SQLite).
       if (datos.base_datos && datos.motor_bueno) alAprobar()
     } catch (laRedRota) {
       setFalla(laRedRota.message)
@@ -51,7 +37,6 @@ export default function Mini1Boveda({ desbloqueada, aprobada, alAprobar }) {
     <MisionMarco
       alias="Mini 1"
       titulo="La Bóveda"
-      teoria="Proyecta la terminal: sin bóveda no hay nada que guardar. Explica qué es una variable de entorno y por qué la clave de PostgreSQL NUNCA vive en el código (subirla a un repositorio es regalarla)."
       desbloqueada={desbloqueada}
       aprobada={aprobada}
     >
@@ -86,7 +71,7 @@ export default function Mini1Boveda({ desbloqueada, aprobada, alAprobar }) {
               <td className="celda-suave">
                 {bateria.base_datos
                   ? 'el motor de la bóveda está vivo'
-                  : 'el motor no responde: revisa .env y el servicio postgresql-x64-18'}
+                  : 'el motor no responde: revisa .env y el servicio Windows de PostgreSQL (postgresql-x64-18 en una instalación estándar; el nombre exacto lo ves en services.msc)'}
               </td>
             </tr>
             <tr>
