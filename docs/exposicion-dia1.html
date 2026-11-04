@@ -46,13 +46,15 @@
   .hora { background: linear-gradient(90deg, #1e3a5f, #0f172a); border-left: 6px solid var(--accent); padding: 14px 20px; margin: 30px 0 14px; border-radius: 8px; }
   .hora h2 { margin: 0; border: none; padding: 0; color: #67e8f9; }
   .hora p { margin: 4px 0 0; color: var(--muted); font-size: 0.95rem; }
+  .cmd { background: #000; border: 1px solid #22c55e; border-radius: 6px; padding: 10px 14px; margin: 8px 0; font-family: Consolas, monospace; color: #22c55e; }
+  .cmd::before { content: "> "; color: #facc15; }
   footer { margin-top: 60px; color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 20px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Dia 1 - El Velocista: guia de exposicion completa</h1>
-  <p style="color:var(--muted)">Documento para el instructor. Contiene, para cada mini del Dia 1: el concepto, el guion palabra por palabra, los pasos exactos, el codigo a escribir, como verificar y los errores comunes. Duracion total: 6 horas, de 6:00 a.m. a 12:00 m.</p>
+  <p style="color:var(--muted)">Documento para el instructor. Duracion total: 6 horas, de 6:00 a.m. a 12:00 m. Contiene, para cada mini: el concepto, el guion palabra por palabra con los comandos para decir en el momento, los pasos exactos, el codigo a escribir, como verificar y los errores comunes.</p>
 
   <div class="nav">
     <a href="#prep">Preparacion</a>
@@ -67,9 +69,9 @@
   <div class="toc">
     <strong>Indice por horas</strong>
     <ul>
-      <li><a href="#prep">Antes de las 6:00 - preparacion del dia</a></li>
+      <li><a href="#prep">Antes de las 6:00 - preparacion del dia y descargas</a></li>
       <li><a href="#h6">6:00 a 7:00 - apertura, Mini 1 La Boveda y Mini 2 El Arquitecto parte 1</a></li>
-      <li><a href="#h7">7:00 a 8:00 - Mini 2 El Arquitecto parte 2 y Mini 3 El Jefe Maestro</a></li>
+      <li><a href="#h7">7:00 a 8:00 - Mini 2 parte 2 y Mini 3 El Jefe Maestro</a></li>
       <li><a href="#h8">8:00 a 9:00 - Mini 4 El Escudo</a></li>
       <li><a href="#h9">9:00 a 10:00 - Mini 5 El Velocista</a></li>
       <li><a href="#h10">10:00 a 11:00 - repaso, preguntas y verificacion general</a></li>
@@ -78,20 +80,88 @@
   </div>
 
   <!-- ================= PREPARACION ================= -->
-  <h2 id="prep">Antes de las 6:00 - preparacion del dia</h2>
+  <h2 id="prep">Antes de las 6:00 - preparacion del dia y descargas</h2>
   <div class="card">
     <h3>Objetivo de hoy</h3>
     <p>Al final del Dia 1 cada estudiante debe tener: PostgreSQL respondiendo, el modelo Contrato creado y migrado, el Admin configurado con al menos un contrato de prueba, un serializer que valide datos, y la API CRUD funcionando con GET /api/contratos/ que responde 200 y GET /api/contratos/999999/ que responde 404.</p>
   </div>
 
-  <h3>Lo que debes tener listo antes de la clase</h3>
+  <h3>Paso 1 - Descargar e instalar los programas (decir esto antes de empezar)</h3>
+  <div class="say">Antes de tocar codigo, necesitamos cuatro programas instalados en su equipo. Los descargan de estas paginas oficiales.</div>
+  <ol>
+    <li><strong>Python 3.14</strong> - pagina oficial: python.org/downloads. Al instalar, marquen la casilla "Add Python to PATH". Sin esa casilla, Windows no reconoce el comando python.</li>
+    <li><strong>Node.js 20.19 o superior</strong> - pagina oficial: nodejs.org. Descarguen la version LTS. Incluye npm automaticamente.</li>
+    <li><strong>PostgreSQL 18</strong> - pagina oficial: postgresql.org/download. Durante la instalacion les pedira una clave para el usuario postgres. Anotenla: la usaran en el archivo .env.</li>
+    <li><strong>pgAdmin</strong> - viene con el instalador de PostgreSQL o se descarga aparte en pgadmin.org. Sirve para ver y crear la base de datos con clics.</li>
+    <li><strong>Git</strong> - pagina oficial: git-scm.com/downloads. Necesario para clonar la plantilla del proyecto.</li>
+    <li><strong>Visual Studio Code</strong> - pagina oficial: code.visualstudio.com. Es el editor donde escribiran el codigo.</li>
+  </ol>
+  <div class="tip">Diganles que verifiquen las versiones con estos comandos en PowerShell: python --version, node --version, npm --version, git --version. Si alguno falla, reinstalen marcando "Add to PATH".</div>
+
+  <h3>Paso 2 - Crear la base de datos en pgAdmin</h3>
+  <div class="say">La base de datos es donde PostgreSQL guarda los contratos. Abran pgAdmin, conectense con su usuario postgres, clic derecho en Databases, Create, Database, y escriban taller_django_react. Ese nombre lo usaran en el siguiente paso.</div>
+  <ol>
+    <li>Abrir pgAdmin y conectarse a PostgreSQL con el usuario postgres.</li>
+    <li>En el panel izquierdo, clic derecho en Databases.</li>
+    <li>Elegir Create, luego Database.</li>
+    <li>Escribir taller_django_react y guardar.</li>
+  </ol>
+
+  <h3>Paso 3 - Preparar Django</h3>
+  <div class="say">Ahora abrimos PowerShell en la carpeta del proyecto y ejecutamos estos comandos uno por uno. El entorno virtual mantiene las librerias de este proyecto separadas de las de otros proyectos.</div>
+  <div class="cmd">cd Backend</div>
+  <div class="cmd">python -m venv venv</div>
+  <div class="cmd">.\venv\Scripts\Activate.ps1</div>
+  <div class="cmd">python -m pip install -r requirements.txt</div>
+  <div class="cmd">Copy-Item .env.example .env</div>
+  <div class="tip">Si PowerShell bloquea la activacion, ejecuten esto en la misma terminal y vuelvan a intentar: Set-ExecutionPolicy -Scope Process RemoteSigned</div>
+
+  <h3>Paso 4 - Completar Backend/.env</h3>
+  <div class="say">Abran el archivo .env y reemplacen los valores de ejemplo. La SECRET_KEY es la firma secreta de Django: sirve para firmar cookies, tokens y datos de sesion. Si alguien la roba, puede falsificar sesiones. Por eso no se comparte ni se sube a Git. Generenla con este comando.</div>
+  <div class="cmd">python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"</div>
+  <div class="say">DEBUG=True significa modo de desarrollo: Django muestra errores detallados en el navegador. En produccion se pone False para no exponer informacion interna. DB_NAME es el nombre de la base que crearon. DB_USER y DB_PASSWORD son el usuario y clave de PostgreSQL. DB_HOST=localhost y DB_PORT=5432 son los valores locales habituales.</div>
   <ul>
-    <li>Django corriendo en tu equipo: python manage.py runserver en el puerto 8000.</li>
-    <li>React corriendo: npm run dev en el puerto 5173.</li>
-    <li>Base PostgreSQL taller_django_react con los 5000 contratos reales ya cargados para mostrar en el panel.</li>
-    <li>La pantalla proyectada con el panel del taller abierto en el navegador.</li>
-    <li>Un navegador con F12 abierto para mostrar la pestana Network.</li>
+    <li>SECRET_KEY: la clave que generaron con el comando anterior.</li>
+    <li>DEBUG: True (modo desarrollo local).</li>
+    <li>DB_NAME: taller_django_react (nombre de la base que crearon).</li>
+    <li>DB_USER: postgres (o su usuario).</li>
+    <li>DB_PASSWORD: la clave que eligieron al instalar PostgreSQL.</li>
+    <li>DB_HOST: localhost.</li>
+    <li>DB_PORT: 5432.</li>
   </ul>
+  <div class="warn">No compartan ni suban .env: contiene la clave de la base de datos. Solo se sube .env.example con valores de ejemplo.</div>
+
+  <h3>Paso 5 - Preparar la base e iniciar Django</h3>
+  <div class="say">Desde Backend/, con venv activo, ejecuten estos tres comandos en orden. check busca errores de configuracion. migrate crea las tablas internas de Django y la tabla contratos_contrato del modelo. runserver arranca el servidor en el puerto 8000.</div>
+  <div class="cmd">python manage.py check</div>
+  <div class="cmd">python manage.py migrate</div>
+  <div class="cmd">python manage.py runserver</div>
+  <div class="say">Dejen esta terminal abierta. Django debe mostrar que esta escuchando en el puerto 8000. Compruebenlo en http://127.0.0.1:8000/api/estado/.</div>
+
+  <h3>Paso 6 - Preparar y arrancar React</h3>
+  <div class="say">Abran una segunda terminal en la carpeta del proyecto. npm install solo hace falta la primera vez o cuando cambian las dependencias. Dejen la terminal abierta y visiten http://localhost:5173.</div>
+  <div class="cmd">cd Frontend</div>
+  <div class="cmd">npm install</div>
+  <div class="cmd">npm run dev</div>
+
+  <h3>Paso 7 - Comprobar el inicio</h3>
+  <ul>
+    <li>Django responde en http://127.0.0.1:8000/api/estado/.</li>
+    <li>React muestra el taller en http://localhost:5173.</li>
+    <li>El Mini 1 se aprueba cuando PostgreSQL esta conectado.</li>
+    <li>tabla_contratos debe aparecer en true despues de ejecutar migrate.</li>
+  </ul>
+
+  <div class="card">
+    <h3>Lo que debes tener listo antes de la clase</h3>
+    <ul>
+      <li>Django corriendo en tu equipo: python manage.py runserver en el puerto 8000.</li>
+      <li>React corriendo: npm run dev en el puerto 5173.</li>
+      <li>Base PostgreSQL taller_django_react con los 5000 contratos reales ya cargados para mostrar en el panel.</li>
+      <li>La pantalla proyectada con el panel del taller abierto en el navegador.</li>
+      <li>Un navegador con F12 abierto para mostrar la pestana Network.</li>
+    </ul>
+  </div>
 
   <h3>Guion de apertura - di esto palabra por palabra</h3>
   <div class="say">Hoy vamos a construir, desde cero, una API real sobre datos reales de contratos publicos colombianos. Cada mini que completen hoy desbloquea el siguiente. El panel que ven en pantalla es el juez: si la API responde lo que esperamos, la mision se aprueba sola. No hay boton manual ni ayuda del instructor en el panel.</div>
@@ -124,19 +194,24 @@
 
   <h4>Guion - di esto palabra por palabra</h4>
   <div class="say">Vamos a abrir la boveda: el archivo que guarda las credenciales de la base de datos. Copien .env.example como .env y reemplacen los valores de ejemplo con los de su PostgreSQL.</div>
-  <div class="say">La SECRET_KEY es la firma de Django. No la inventen: generemosla con el comando que esta en la guia. DEBUG=True significa modo de desarrollo: Django muestra errores detallados. En produccion se pone False.</div>
+  <div class="say">La SECRET_KEY es la firma secreta de Django. Sirve para firmar cookies, tokens y datos de sesion. Si alguien la roba, puede falsificar sesiones. Por eso no se comparte ni se sube a Git. Generenla con este comando: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"</div>
+  <div class="say">DEBUG=True significa modo de desarrollo: Django muestra errores detallados en el navegador. En produccion se pone False para no exponer informacion interna. DB_NAME es el nombre de la base que crearon. DB_USER y DB_PASSWORD son el usuario y clave de PostgreSQL. DB_HOST=localhost y DB_PORT=5432 son los valores locales habituales.</div>
   <div class="say">Ahora ejecutamos tres comandos en orden: check busca errores de configuracion, migrate crea las tablas internas de Django, y runserver arranca el servidor en el puerto 8000.</div>
+  <div class="cmd">python manage.py check</div>
+  <div class="cmd">python manage.py migrate</div>
+  <div class="cmd">python manage.py runserver</div>
+  <div class="say">Dejen esta terminal abierta. Django debe mostrar que esta escuchando en el puerto 8000. Compruebenlo en http://127.0.0.1:8000/api/estado/.</div>
   <div class="say">Abran http://127.0.0.1:8000/api/estado/ en el navegador. Deben ver base_datos: true y motor_bueno: true. Si ven false, el problema esta en el .env, no en el codigo.</div>
 
   <h4>Pasos exactos</h4>
   <ol>
     <li>Copiar Backend/.env.example a Backend/.env.</li>
-    <li>Completar SECRET_KEY, DEBUG=True, DB_NAME=taller_django_react, DB_USER, DB_PASSWORD, DB_HOST=localhost, DB_PORT=5432.</li>
+    <li>Completar SECRET_KEY con el comando anterior, DEBUG=True, DB_NAME=taller_django_react, DB_USER, DB_PASSWORD, DB_HOST=localhost, DB_PORT=5432.</li>
     <li>Activar el entorno virtual: .\venv\Scripts\Activate.ps1.</li>
     <li>Ejecutar: python manage.py check</li>
     <li>Ejecutar: python manage.py migrate</li>
     <li>Ejecutar: python manage.py runserver</li>
-    <li>Abrir una segunda terminal y arrancar React: cd Frontend && npm install && npm run dev</li>
+    <li>Abrir una segunda terminal y arrancar React: cd Frontend, luego npm install, luego npm run dev.</li>
     <li>En el panel, pulsar Sondear la boveda.</li>
   </ol>
 
@@ -183,7 +258,7 @@ DATABASES = {
   <div class="say">Los seis campos vienen del dataset SECOP II: el identificador del contrato, la entidad que compra, la descripcion u objeto, el valor total, el estado y la fecha de firma. No guardamos todo el dataset: solo lo que el taller necesita.</div>
   <div class="say">CharField es texto corto, TextField texto largo, DecimalField dinero con decimales, DateField fecha. unique=True en el identificador evita duplicados.</div>
   <div class="say">__str__ hace que en el Admin se vea el identificador en vez de Contrato object (1). Meta.ordering ordena las consultas automaticamente.</div>
-  <div class="say">Ahora generamos la migracion: makemigrations contratos. Django lee el modelo y escribe un archivo Python con las instrucciones SQL. Luego migrate ejecuta ese SQL en PostgreSQL.</div>
+  <div class="say">Ahora generamos la migracion con este comando: python manage.py makemigrations contratos. Django lee el modelo y escribe un archivo Python con las instrucciones SQL. Luego ejecuten: python manage.py migrate. Ese comando ejecuta ese SQL en PostgreSQL.</div>
   <div class="say">Comprueben en /api/estado/: tabla_contratos debe pasar a true. Si sigue en false, la migracion no se aplico.</div>
 
   <h4>Pasos exactos</h4>
@@ -245,7 +320,7 @@ class Contrato(models.Model):
   <h4>Guion - di esto palabra por palabra</h4>
   <div class="say">Django trae un panel de administracion gratuito en /admin/. Es la mesa de trabajo donde ustedes van a ver y crear contratos. Pero Django no sabe que modelos mostrar hasta que se los registren.</div>
   <div class="say">Vamos a registrar Contrato con un ModelAdmin propio. Configuramos list_display para ver las columnas importantes, search_fields para buscar por identificador, entidad o descripcion, y list_filter para filtrar por estado y fecha.</div>
-  <div class="say">Ahora crean su usuario administrador con createsuperuser. Entren a http://127.0.0.1:8000/admin/ e inicien sesion. Veran la lista de contratos. Crean uno de prueba a mano.</div>
+  <div class="say">Ahora crean su usuario administrador con este comando: python manage.py createsuperuser. Entren a http://127.0.0.1:8000/admin/ e inicien sesion. Veran la lista de contratos. Crean uno de prueba a mano.</div>
   <div class="say">Con los 5000 contratos reales de SECOP II cargados, el Admin deja de ser una vista vacia: se convierte en la herramienta para encontrar y revisar contratos por estado, entidad y valor.</div>
 
   <h4>Pasos exactos</h4>
