@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Libreto para exponer Django REST + React</title>
+<style>
+:root{--fondo:#0b1220;--panel:#111c2e;--tarjeta:#17243a;--borde:#31435d;--texto:#e8eef7;--suave:#aab8ca;--azul:#62c7f4;--verde:#47d7a0;--amarillo:#ffd36a;--rojo:#ff8f8f;--codigo:#07101d}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--fondo);color:var(--texto);font:16px/1.65 "Segoe UI",Arial,sans-serif}.contenedor{max-width:1080px;margin:auto;padding:30px 22px 72px}h1{font-size:clamp(2rem,5vw,3rem);line-height:1.15;color:var(--azul);margin:0 0 12px}h2{font-size:1.55rem;color:var(--azul);margin:0}h3{font-size:1.2rem;color:var(--amarillo);margin:22px 0 8px}p{margin:8px 0}strong{color:#fff}a{color:var(--azul);text-decoration:none}a:hover{text-decoration:underline}.subtitulo{color:var(--suave);margin-bottom:18px}.barra{position:sticky;top:0;z-index:5;background:#0b1220f2;border-bottom:1px solid var(--borde);padding:10px 0;display:flex;flex-wrap:wrap;gap:8px 14px}.barra a{font-size:.9rem}.panel,.slide,.decir,.hacer,.pregunta,.puente,.nota,.alerta,.bien{border:1px solid var(--borde);border-radius:10px;padding:15px 18px;margin:12px 0;background:var(--tarjeta)}.panel{border-left:5px solid var(--azul)}.slide{margin:30px 0 18px;scroll-margin-top:66px}.cabecera{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:1px solid var(--borde);padding-bottom:9px;margin-bottom:13px}.tiempo{color:var(--amarillo);font-weight:700;white-space:nowrap}.decir{background:#10251f;border-left:4px solid var(--verde)}.decir::before{content:"Di:";display:block;color:var(--verde);font-weight:700;margin-bottom:4px}.hacer{background:#17243a;border-left:4px solid var(--azul)}.hacer::before{content:"Señala o haz:";display:block;color:var(--azul);font-weight:700;margin-bottom:4px}.pregunta{background:#2b2617;border-left:4px solid var(--amarillo)}.pregunta::before{content:"Pregunta al grupo:";display:block;color:var(--amarillo);font-weight:700;margin-bottom:4px}.puente{background:#151d2b;border-left:4px solid #8294ad}.puente::before{content:"Transición:";display:block;color:#bdcbe0;font-weight:700;margin-bottom:4px}.nota{border-left:4px solid var(--azul)}.alerta{border-left:4px solid var(--rojo);background:#2b1a20}.bien{border-left:4px solid var(--verde);background:#10251f}.comando{background:var(--codigo);border:1px solid #275943;border-radius:7px;padding:11px 14px;margin:9px 0}.comando code{display:block;font: .94rem Consolas,monospace;color:#8df0bd;overflow-wrap:anywhere}.comando p{color:var(--suave);font-size:.94rem;margin:6px 0 0}.resumen{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin:16px 0}.resumen div{background:var(--tarjeta);border:1px solid var(--borde);border-radius:8px;padding:12px}.resumen b{display:block;color:var(--azul);font-size:1.05rem}table{border-collapse:collapse;width:100%;margin:10px 0}th,td{border:1px solid var(--borde);padding:8px 10px;text-align:left;vertical-align:top}th{background:#14233a;color:var(--azul)}code{font: .92em Consolas,monospace;color:#ffe49a;background:var(--codigo);padding:2px 5px;border-radius:4px}.pie{margin-top:42px;padding-top:14px;border-top:1px solid var(--borde);color:var(--suave);font-size:.9rem}@media print{body{background:#fff;color:#111}.barra{display:none}.slide,.panel,.decir,.hacer,.pregunta,.puente,.nota,.alerta,.bien,.resumen div{background:#fff;color:#111;border-color:#999}h1,h2,h3,strong,th,code{color:#111}.slide{break-inside:avoid}.cabecera{border-color:#777}}
+</style>
+</head>
+<body>
+<main class="contenedor">
+<h1>Libreto para exponer Django REST + React</h1>
+<p class="subtitulo">Guía independiente de la exposición del Día 1. Sigue las 25 diapositivas de Presentacion Django + React - SECOP II corregida. Incluye qué decir, qué señalar, preguntas y transiciones. No hace falta leerla a los estudiantes; es el apoyo del expositor.</p>
+
+<div class="panel"><strong>Duración sugerida:</strong> 1 hora y 53 minutos en total, según los tiempos de las notas del presentador. Si el grupo necesita más conversación, usa las preguntas y recorta las explicaciones repetidas. La instalación de programas se hace antes de esta exposición.</div>
+
+<nav class="barra">
+<a href="#s1">1–5 · El panorama</a><a href="#s6">6–9 · La API</a><a href="#s10">10–14 · Django</a><a href="#s15">15–18 · React</a><a href="#s19">19–21 · Ruta</a><a href="#s22">22–25 · Cierre</a>
+</nav>
+
+<h2 id="s1">Apertura: entender qué vamos a construir</h2>
+
+<section class="slide" id="slide1">
+<div class="cabecera"><h2>Diapositiva 1 · Full Stack con Django REST y React</h2><span class="tiempo">1 min</span></div>
+<div class="decir">Hola, somos Steven y Yesid. Durante tres días construiremos una plataforma para explorar contratos públicos colombianos de SECOP II. Antes de programar, quiero que entendamos cómo se conectan la pantalla, la API y la base de datos.</div>
+<div class="hacer">Señala los tres bloques: React es la pantalla, Django REST contiene la API y las reglas, PostgreSQL guarda los contratos.</div>
+<div class="pregunta">¿Quién ha trabajado antes con Django, React o una API? Escucha dos o tres respuestas para conocer el punto de partida del grupo.</div>
+<div class="puente">Primero veamos qué información tendrá el panel y qué problema resolverá.</div>
+</section>
+
+<section class="slide" id="slide2">
+<div class="cabecera"><h2>Diapositiva 2 · Lo que construiremos</h2><span class="tiempo">2 min</span></div>
+<div class="decir">El producto del taller es un panel para consultar contratos SECOP II. Podemos buscar un contrato, ver su identificador y revisar su estado. La ilustración muestra la idea general; no es una captura literal de la aplicación terminada.</div>
+<div class="hacer">Señala el buscador, los filtros y las filas. Explica que cada fila representa un contrato y no una tarea. En el repositorio de aprendices la tabla empieza vacía; los estudiantes crean un registro de prueba y en el Mini 11 descargan contratos reales.</div>
+<div class="pregunta">Si cierro el navegador y vuelvo a abrir el panel, ¿dónde deberían seguir estando los contratos?</div>
+<div class="puente">Para responder, distingamos los datos que guarda el navegador de los datos que guarda el servidor.</div>
+</section>
+
+<section class="slide" id="slide3">
+<div class="cabecera"><h2>Diapositiva 3 · Primero, una pregunta</h2><span class="tiempo">2 min</span></div>
+<div class="decir">Piensen unos segundos y elijan A, B o C. No hay que adivinar una palabra técnica; piensen dónde debe vivir un contrato si varias personas necesitan consultarlo.</div>
+<div class="hacer">Lee la pregunta y deja unos 30 segundos para votar. Luego confirma la respuesta C: los contratos se guardan en PostgreSQL del servidor.</div>
+<div class="nota"><strong>Matiz:</strong> el navegador sí guarda el progreso de las misiones en su almacenamiento local. Eso no significa que los contratos estén ahí. Los contratos se guardan en PostgreSQL.</div>
+<div class="puente">Ahora vamos a ponerle nombre a las tres partes de ese recorrido.</div>
+</section>
+
+<section class="slide" id="slide4">
+<div class="cabecera"><h2>Diapositiva 4 · Full Stack: tres capas</h2><span class="tiempo">2 min</span></div>
+<div class="decir">Una aplicación Full Stack conecta tres capas. El frontend es lo que usa la persona. El backend recibe sus solicitudes y aplica las reglas. La base de datos conserva la información para que no se pierda al cerrar la página.</div>
+<div class="hacer">Relaciona cada capa con el proyecto: React y Vite para el frontend; Django y Django REST Framework para el backend; PostgreSQL para la base de datos.</div>
+<div class="pregunta">¿Por qué no dejamos que React se conecte directamente a PostgreSQL? Porque expondríamos credenciales y perderíamos el control central de las reglas.</div>
+<div class="puente">Hace falta una forma acordada para que React le pida información a Django. Esa forma es la API.</div>
+</section>
+
+<section class="slide" id="slide5">
+<div class="cabecera"><h2>Diapositiva 5 · API REST: el mesero</h2><span class="tiempo">3 min</span></div>
+<div class="decir">Pensemos en un restaurante. React es el comensal: pide un dato. La API lleva el pedido a Django. Django consulta PostgreSQL y prepara la respuesta. El cliente no entra directamente a la base, igual que el comensal no entra a la cocina.</div>
+<div class="hacer">Señala las cuatro partes del dibujo y lee el ejemplo real: <code>/api/contratos/</code> es la dirección de la colección de contratos.</div>
+<div class="pregunta">Si pido un contrato que no existe, ¿debería devolverme uno inventado o avisar que no lo encontró? La API debe responder con un estado claro, como HTTP 404.</div>
+<div class="puente">Veamos qué ocurre desde el clic del usuario hasta la respuesta en JSON.</div>
+</section>
+
+<h2 id="s6">La API: viaje de datos, métodos y formato</h2>
+
+<section class="slide" id="slide6">
+<div class="cabecera"><h2>Diapositiva 6 · El viaje de una solicitud</h2><span class="tiempo">3 min</span></div>
+<div class="decir">Sigamos una petición GET a <code>/api/contratos/</code>. React la envía con fetch. Django revisa la ruta y llama a la vista. El ViewSet usa el modelo y el ORM para consultar PostgreSQL. El serializer prepara el JSON. React recibe la respuesta y la muestra.</div>
+<div class="hacer">Recorre los seis pasos de izquierda a derecha y luego de arriba abajo. Si algo falla, revisamos Network en F12 y la terminal de Django para localizar en qué parte se detuvo.</div>
+<div class="pregunta">Si Django encuentra el contrato pero React no lo muestra, ¿qué pasos revisarían antes de tocar la base de datos?</div>
+<div class="puente">La URL identifica el recurso; el método HTTP indica qué queremos hacer con él.</div>
+</section>
+
+<section class="slide" id="slide7">
+<div class="cabecera"><h2>Diapositiva 7 · Los verbos HTTP son CRUD</h2><span class="tiempo">2 min</span></div>
+<div class="decir">GET lee datos. POST envía datos para crear. PUT o PATCH actualizan. DELETE elimina. En Django REST Framework, ModelViewSet ya trae estas acciones para el modelo Contrato.</div>
+<div class="hacer">Relaciona la tabla con los minis. GET se usa para consultar contratos e informes. POST aparece en la validación del Mini 4 y en la descarga masiva del Mini 11. DELETE se protege con confirmación en el Mini 15.</div>
+<div class="nota">PUT y PATCH están disponibles en el ViewSet, pero no son el tema de una misión independiente en este taller. El Mini 13 trata búsqueda, filtro por estado y ordenamiento.</div>
+<div class="puente">Para que dos lenguajes distintos intercambien estos datos, usamos un formato común: JSON.</div>
+</section>
+
+<section class="slide" id="slide8">
+<div class="cabecera"><h2>Diapositiva 8 · JSON, el idioma común</h2><span class="tiempo">2 min</span></div>
+<div class="decir">Django está escrito en Python y React en JavaScript. JSON es texto estructurado que ambos pueden leer. Las llaves rodean un contrato; los corchetes pueden rodear una lista de contratos. Cada clave tiene un valor.</div>
+<div class="hacer">Señala <code>id_contrato</code>, <code>entidad_compradora</code>, <code>valor_total</code> y <code>estado</code>. En este ejemplo, el valor decimal viaja como texto para conservar sus dos decimales. Es una muestra de los campos reales del proyecto.</div>
+<div class="pregunta">¿Cuál de estos datos identifica de manera única el contrato? ¿Qué campo describe su estado?</div>
+<div class="puente">Ahora veamos los puertos donde corren las tres partes del proyecto.</div>
+</section>
+
+<section class="slide" id="slide9">
+<div class="cabecera"><h2>Diapositiva 9 · Nuestro stack completo</h2><span class="tiempo">3 min</span></div>
+<div class="decir">React y Vite muestran la interfaz en el puerto 5173. Django REST Framework atiende la API en el 8000. PostgreSQL es un servicio aparte en el 5432. React y Django se hablan con HTTP y JSON; Django consulta la base.</div>
+<div class="hacer">Señala las flechas y los tres puertos. Aclara que son dos servidores web y un servicio de base de datos, y que por eso tenemos varias terminales.</div>
+<div class="nota"><strong>CORS:</strong> para el navegador, el puerto forma parte del origen. 5173 y 8000 son orígenes distintos. Django debe autorizar el origen del frontend para que React pueda leer la respuesta.</div>
+<div class="puente">Antes de escribir, dejemos el proyecto descargado y los dos servidores preparados.</div>
+</section>
+
+<h2 id="s10">Preparación y backend</h2>
+
+<section class="slide" id="slide10">
+<div class="cabecera"><h2>Diapositiva 10 · Arranque del proyecto</h2><span class="tiempo">5 min</span></div>
+<div class="decir">Esta es la ruta de preparación en Windows. Antes de la sesión, cada persona debe tener Python, Node, PostgreSQL, pgAdmin, Git y VS Code instalados. El repositorio de aprendices es privado; deben tener permiso de GitHub para clonarlo.</div>
+<div class="hacer">Lee los pasos de arriba abajo. El entorno virtual separa las librerías de este backend. requirements.txt las instala. .env guarda las claves locales. migrate aplica las tablas disponibles. runserver inicia Django.</div>
+<table><thead><tr><th>Comando visible</th><th>Qué hace</th></tr></thead><tbody>
+<tr><td><code>git clone ...</code></td><td>Descarga la plantilla privada desde GitHub.</td></tr>
+<tr><td><code>cd proyecto-stack-django</code> y <code>cd Backend</code></td><td>Entra primero al repositorio y luego a la carpeta de Django.</td></tr>
+<tr><td><code>python -m venv venv</code></td><td>Crea el entorno virtual del backend.</td></tr>
+<tr><td><code>Activate.ps1</code></td><td>Activa el entorno virtual en PowerShell.</td></tr>
+<tr><td><code>pip install -r requirements.txt</code></td><td>Instala Django, DRF y los adaptadores de la base.</td></tr>
+<tr><td><code>Copy-Item .env.example .env</code></td><td>Copia la plantilla que se llena con las claves locales.</td></tr>
+<tr><td><code>check</code>, <code>migrate</code> y <code>runserver</code></td><td>Revisan la configuración, aplican migraciones y arrancan Django en el 8000.</td></tr>
+<tr><td><code>cd ...\Frontend</code>, <code>npm install</code>, <code>npm run dev</code></td><td>En otra terminal entran al frontend, instalan sus dependencias y arrancan Vite en el 5173.</td></tr>
+</tbody></table>
+<div class="alerta">El primer migrate crea las tablas internas de Django. La tabla contratos_contrato aparece después de completar el Mini 2. Antes de iniciar, la base taller_django_react debe existir en pgAdmin y Backend/.env debe estar completo.</div>
+<div class="puente">Con los servidores listos, diseñamos el modelo que Django guardará en PostgreSQL.</div>
+</section>
+
+<section class="slide" id="slide11">
+<div class="cabecera"><h2>Diapositiva 11 · Modelo, ORM y migraciones</h2><span class="tiempo">15 min</span></div>
+<div class="decir">Un modelo es una clase Python que describe una tabla. Cada campo es una columna. El ORM traduce operaciones de Python a consultas SQL. Una migración guarda y aplica cambios en la estructura de PostgreSQL.</div>
+<div class="hacer">Pregunta qué datos necesita un contrato y luego señala los campos: ID, entidad, descripción, valor, estado y fecha de firma. Explica que el identificador es único.</div>
+<div class="nota">El código visible usa la forma corta de algunos argumentos para que el ejemplo quepa. En el proyecto escribimos sus nombres completos, como <code>max_length=60</code> y <code>decimal_places=2</code>. Agregamos también <code>Meta.ordering</code> y <code>__str__</code> al completar el modelo.</div>
+<div class="hacer">Explica el flujo inferior: el modelo cambia, makemigrations genera el archivo de migración y migrate lo aplica. No digas que makemigrations crea la tabla.</div>
+<div class="comando"><code>python manage.py makemigrations contratos</code><p>Detecta el nuevo modelo y genera el archivo de migración.</p></div>
+<div class="comando"><code>python manage.py migrate</code><p>Ejecuta la migración en PostgreSQL y crea contratos_contrato.</p></div>
+<div class="pregunta">¿Qué error aparecería si intentamos consultar Contrato antes de aplicar la migración?</div>
+<div class="puente">Cuando la tabla existe, podemos administrarla desde el panel que Django ya trae.</div>
+</section>
+
+<section class="slide" id="slide12">
+<div class="cabecera"><h2>Diapositiva 12 · Django Admin: gestionar contratos</h2><span class="tiempo">12 min</span></div>
+<div class="decir">Django Admin es una interfaz que se genera a partir de los modelos. No tenemos que construir una pantalla CRUD desde cero para crear o revisar registros. Registramos Contrato y configuramos columnas, búsqueda y filtros.</div>
+<div class="hacer">Señala las columnas ID contrato y Estado, y el botón para añadir. Explica que el ejemplo representa contratos SECOP; la base de cada aprendiz empieza vacía.</div>
+<div class="pregunta">Al pulsar Guardar, Django valida el formulario y crea una fila en contratos_contrato. ¿Cuál de estos datos necesita ser único?</div>
+<div class="puente">El Admin ya puede gestionar el modelo. La API necesita además un traductor entre Python y JSON.</div>
+</section>
+
+<section class="slide" id="slide13">
+<div class="cabecera"><h2>Diapositiva 13 · Serializer: el traductor</h2><span class="tiempo">12 min</span></div>
+<div class="decir">El objeto Contrato está en Python, pero React recibe JSON. El serializer traduce la respuesta y valida los datos que llegan para crear un contrato. ModelSerializer genera los campos usando el modelo.</div>
+<div class="hacer">Señala model y fields. Después explica extra_kwargs: cambia la regla del campo valor_total sin volver a declarar el serializer completo. min_value cero impide contratos con valor negativo.</div>
+<div class="pregunta">Si el navegador envía valor_total como texto que no es un número o envía un valor negativo, ¿qué respuesta esperamos? HTTP 400 con el error de validación.</div>
+<div class="nota">Si el panel no puede llamar al endpoint por CORS, la configuración se completa en el Mini 9. Después se repite la prueba del serializer.</div>
+<div class="puente">Ya tenemos el modelo y su traductor. Ahora conectamos una dirección con las acciones de la API.</div>
+</section>
+
+<section class="slide" id="slide14">
+<div class="cabecera"><h2>Diapositiva 14 · Vistas y rutas</h2><span class="tiempo">15 min</span></div>
+<div class="decir">ContratoViewSet hereda de ModelViewSet y obtiene las acciones CRUD. queryset define con qué contratos trabaja. serializer_class define cómo los convierte y valida. DefaultRouter genera las direcciones para la colección y los registros individuales.</div>
+<div class="hacer">Sigue el prefijo en tres partes: config/urls.py incluye contratos.urls bajo api/. El router registra contratos. Juntas forman /api/contratos/.</div>
+<div class="comando"><code>GET /api/contratos/</code><p>Consulta la colección y debe responder HTTP 200.</p></div>
+<div class="comando"><code>GET /api/contratos/999999/</code><p>Consulta un registro que no existe y debe responder HTTP 404.</p></div>
+<div class="nota">La ruta directa se puede probar en el navegador. El panel React puede necesitar que completemos CORS en el Mini 9 antes de leer la respuesta.</div>
+<div class="puente">Con el backend en su lugar, pasamos a los componentes que muestran los datos en React.</div>
+</section>
+
+<h2 id="s15">React y la conexión con Django</h2>
+
+<section class="slide" id="slide15">
+<div class="cabecera"><h2>Diapositiva 15 · React: componentes y JSX</h2><span class="tiempo">3 min</span></div>
+<div class="decir">React construye una interfaz con componentes: funciones que devuelven una parte visual. JSX permite escribir etiquetas parecidas a HTML dentro de JavaScript. Vite sirve este frontend durante el desarrollo y lo actualiza al guardar.</div>
+<div class="hacer">Señala el árbol de componentes: el panel contiene un buscador y una lista; la lista contiene elementos de contrato. En Mini 6, Camaleon.jsx debe mostrar un h1 con la clase titulo-gigante y un nombre.</div>
+<div class="pregunta">¿Qué parte de esta pantalla podríamos cambiar sin rehacer las otras? Cada componente encapsula una pieza de la interfaz.</div>
+<div class="puente">React también debe recordar los datos que cambian mientras usamos la pantalla.</div>
+</section>
+
+<section class="slide" id="slide16">
+<div class="cabecera"><h2>Diapositiva 16 · Estado: la memoria de React</h2><span class="tiempo">3 min</span></div>
+<div class="decir">Una variable normal puede cambiar sin que React se entere; por eso la pantalla no necesariamente se actualiza. useState guarda el dato y devuelve una función que lo cambia. Cuando usamos esa función, React vuelve a dibujar el componente.</div>
+<div class="hacer">Explica el contador del Mini 7: cuenta inicia en cero, setCuenta suma uno. data-cuenta y data-aumentar son atributos que el verificador usa para localizar el número y el botón.</div>
+<div class="pregunta">¿Qué debería aparecer después de pulsar una vez? El valor inicial más uno.</div>
+<div class="puente">Ya sabemos guardar y actualizar estado. Ahora hacemos una petición a Django.</div>
+</section>
+
+<section class="slide" id="slide17">
+<div class="cabecera"><h2>Diapositiva 17 · CORS: el portero del navegador</h2><span class="tiempo">5 min</span></div>
+<div class="decir">React está en el puerto 5173 y Django en el 8000. Para el navegador eso significa orígenes distintos. CORS es la regla de seguridad que le permite a Django decir qué origen puede leer sus respuestas.</div>
+<div class="hacer">Recorre las tres piezas de settings.py: corsheaders en INSTALLED_APPS, CorsMiddleware antes de CommonMiddleware y los dos orígenes locales exactos. La librería ya está en requirements.txt; el reto es configurarla.</div>
+<div class="pregunta">¿Quién bloquea la lectura de la respuesta, Django o el navegador? El navegador, si la respuesta no incluye el permiso esperado.</div>
+<div class="nota">Después de cambiar settings.py, reinicia runserver. En F12, pestaña Network, observa OPTIONS y luego GET.</div>
+<div class="puente">Con CORS configurado, React puede leer el resultado del fetch y renderizar la lista.</div>
+</section>
+
+<section class="slide" id="slide18">
+<div class="cabecera"><h2>Diapositiva 18 · Conectar React con Django</h2><span class="tiempo">5 min</span></div>
+<div class="decir">El Mini 8 hace el primer fetch GET a /api/contratos/. En la plantilla, podemos ver el bloqueo de CORS antes de configurar el Mini 9. Después de abrir el permiso, repetimos la consulta. En Mini 10 usamos map para mostrar cada contrato.</div>
+<div class="hacer">Señala API_URL y el uso de id_contrato como key. El servidor puede devolver una lista directa o un objeto paginado con results; el código contempla ambos casos.</div>
+<div class="nota">En Network revisa URL, método, código HTTP y JSON. Si la respuesta llegó a Django pero el navegador dice CORS, vuelve al Mini 9; no cambies la URL al azar.</div>
+<div class="puente">Conectada la interfaz, el Día 3 usa datos reales para practicar carga y análisis.</div>
+</section>
+
+<h2 id="s19">SECOP II: carga y análisis de datos</h2>
+
+<section class="slide" id="slide19">
+<div class="cabecera"><h2>Diapositiva 19 · Día 3: contratos SECOP II a escala</h2><span class="tiempo">4 min</span></div>
+<div class="decir">El último día trabajaremos con contratos reales. Descargaremos una cantidad controlada desde el dataset SECOP II, calcularemos estadísticas, buscaremos y filtraremos resultados, paginaremos la respuesta y practicaremos una limpieza protegida.</div>
+<div class="hacer">Recorre las cinco tarjetas en orden. Mini 11 carga con bulk_create; Mini 12 calcula métricas y muestra la gráfica; Mini 13 busca, filtra y ordena; Mini 14 pagina; Mini 15 exige confirmar antes de borrar.</div>
+<div class="nota"><strong>Fuente:</strong> dataset jbjy-vk9h de datos.gov.co, Agencia Nacional de Contratación Pública — Colombia Compra Eficiente. Conserva la atribución y la licencia CC BY-SA 4.0.</div>
+<div class="alerta">Mini 15 borra todos los contratos de la base local. Úsalo solo con la base del taller, nunca contra una base de producción.</div>
+<div class="puente">Veamos cómo se reparten estas misiones durante las tres sesiones.</div>
+</section>
+
+<section class="slide" id="slide20">
+<div class="cabecera"><h2>Diapositiva 20 · Ruta de los tres días</h2><span class="tiempo">2 min</span></div>
+<div class="decir">El Día 1 construye la base y la API. El Día 2 crea los componentes React y los conecta con Django. El Día 3 descarga y analiza los contratos SECOP II. Cada día ocupa seis horas; entre los tres suman dieciocho horas.</div>
+<div class="hacer">Señala el resultado de cada tarjeta: modelo y API listos; React mostrando contratos; datos SECOP consultables y analizados.</div>
+<div class="pregunta">¿Qué pieza del primer día creen que hará falta cuando lleguemos a la gráfica del Día 3?</div>
+<div class="puente">Esta es la lista exacta de las quince misiones.</div>
+</section>
+
+<section class="slide" id="slide21">
+<div class="cabecera"><h2>Diapositiva 21 · Los quince minis del taller</h2><span class="tiempo">3 min</span></div>
+<div class="decir">Este es el mapa completo. Día 1: Bóveda, Arquitecto, Jefe Maestro, Escudo y Velocista. Día 2: Camaleón, Contador, Primer fetch, Portero CORS y Listado React. Día 3: Avalancha SECOP, Analista, Búsqueda avanzada, Paginación y Limpieza segura.</div>
+<div class="hacer">Lee los nombres por día y destaca que cada reto se apoya en lo anterior. El Panel comprueba automáticamente las respuestas, peticiones o resultados visibles.</div>
+<div class="pregunta">¿Cuál les parece más desafiante: conectar el navegador con Django o trabajar con miles de contratos?</div>
+<div class="puente">En cada misión repetiremos el mismo ciclo para no perdernos.</div>
+</section>
+
+<h2 id="s22">Cómo aprender y empezar</h2>
+
+<section class="slide" id="slide22">
+<div class="cabecera"><h2>Diapositiva 22 · Cómo aprenderemos cada tema</h2><span class="tiempo">2 min</span></div>
+<div class="decir">Primero presentamos un problema del panel, hacemos una pregunta, explicamos el concepto y construimos la solución. Después el panel verifica el resultado y conversamos sobre cualquier error.</div>
+<div class="hacer">Señala los cinco pasos y subraya que la verificación no sustituye la explicación. Cada persona debe poder contar qué cambió y qué resultado observó.</div>
+<div class="pregunta">Cuando aparezca un error, ¿qué tres lugares podemos revisar? La consola, Network y la terminal de Django.</div>
+<div class="puente">Las misiones son una práctica; estas reglas nos ayudan a aprender en equipo.</div>
+</section>
+
+<section class="slide" id="slide23">
+<div class="cabecera"><h2>Diapositiva 23 · Las reglas del juego</h2><span class="tiempo">2 min</span></div>
+<div class="decir">Reconocemos el esfuerzo, pero terminar primero no basta: también hay que explicar qué se hizo y por qué funciona. El panel aprueba una misión cuando pasa su verificación automática. Los instructores orientamos con preguntas y pistas, no con soluciones para copiar.</div>
+<div class="hacer">Aclara que no hay una misión final de diseño adicional. La misión 15 es El Limpiador y consiste en proteger el borrado con confirmación.</div>
+<div class="pregunta">¿Qué vale más: pegar código que funciona o poder explicar cómo lo construiste?</div>
+<div class="puente">Antes de entrar a la práctica, revisemos que los equipos tengan las herramientas correctas.</div>
+</section>
+
+<section class="slide" id="slide24">
+<div class="cabecera"><h2>Diapositiva 24 · Antes de empezar</h2><span class="tiempo">2 min</span></div>
+<div class="decir">Necesitan Python 3.14, Node con npm, Git, PostgreSQL 18 con pgAdmin, VS Code y un navegador con F12. El repositorio es privado, así que cada estudiante necesita permiso de acceso antes de clonarlo.</div>
+<div class="hacer">Abre F12 y muestra Console y Network. Console enseña errores del navegador; Network muestra la petición, su método, el estado HTTP y la respuesta. Para errores del backend también miramos la terminal de Django.</div>
+<div class="alerta">Antes de la clase, instala los programas, crea la base taller_django_react y completa Backend/.env. Nunca subas .env ni compartas la contraseña.</div>
+<div class="puente">Con las herramientas listas, repasemos cómo una petición conecta el backend y el frontend.</div>
+</section>
+
+<section class="slide" id="slide25">
+<div class="cabecera"><h2>Diapositiva 25 · Todo conectado</h2><span class="tiempo">3 min</span></div>
+<div class="decir">El modelo define qué datos hay. El serializer valida esos datos y los convierte a JSON. La vista decide qué hacer. La ruta indica dónde atender la petición. React usa fetch, guarda la respuesta en su estado y muestra los contratos.</div>
+<div class="hacer">Recorre las flechas de backend y frontend. Enfatiza que el JSON es el puente entre Django y React.</div>
+<div class="pregunta">Cuando React pide /api/contratos/, ¿qué pasa desde el navegador hasta PostgreSQL y de vuelta?</div>
+<div class="bien">Respuesta que esperamos: fetch hace la petición GET, Django resuelve la ruta, el ViewSet consulta el modelo mediante el ORM, el serializer produce JSON, la respuesta vuelve a React y el panel muestra los datos.</div>
+<div class="decir">Si pueden explicar ese recorrido con sus propias palabras, ya tienen el mapa del taller. Ahora sí, empezamos la práctica.</div>
+</section>
+
+<footer class="pie">Libreto basado en la presentación corregida Presentacion Django + React - SECOP II. Úsalo como apoyo del expositor; el guion no reemplaza las prácticas de cada misión.</footer>
+</main>
+</body>
+</html>

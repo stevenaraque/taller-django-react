@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Día 2 | Libreto de React y CORS</title>
+<style>
+:root{--fondo:#0b1220;--tarjeta:#17243a;--borde:#31435d;--texto:#e8eef7;--suave:#aab8ca;--azul:#62c7f4;--naranja:#f4a86b;--verde:#47d7a0;--amarillo:#ffd36a;--rojo:#ff8f8f;--violeta:#b79cff;--codigo:#07101d}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--fondo);color:var(--texto);font:16px/1.65 "Segoe UI",Arial,sans-serif}
+.contenedor{max-width:1040px;margin:auto;padding:30px 22px 80px}
+h1{font-size:clamp(1.8rem,4.5vw,2.6rem);line-height:1.2;color:var(--azul);margin:0 0 12px}
+h2{font-size:1.5rem;color:var(--azul);margin:46px 0 14px;border-bottom:1px solid var(--borde);padding-bottom:9px}
+h3{font-size:1.15rem;color:var(--amarillo);margin:24px 0 8px}
+h4{font-size:1rem;color:var(--verde);margin:16px 0 6px}
+p{margin:8px 0}
+a{color:var(--azul)}
+strong{color:#fff}
+code{font:.93em Consolas,monospace;color:#ffe49a;background:var(--codigo);padding:2px 5px;border-radius:4px}
+.barra{position:sticky;top:0;z-index:4;background:#0b1220f2;border-bottom:1px solid var(--borde);padding:10px 0;display:flex;flex-wrap:wrap;gap:8px 14px}
+.barra a{text-decoration:none;font-size:.9rem}
+.bloque,.hora,.nota,.alerta,.correcto,.comando,.ruta{border:1px solid var(--borde);border-radius:10px;padding:15px 18px;margin:12px 0;background:var(--tarjeta)}
+.hora{margin:36px 0 14px;background:linear-gradient(110deg,#163555,#111c2e);border-left:6px solid var(--azul)}
+.hora h2{margin:0;border:0;padding:0}
+.hora p{color:var(--suave);margin-bottom:0}
+.nota{border-left:4px solid var(--azul)}
+.alerta{border-left:4px solid var(--rojo);background:#2b1a20}
+.correcto{border-left:4px solid var(--verde);background:#10251f}
+.comando{background:var(--codigo);border-color:#275943}
+.comando code{display:block;font-size:.97rem;color:#8df0bd;overflow-wrap:anywhere;white-space:pre}
+.comando p{font-size:.93rem;margin:7px 0 0;color:var(--suave)}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.9rem}
+th,td{border:1px solid var(--borde);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:#1b2c45;color:#cfe3f5}
+table code{white-space:pre-wrap;overflow-wrap:anywhere}
+.guion{border:1px solid var(--verde);border-left:6px solid var(--verde);border-radius:10px;padding:14px 18px;margin:14px 0;background:#10251f}
+.explica{border:1px solid var(--azul);border-left:6px solid var(--azul);border-radius:10px;padding:14px 18px;margin:14px 0;background:#13203a}
+.guion::before,.explica::before{display:block;font-weight:700;font-size:.85rem;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+.guion::before{content:"Guion · se va explicando: ";color:var(--verde)}
+.explica::before{content:"Explicación en palabras simples (lo que acabas de decir): ";color:var(--azul)}
+.guion p{margin:9px 0;font-size:1.03rem}
+.explica p{margin:9px 0;color:#d7e2ef}
+.fondo{border:1px solid var(--violeta);border-left:6px solid var(--violeta);border-radius:10px;padding:14px 18px;margin:14px 0;background:#1d1838}
+.fondo::before{content:"Explicación a fondo · la maquinaria por dentro (para leer, no se dice en voz alta)";display:block;font-weight:700;font-size:.85rem;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;color:var(--violeta)}
+.fondo p{margin:9px 0;color:#dcd6f2}
+.paso{border:1px solid var(--borde);border-left:6px solid var(--verde);border-radius:10px;padding:13px 17px;margin:14px 0;background:var(--tarjeta)}
+.paso h4{margin:2px 0 10px;color:var(--verde)}
+.donde{color:var(--suave);font-size:.95rem;border:1px dashed var(--azul);border-radius:8px;padding:9px 12px;background:#0d1a2b}
+.donde strong{color:var(--azul)}
+.hablas{border-left:4px solid var(--naranja);border-radius:8px;padding:11px 14px;margin-top:10px;background:#2b1f14}
+.hablas strong{color:var(--naranja)}
+.hablas p{margin:7px 0}
+.tag{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.78rem;font-weight:700;margin-right:8px;vertical-align:middle}
+.tag-steven{background:#10395a;color:#9fd8ff}
+.tag-yesid{background:#5a3a17;color:#ffd0a6}
+.flecha{font-size:2rem;color:var(--suave);padding:0 10px}
+.flujo{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;text-align:center;gap:6px;margin:14px 0}
+.caja{flex:1;min-width:130px;border:1px solid var(--borde);border-radius:10px;padding:11px;background:#111c2e;font-size:.92rem}
+.relevo{border:1px dashed var(--naranja);border-radius:10px;padding:11px 15px;margin:14px 0;background:#2b1f14}
+.relevo::before{content:"Turno: aquí termina el actual y sigue el otro instructor. ";color:var(--naranja);font-weight:700}
+@media(max-width:640px){.flujo{flex-direction:column}.flecha{transform:rotate(90deg)}}
+</style>
+</head>
+<body>
+<main class="contenedor">
+
+<h1>Día 2: evaluamos la tarea y conectamos React con Django</h1>
+<p class="bloque" style="border-left:5px solid var(--azul)"><strong>Cómo usar este guion:</strong> los turnos están <strong>intercalados</strong>: alternan <span class="tag tag-steven">Steven</span> y <span class="tag tag-yesid">Yesid</span> a lo largo de toda la mañana. Cada tema lleva tres piezas: el <strong>Guion</strong> que dices en voz alta, debajo la <strong>Explicación en palabras simples</strong> y, en violeta, la <strong>Explicación a fondo</strong>, que es lectura tuya para responder las preguntas profundas. Los minis que escriben código traen la <strong>Escritura paso a paso</strong>: cada paso dice dónde estás parado, qué escribes exactamente y qué dices mientras lo escribes, con la explicación de cada línea integrada en ese mismo paso. NO se repite nada por separado: escribes, lees lo que dices, y así avanzas.</p>
+
+<nav class="barra">
+<a href="#introduccion">1 · Introducción (S)</a><a href="#eval6">2 · Evaluación Mini 6 (Y)</a><a href="#lecc6">3 · Mini 6 línea por línea (S)</a><a href="#mini7">4 · Mini 7 (Y)</a><a href="#mini8">5 · Mini 8 (S)</a><a href="#mini9">6 · Mini 9 (Y)</a><a href="#mini10">7 · Mini 10 (S)</a><a href="#cierre">8 · Cierre (ambos)</a>
+</nav>
+
+<section id="introduccion">
+<div class="hora"><h2>Turno 1 · 6:00 a 6:20 — <span class="tag tag-steven">Steven</span>: introducción del día</h2><p>Se explica: qué hicimos ayer, qué haremos hoy y cómo se juega el día.</p></div>
+
+<div class="guion">
+<p>«Buenos días. Hoy teníamos una tarea de casa: el Mini 6. Arrancamos evaluándola uno por uno, y el resto aprovecha para encender sus dos terminales. Después seguimos al resto de la misión del día.</p>
+<p>Miren el mapa: ayer construimos la bodega. Django guarda los contratos en PostgreSQL y los entrega por una API en la dirección 127.0.0.1:8000. Hoy construimos la vitrina: React es la parte que la persona ve en el navegador, en el puerto 5173. Y entre bodega y vitrina hay una regla de seguridad del navegador que solo se abre con permiso: CORS. Por eso el día se llama "El Portero": hoy escribimos los componentes, pedimos los datos por primera vez con fetch, abrimos el permiso con CORS, y terminamos pintando los contratos reales en pantalla.»</p>
+</div>
+<div class="explica">
+<p><strong>Traducción de ese guion:</strong> "bodega" significa el backend (lo que guarda y entrega datos: Django + PostgreSQL). "Vitrina" significa el frontend (lo que la persona ve: React). Son dos programas separados en dos puertos distintos: 8000 y 5173, por eso en clase corresponden a las dos terminales. Si alguien pregunta puertos: un puerto es como un número de oficina dentro del mismo edificio (el computador); cada servidor escucha en el suyo. "CORS" se anuncia aquí pero NO se explica todavía: se explica en el Mini 9. En este punto basta con decir «una regla de seguridad del navegador; la abrimos con permiso más adelante».</p>
+<p><strong>Comandos para proyectar mientras hablas</strong> (columna de la izquierda): <code>python manage.py runserver</code> en la carpeta Backend (enciende Django, el 8000) y <code>npm run dev</code> en la carpeta Frontend (enciende React, el 5173). El entorno virtual ya se creó el Día 1: hoy solo se activa.</p>
+</div>
+<div class="fondo">
+<p><strong>Por qué exactamente 8000 y 5173:</strong> son los números de fábrica de cada herramienta. Al arrancar, <code>python manage.py runserver</code> toma el 8000 si nadie lo cambia; Vite (el servidor de desarrollo de React) toma el 5173. No hay nada mágico en los números: podrían configurarse otros. Se usan los de fábrica para que el taller funcione igual en los computadores de toda la sala, sin pelear con configuraciones.</p>
+<p><strong>Cómo se entiende un puerto:</strong> el computador tiene una sola dirección local (127.0.0.1) pero ejecuta varios programas que "atienden" a la vez. El puerto es el número de despacho: el sistema operativo le entrega a Django lo que llega al 8000 y a Vite lo que llega al 5173. Dos programas en la misma máquina, cero conflicto.</p>
+<p><strong>Cómo se conectan Django y React (la pregunta del día):</strong> los dos programas NO se hablan directamente. React corre DENTRO del navegador; cuando su código ejecuta <code>fetch</code>, es el navegador el que sale de la página (que vive en el 5173) y toca la puerta del 8000. Django responde, el navegador recibe la respuesta, y solo si está de acuerdo la entrega al código de React. Por eso el permiso es asunto del navegador, no de Django ni de React: esa regla es CORS y por eso el día se llama "El Portero".</p>
+<p><strong>Detalle de <code>127.0.0.1</code>:</strong> es la dirección de retorno (loopback): significa "esta misma máquina". Una petición hacia 127.0.0.1 nunca sale a internet ni a la red del colegio: gira por dentro del propio equipo. Por eso el taller funciona sin internet: base de datos, backend y frontend viven en la misma máquina y se hablan por dentro.</p>
+</div>
+<div class="alerta">Checa en cada equipo antes de evaluar: la copia debe estar actualizada. <code>Camaleon.jsx</code> debe llegar con <code>return null</code>. Quien traiga la plantilla vieja (con <code>EtiquetaSecop</code> ya escrito) debe hacer <code>git stash push</code> + <code>git pull origin main</code>. A todos: NO restaurar el stash con <code>git stash pop</code>.</div>
+</section>
+
+<section id="eval6">
+<div class="hora"><h2>Turno 2 · 6:20 a 7:00 — <span class="tag tag-yesid">Yesid</span>: evaluación de la tarea del Mini 6</h2><p>Se explica: qué se pedía en la tarea y cómo se revisa casa por casa.</p></div>
+
+<div class="guion">
+<p><em>(Se explica: los entregables de la tarea)</em> «La tarea del Mini 6 pedía una tarjeta con DOS piezas en Camaleon.jsx: un componente pequeño llamado EtiquetaSecop que muestra la etiqueta SECOP II, y el componente principal Camaleon, que dibuja una section y DENTRO usa a EtiquetaSecop. Ese "un componente dentro de otro" era el corazón del deber: por eso el panel aprobado no basta solo.»</p>
+<p><em>(Se explica: el proceso de revisión)</em> «La revisión tiene dos pasos. Primero abrimos el código y verificamos que existe el componente propio y que Camaleon lo usa. Después pulsamos Verificar el componente en el panel, delante de mí, en cada máquina. Y de paso, tres preguntas orales: ¿qué devuelve EtiquetaSecop?, ¿por qué className y no class?, ¿qué pasa si borras EtiquetaSecop de la sección?»</p>
+</div>
+<div class="explica">
+<p><strong>Traducción:</strong> "El panel aprobado no basta" significa que el panel solo mira la pantalla: si alguien hubiera escrito el span directo sin crear el componente, la pantalla queda idéntica y el panel aprobaría igual. La revisión a mano del archivo es la única manera de saber si hicieron lo que se pidió. Las tres preguntas orales son de comprensión, no de memoria: la respuesta correcta primera es «un span con SECOP II, mediante un return»; la segunda es «JSX vive dentro de JavaScript y class ya es palabra reservada de ese lenguaje»; la tercera es «desaparece la etiqueta en pantalla, porque la pinta ese componente».</p>
+<p><strong>Rúbrica rápida (10 puntos):</strong> EtiquetaSecop con su span = 3. Usarlo dentro de la section = 3. h1 con className="titulo-gigante" y título propio = 2. Párrafo con palabras propias = 1. No haber tocado Mini6_Camaleon.jsx = 1. Tres descripciones idénticas en la sala = sospecha de copia: pregunta qué significa cada frase.</p>
+</div>
+<div class="fondo">
+<p><strong>Cómo verifica el panel, por dentro:</strong> los verificadores de hoy (Mini 6, 7, 9 y 10) no leen tu archivo .jsx: leen el DOM, el dibujo final que quedó en el navegador después de ejecutar tu código. Por eso dos códigos distintos pueden aprobar el mismo mini: si el dibujo final coincide con lo esperado, aprueba. Y por eso el panel NO puede distinguir entre la composición pedida y un span escrito directo: los dos pintan exactamente lo mismo. La lectura manual del archivo (la que hace Yesid en este turno) es el único juez del CÓMO, y por eso vale la mitad de la nota.</p>
+<p><strong>Qué es el DOM:</strong> cuando el navegador carga una página, convierte el HTML en un árbol de nodos en memoria (uno por etiqueta). La pantalla no muestra el código: muestra el árbol. Las herramientas de desarrollador y el juez del panel leen el árbol, no el código: siempre se mira el RESULTADO, nunca la fuente. Conocer esta regla evita el malentendido de "pero si mi código está bien": el panel no puede opinar de tu código, solo de lo que quedó pintado.</p>
+</div>
+
+<table><thead><tr><th>Si no la trae…</th><th>Qué haces</th></tr></thead>
+<tbody>
+<tr><td>No actualizó el proyecto</td><td>Stash + pull supervisado: 5 minutos, antes de calificar</td></tr>
+<tr><td>No la hizo</td><td>10 minutos en clase con UNA pista; no se muestra el código</td></tr>
+<tr><td>La copió de otra sala</td><td>Se hace de nuevo, con integración oral al final</td></tr>
+</tbody></table>
+
+<div class="nota"><strong>Solo Yesid:</strong> mientras evalúas uno a uno, los demás quedan con trabajo corto: estudiar las tres preguntas de la evaluación y tener sus respuestas listas, porque la oral pasa cuando les toque. Anota por lado quién aprobó y quién queda pendiente, para el cierre.</div>
+<div class="relevo">Yesid termina: «Pasamos a la lección del Mini 6: qué significaba cada línea». Ahora entra Steven.</div>
+</section>
+
+<section id="lecc6">
+<div class="hora"><h2>Turno 3 · 7:00 a 7:45 — <span class="tag tag-steven">Steven</span>: Mini 6, la solución línea por línea</h2><p>Se explica: qué es un componente, qué es JSX y por qué cada línea del archivo está donde está.</p></div>
+
+<h3>Escritura paso a paso con lo que dices</h3>
+
+<div class="paso">
+<h4>Paso 1. Abrir el archivo</h4>
+<p class="donde"><strong>Dónde:</strong> VS Code con la carpeta proyecto-stack-django. Explorador lateral: Frontend, src, features, misiones, dia2. Abre Camaleon.jsx.</p>
+<div class="hablas"><strong>Dices:</strong>
+<p>El Mini 6 se resuelve en un solo archivo y lo vamos a encontrar caminando carpeta por carpeta. Frontend, src, features, misiones, dia2. Ahí abre Camaleon.jsx. Miren lo que tiene adentro: un solo return null. Eso significa que hoy dibuja nada. Lo llenamos nosotros.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 2. Escribir el componente pequeño</h4>
+<p class="donde"><strong>Dónde:</strong> en Camaleon.jsx, reemplaza el return null por estas líneas.</p>
+<div class="comando"><code>function EtiquetaSecop() {
+  return &lt;span&gt;SECOP II&lt;/span&gt;
+}</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>Empezamos por la pieza chica. Escribimos function EtiquetaSecop. Es una función normal de JavaScript. El nombre arranca con mayúscula y eso no es por gusto: React solo interpreta como componente a lo que empieza en mayúscula. Si lo escribimos en minúscula, lo tomaría por una etiqueta HTML con ese nombre y fallaría.</p>
+<p>Debajo viene el return, y lo que devuelve es un span con el texto SECOP II. Todo lo que una función componente devuelve con return es lo que se ve en pantalla. Cerramos con la llave. Yo siempre reviso los cierres primero cuando algo no compila.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 3. Escribir el componente principal</h4>
+<p class="donde"><strong>Dónde:</strong> en el mismo archivo, debajo del componente anterior.</p>
+<div class="comando"><code>export default function Camaleon() {
+  return (
+    &lt;section&gt;
+      &lt;EtiquetaSecop /&gt;
+      &lt;h1 className="titulo-gigante"&gt;Contratos públicos de Colombia&lt;/h1&gt;
+      &lt;p&gt;Explora quién compra, cuánto paga y en qué estado va cada proceso.&lt;/p&gt;
+    &lt;/section&gt;
+  )
+}</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>Ahora el componente principal. export default es la puerta por donde el juez del panel trae este componente para probarlo. Sin esa palabra el archivo existe pero el mini no carga. El nombre function Camaleon es el nombre exacto que el juez busca.</p>
+<p>El return va con paréntesis para que el JSX de varias líneas quepa completo sin romperse.</p>
+<p>La section es el elemento raíz. Un componente devuelve una sola etiqueta que contenga todo lo demás, y aquí esa etiqueta es la section.</p>
+<p>Y esta es la línea del corazón de la tarea: EtiquetaSecop con la barra al final. Con esa única línea estamos usando el componente que acabamos de escribir arriba. Eso se llama composición: construir una pieza una vez y usarla donde haga falta. Si mañana el texto de la etiqueta cambia, se cambia en un solo lugar y no en diez.</p>
+<p>El h1 lleva className y no class, porque JSX es JavaScript y class ya significa otra cosa en ese lenguaje. El título del ejemplo es Contratos públicos de Colombia y está aquí solo de muestra: cada aprendiz escribe el suyo con sus palabras. Con el párrafo igual: la descripción de ustedes, no la copiada.</p>
+<p>Cerramos todo en orden: section, paréntesis, función.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 4. Guardar y verificar</h4>
+<div class="hablas"><strong>Dices:</strong>
+<p>Guardamos el archivo. Vamos al panel, Día 2, Mini 6, y pulsamos Verificar el componente. Si no aprueba revisamos dos cosas: que el componente principal se llame Camaleon exactamente así con C mayúscula, y que ningún cierre de section, de paréntesis o de llave haya quedado abierto.</p>
+</div>
+</div>
+
+<div class="guion">
+<p><em>(Se explica: por qué componer y no copiar)</em> «Escuchen la pregunta de siempre: ¿por qué no escribir el span directo? Porque si esa etiqueta hiciera falta en 10 sitios de la app, copiaría el mismo HTML 10 veces. Con el componente, cada sitio es UNA línea: y si mañana cambia el texto de la etiqueta, cambio UN solo lugar. Eso hicimos hoy: escribir una pieza una vez y usarla donde sea.»</p>
+</div>
+<div class="explica">
+<p><strong>Traducción:</strong> este párrafo es la justificación práctica de la tarea. "Componer" es armar interfaces poniendo piezas pequeñas dentro de piezas grandes. La analogía del taller directo a la sala: LEGO. Si un aprendiz insiste en que con copiar "funciona igual", concede: funciona igual HOY, y falla cuando crezca la app. Ese es todo el argumento.</p>
+<p><strong>Los dos conceptos de toda la sesión del Mini 6, para quedar sólidos:</strong> 1) Un componente es una función JavaScript que devuelve lo que se ve (JSX). 2) La composición (un componente usado dentro de otro) es lo que hace React distinto de escribir HTML: piezas que se reutilizan.</p>
+</div>
+<div class="fondo">
+<p><strong>El navegador no entiende JSX:</strong> escribir etiquetas dentro de una función de JavaScript no es JavaScript puro: es una extensión. Antes de que el navegador ejecute el archivo, Vite lo traduce: cada etiqueta se convierte en llamadas a funciones de React. <code>&lt;EtiquetaSecop /&gt;</code> significa "ejecuta la función EtiquetaSecop y su resultado queda anidado aquí". Por eso la mayúscula es gramática, no gusto: en minúscula, React lo interpretaría como una etiqueta HTML con ese nombre (que no existe en ningún estándar) y la pantalla quedaría en blanco o explotaría con error.</p>
+<p><strong>Para qué sirve <code>export default</code>:</strong> cada archivo es un módulo: una habitación con la puerta cerrada. Lo que declares dentro no existe fuera del archivo. <code>export default</code> define qué atraviesa la puerta. El juez del panel hace <code>import Camaleon from '...'</code>: si Camaleon no está exportado, no llega nada y el mini no arranca.</p>
+<p><strong>Describir vs mandar a mano:</strong> sin React, para cambiar la pantalla hay que agarrar el DOM a mano (crear nodos, insertarlos, quitarlos). Con React, tú describes CÓMO debe verse la pantalla según los datos, y React hace el trabajo: mantiene una copia virtual del dibujo, la compara con la anterior y toca en el DOM real SOLAMENTE lo que cambió. Con la tarjeta estática de hoy no se nota; con el contador del Mini 7 sí, porque cada clic repinta y esa comparación es lo que mantiene React rápido.</p>
+</div>
+<div class="relevo">Termina Steven con el Mini 6 explicado. Entra Yesid con el Mini 7.</div>
+</section>
+
+<section id="mini7">
+<div class="hora"><h2>Turno 4 · 7:45 a 8:45 — <span class="tag tag-yesid">Yesid</span>: Mini 7, El Albañil (estado)</h2><p>Se explica: qué es el estado y por qué React necesita useState para cambiar la pantalla.</p></div>
+
+<div class="guion">
+<p><em>(Se explica: por qué existe el estado)</em> «El Mini 6 dibujó una tarjeta fija: se ve y se acabó. Ahora queremos movimiento: un contador con botón. Y aquí viene la pregunta clave: si yo hago <code>numero = numero + 1</code> con JavaScript normal, ¿se mueve la pantalla? NO. El valor cambia en memoria, pero React no se entera. React solo redibuja lo que sabe que cambió. Necesitamos avisarle formalmente. Para eso existe useState: una función de React que guarda el valor y devuelve además la orden para avisar.»</p>
+</div>
+<div class="explica">
+<p><strong>Traducción:</strong> este es el concepto de estado. "Estado" = la memoria del componente mientras está en pantalla. React NO vigila variables cualquiera: solo re-dibuja lo que le avisas con la función especial <code>set</code>. <code>useState(0)</code> devuelve DOS cosas (por eso vienen los corchetes): el valor actual y la función de cambio. En el ejemplo: <code>cuenta</code> para leer y <code>setCuenta</code> para cambiar.</p>
+</div>
+
+<h3>Escritura paso a paso con lo que dices</h3>
+
+<div class="paso">
+<h4>Paso 1. Abrir el archivo</h4>
+<p class="donde"><strong>Dónde:</strong> Frontend, src, features, misiones, dia2. Abre Contador.jsx.</p>
+<div class="hablas"><strong>Dices:</strong>
+<p>El Mini 7 se llama El Albañil porque construimos movimiento: un contador con botón. Abrimos Contador.jsx. La plantilla trae un output con el número cero y un botón. Los atributos que empiezan con data no se tocan: son los puntos por donde el panel agarra el botón para probarlo. El plan es reemplazar todo el archivo por este.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 2. Traer la herramienta y crear el estado</h4>
+<p class="donde"><strong>Dónde:</strong> al inicio del archivo, arriba de todos los renglones.</p>
+<div class="comando"><code>import { useState } from 'react'
+
+export default function Contador() {
+  const [cuenta, setCuenta] = useState(0)</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>Primer renglón, un import: le pedimos prestada la función useState a React. Sin esa línea, para JavaScript esa función no existe. Los imports siempre van arriba del archivo.</p>
+<p>Ahora el corazón del mini. Entre corchetes desempaquetamos dos cosas: cuenta para leer el valor y setCuenta para cambiarlo. El cero es con lo que arranca el contador. Por qué dos cosas: porque useState devuelve el valor y también la orden para avisar. Si aquí hubiéramos escrito cuenta = cuenta + 1 con JavaScript normal, el número cambiaría en memoria pero la pantalla no se movería, porque React se entera únicamente cuando usamos setCuenta. Esa memoria del componente mientras está en pantalla se llama estado.</p>
+<p>El nombre del par sigue la convención del ecosistema: el valor se llama cuenta y su función se llama el mismo nombre con el prefijo set, setCuenta. No es obligatorio, pero seguirlo hace que el código de todos se lea igual.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 3. La acción del botón</h4>
+<p class="donde"><strong>Dónde:</strong> debajo del renglón del estado, dentro de la función.</p>
+<div class="comando"><code>  function aumentar() {
+    setCuenta(cuenta + 1)
+  }</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>aumentar es la función que se ejecuta en cada clic: toma el valor vivo de cuenta, le suma uno y lo guarda con setCuenta. Ese setCuenta es exactamente lo que avisa a React y hace repintar la pantalla con el número nuevo. Como el cálculo lee el valor de ese momento, el primer clic lleva el contador a uno y el segundo a dos.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 4. El dibujo con el botón</h4>
+<p class="donde"><strong>Dónde:</strong> debajo de la función aumentar.</p>
+<div class="comando"><code>  return (
+    &lt;div&gt;
+      &lt;output data-cuenta&gt;{cuenta}&lt;/output&gt;
+      &lt;button type="button" data-aumentar onClick={aumentar}&gt;
+        Colocar pieza
+      &lt;/button&gt;
+    &lt;/div&gt;
+  )
+}</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>return con un div que envuelve todo, igual que el section del Mini 6: un componente devuelve una sola etiqueta raíz.</p>
+<p>El output muestra el valor del estado entre llaves. Las llaves meten una variable de JavaScript dentro del JSX. Miren la diferencia con la plantilla: el cero fijo era un texto muerto que nunca iba a cambiar. Ahora ahí vive el valor vivo del estado.</p>
+<p>En el botón fíjense tres cosas. El data-aumentar queda intacto, porque el panel lo necesita. El onClick se escribe igual a aumentar SIN paréntesis. Y esta es la pregunta que separa a quien copió de quien entendió: sin paréntesis le entregamos al botón el nombre de la función para que él la llame cada vez que alguien haga clic. Si escribiéramos aumentar con paréntesis, la función se ejecutaría apenas se dibuja el componente, otra vez, y otra vez, y el navegador se quedaría pegado en un bucle infinito. La función espera al clic, no corre sola.</p>
+<p>Otra cosa del mismo renglón: onClick se escribe con la C mayúscula. En minúscula React lo ignora en silencio y el botón no hace nada, y ni siquiera avisa algo en consola. Ese error solo se encuentra mirando el renglón con calma.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 5. Guardar y verificar</h4>
+<div class="hablas"><strong>Dices:</strong>
+<p>Guardamos. Panel, Día 2, Mini 7, Verificar el contador. El panel pulsa el botón por ustedes y revisa la lectura del número antes y después del clic: tiene que subir de verdad en uno. Un número escribido a mano que no se mueve no aprueba.</p>
+</div>
+</div>
+
+<div class="fondo">
+<p><strong>Qué hace por dentro <code>useState</code>:</strong> React guarda el valor en un almacén interno asociado a este componente, no en una variable común del archivo. <code>setCuenta</code> hace tres cosas: guarda el valor nuevo, marca al componente como "necesita repintar" y en el repintado siguiente devolverá el valor guardado. La función <code>Contador</code> vuelve a correr ENTERA en cada cambio: el <code>useState(0)</code> de la segunda corrida ya no devuelve el 0 inicial, devuelve lo que hay en el almacén. El 0 solo se usa en el primer dibujo.</p>
+<p><strong>Ciclo completo de un clic:</strong> clic → <code>onClick</code> ejecuta <code>aumentar()</code> → <code>setCuenta</code> guarda 1 → React repinta: la función corre de nuevo → <code>{cuenta}</code> muestra "1" → queda listo para el siguiente clic. Tarda milisegundos: el usuario lo siente instantáneo, pero por debajo ocurrieron todos estos pasos.</p>
+<p><strong>Detalle fino para más adelante:</strong> si un día necesitas sumar varias veces dentro del mismo clic, <code>setCuenta(cuenta + 1)</code> repetido daría siempre el mismo resultado, porque la variable <code>cuenta</code> no cambia hasta el siguiente repintado. La forma segura es <code>setCuenta(c =&gt; c + 1)</code>, que React ejecuta con el valor más fresco. Hoy no hace falta (un clic suma uno); se anota para que no asuste cuando lo veas.</p>
+</div>
+<div class="alerta">Error típico de hoy: <code>onclick</code> en minúsculas. En JSX es <code>onClick</code> con C mayúscula; React ignora el otro en silencio.</div>
+<div class="relevo">Yesid termina con el estado. Entra Steven con el primer fetch.</div>
+</section>
+
+<section id="mini8">
+<div class="hora"><h2>Turno 5 · 9:00 a 9:40 — <span class="tag tag-steven">Steven</span>: Mini 8, El Impulso (primer fetch)</h2><p>Se explica: cómo el navegador pide datos y por qué fetch es asíncrono y puede fallar. Aquí no se escribe código.</p></div>
+
+<div class="guion">
+<p><em>(Se explica: qué es fetch, la función del navegador que hace el viaje)</em> «El Mini 8 no se escribe código: se entiende. La instrucción es: entrar al panel, entrar al Mini 8, pulsar "Impulsar el primer fetch", y abrir F12 Network para ver el viaje. La petición sale del código del panel: GET hacia la dirección <code>http://127.0.0.1:8000/api/contratos/</code>. Si todo va bien, Django responde HTTP 200 con la lista de contratos. Vamos a aprender a distinguir tres resultados: OK, error del servidor, y SIN RESPUESTA.»</p>
+</div>
+<div class="explica">
+<p><strong>Traducción:</strong> "fetch" es la función que el navegador trae de fábrica para pedir datos a un servidor. En este mini el código ya existe (lo escribimos dentro del panel del taller) y el estudiante solo lo lanza y lo observa. Los tres resultados que debe distinguir: (1) <code>200</code> = la API respondió bien; (2) error tipo 4xx/5xx = Django respondió, pero con un error de su lado; (3) "sin respuesta" = ni siquiera llegó: típico de servidor apagado o de CORS cerrado. El último es la antesala del Mini 9: si no hay respuesta, NO es un error de tu JavaScript.</p>
+</div>
+
+<h3>Escritura paso a paso con lo que dices</h3>
+
+<div class="paso">
+<h4>Paso 1. Dejar los dos servidores a punto</h4>
+<p class="donde"><strong>Dónde:</strong> terminal de la carpeta Backend con runserver encendido, terminal de la carpeta Frontend con npm run dev encendido. Navegador en el panel, entrada Día 2, Mini 8.</p>
+<div class="hablas"><strong>Dices:</strong>
+<p>El Mini 8 no se escribe código: se observa y se entiende. Los dos servidores tienen que estar encendidos: en la terminal uno revisan que Django esté arriba, y en la terminal dos que React esté arriba. Si alguno de los dos está apagado, no avanza nada de lo que viene hoy. Entren al panel y denle a la entrada del Mini 8.</p></think><tool_call>edit<arg_key>newString</arg_key><arg_value>El Mini 8 no se escribe código: se observa y se entiende. Los dos servidores tienen que estar encendidos: en la terminal uno revisan que Django esté arriba, y en la terminal dos que React esté arriba. Si alguno de los dos está apagado, no avanza nada de lo que viene hoy. Entren al panel y denle a la entrada del Mini 8.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 2. Lanzar el viaje y leer el resultado</h4>
+<div class="hablas"><strong>Dices:</strong>
+<p>Pulsamos Impulsar el primer fetch y leemos con calma lo que entrega el panel. Hay tres desenlaces posibles. Uno, el código doscientos: la API respondió bien. Dos, un error del lado del servidor. Tres, la leyenda sin respuesta. En esta sala lo más probable hoy es el sin respuesta, y quiero que lo escuchen bien: eso NO significa que su código esté mal ni que su computadora esté rota. Es la antesala del Mini 9 y en un rato sabrán por qué.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 3. Ver el viaje en las herramientas del navegador</h4>
+<div class="hablas"><strong>Dices:</strong>
+<p>Ahora abrimos F12 y vamos a la pestaña Network. Pulsan el botón del mini de nuevo y buscan la fila que dice contratos: ahí aparece el método, el código del resultado y el tiempo que tardó el viaje. Esa fila es la evidencia de la petición. El navegador no solo dibuja pantallas: también muestra los viajes que su página hizo.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 4. Leer el código que hizo el viaje, en voz alta</h4>
+<p class="donde"><strong>Dónde:</strong> para proyectar: Frontend, src, features, misiones, dia2, Mini8_Impulso.jsx. Ahí vive el código que el panel ejecuta.</p>
+<div class="comando"><code>async function impulso() {
+  setLanzando(true)
+  setResultado(null)
+  try {
+    const { respuesta } = await peticion(`${API_URL}/contratos/`)
+    setResultado({
+      correcto: respuesta.ok,
+      codigo: respuesta.status,
+      detalle: respuesta.ok
+        ? 'Django respondió y el navegador permitió leer la respuesta.'
+        : 'Django respondió con un error HTTP.',
+    })
+    if (respuesta.ok) alAprobar()
+  } catch (roto) {
+    setResultado({ correcto: false, codigo: 'sin respuesta', detalle: roto.message })
+  } finally {
+    setLanzando(false)
+  }
+}</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>async function impulso declara una función asíncrona. Asíncrona porque el viaje a Django tarda, y JavaScript trabaja en un solo hilo: no puede quedarse congelado esperando.</p>
+<p>Los dos primeros renglones preparan la pantalla: setLanzando pone el botón en modo impulsando, y setResultado limpia la respuesta anterior para que no se nos mezclen viajes distintos.</p>
+<p>try abre la zona protegida. Una petición de red se puede romper, y si se rompe, el código cae directo al catch y la aplicación no se muere. Por detrás, la línea del viaje: sacamos respuesta de la petición, y await significa detente hasta que el viaje termine. La base de la dirección vive en API_URL, definida en un solo lugar del proyecto, en la carpeta shared.</p>
+<p>setResultado guarda el desenlace y miren el detalle: el código que se muestra es respuesta.ok y respuesta.status, el resultado REAL del viaje. La aprobación nunca se inventa: se observa. Y si el viaje fue exitoso, la línea que sigue llama a alAprobar y el mini se aprueba solo.</p>
+<p>El catch toma el error, aquí lo llamamos roto, y lo muestra como la leyenda sin respuesta junto con su motivo. Y el finally corre siempre, el viaje salga bien o mal: devuelve el botón a la normalidad. Sin el finally, si la petición fallara, el botón quedaría pegado en impulsando para siempre.</p>
+</div>
+</div>
+
+<div class="guion">
+<p><em>(Se explica: la analogía para cerrar el mini)</em> «Piensen en un supermercado. El cliente no entra a la bodega: pide al cajero. El cajero sabe las reglas y decide qué entregar. El cajero es la API; la bodega es PostgreSQL; el cliente, el navegador. Y hay una segunda cosa: si el cliente llega de un sitio no autorizado, el cajero no puede entregarle nada. Eso todavía no nos ha fallado porque nadie ha pedido datos aún; la primera vez que lo intentemos será exactamente lo que pase: el pedido sale bien pero la respuesta no llega. Abrir la lista de clientes que SÍ pueden recibir la respuesta es la diplomacia del siguiente mini.»</p>
+</div>
+<div class="explica">
+<p><strong>Traducción:</strong> esta analogía conecta los tres minis de hoy: API, base de datos y CORS. El navegador no toca la base de datos directamente (seguridad y arquitectura): habla con la API, que decide qué y a quién entregar. La frase que conduce al Mini 9 es: "el cajero pregunta de dónde vienes, y la lista de orígenes aceptados es CORS. El siguiente bloque escribe esa lista."</p>
+</div>
+<div class="fondo">
+<p><strong>Anatomía de una petición:</strong> un <code>fetch</code> siempre lleva lo mismo. Método (GET significa "traer"), ruta (<code>/api/contratos/</code>), cabeceras (los datos del sobre: quién pide, qué acepta como respuesta; entre ellas va <code>Origin</code>, el origen de la página que pregunta) y, en otros casos, cuerpo (el contenido; un GET no lleva). La respuesta viene dividida igual: código de estado (200 OK, 404, 403...), cabeceras y cuerpo (aquí, el JSON). F12 → Network muestra las dos caras: lo que se envió y lo que el servidor devolvió.</p>
+<p><strong>Por qué la petición es asíncrona:</strong> un viaje por red tarda milisegundos o segundos. JavaScript tiene un solo hilo: si el código se detuviera a esperar la respuesta, la página entera se congelaría. <code>await</code> dice: "espera el resultado, pero libera el hilo mientras llega". Así la app sigue viva (el botón dice "Impulsando...", la pantalla no se congela) y el código continúa justo cuando la respuesta aterriza. Eso significa "asíncrono".</p>
+<p><strong>El detalle que explica el Mini 9:</strong> cuando CORS está cerrado, la petición SÍ sale, Django SÍ responde, y Network puede mostrar incluso el resultado... y AUN ASÍ el código de React no ve nada: la respuesta la retiene el navegador, porque el servidor no declaró que ese origen está permitido. Desde JavaScript se ve como un error de red ("Failed to fetch", que el panel resume en "sin respuesta"). O sea: "sin respuesta" no siempre significa "el servidor está muerto": también significa "la respuesta llegó, pero el portero no la entrega". Eso es exactamente lo que el Mini 9 arregla.</p>
+<p><strong>try / catch / finally:</strong> <code>try</code> encierra lo que puede fallar; <code>catch</code> corre SOLO si algo falló (recibe el error como <code>roto</code>) y <code>finally</code> corre SIEMPRE, fallara o no. El finally es el lugar de la limpieza: sin él, si la petición fallara, el botón quedaría pegado en "Impulsando..." para siempre, porque la línea que lo devuelve a la normalidad nunca correría.</p>
+</div>
+<div class="relevo">Steven termina y le pasa el turno a Yesid, que escribe la lista de CORS.</div>
+</section>
+
+<section id="mini9">
+<div class="hora"><h2>Turno 6 · 9:40 a 10:30 — <span class="tag tag-yesid">Yesid</span>: Mini 9, El Portero (CORS)</h2><p>Se explica: qué es la regla de mismo-origen, por qué bloquea, y los tres cambios exactos en settings.py.</p></div>
+
+<div class="guion">
+<p><em>(Se explica: la regla del navegador que bloquea)</em> «El navegador tiene una regla de seguridad llamada misma-origen: una página solo puede leer respuestas de su MISMO origen, que se compone de esquema, dirección y puerto. React vive en localhost:5173 y Django vive en 127.0.0.1:8000. Diferente puerto = diferente origen. Entonces el navegador lleva tu GET hasta Django… y al final NO entrega la respuesta al código, porque el origen no coincide. Eso no es un error de nuestra aplicación: es una regla de fábrica del navegador.</p>
+<p><em>(Se explica: la solución: la lista blanca CORS)</em> ¿Y cómo se abre la puerta? No quitando la regla. Añadiendo en Django una LISTA de orígenes que la API acepta. Ese mecanismo se llama CORS. Hoy escribimos esa lista con TRES movimientos en un solo archivo: uno en apps, uno en middleware, y la lista blanca. Después reiniciamos el servidor para que Django los lea. Con una regla fina: se abren SOLO los dos orígenes del taller, no todos los del mundo.»</p>
+</div>
+<div class="explica">
+<p><strong>Traducción:</strong> "origen" se compone de TRES partes: protocolo + dirección + puerto. Si cambia cualquiera de las tres, ya es otro origen. <code>localhost:5173</code> (React) y <code>127.0.0.1:8000</code> (Django) difieren en puerto: por eso el navegador considera que la respuesta viene de otro sitio y la bloquea por defecto, si no hay permiso (regla same-origin). CORS es la lista de permisos que el servidor ANUNCIA por cabeceras, y el navegador la respeta. <strong>La analogía del cajero del Mini 8 se cierra aquí:</strong> la lista blanca es el registro de clientes autorizados; el navegador chequea esa lista antes de entregar la respuesta al código.</p>
+</div>
+
+<h3>Escritura paso a paso con lo que dices</h3>
+
+<div class="paso">
+<h4>Paso 1. Abrir el archivo del portero</h4>
+<p class="donde"><strong>Dónde:</strong> Backend, config, settings.py.</p>
+<div class="hablas"><strong>Dices:</strong>
+<p>El permiso del portero se escribe en settings.py. La ruta es Backend, config, settings.py. Este archivo es la configuración central de Django: la memoria de cómo vive el servidor. Tomen nota desde ya, porque se los voy a pedir tres veces: cada cambio aquí exige reiniciar el servidor de Django.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 2. Registrar la app que entiende de CORS</h4>
+<p class="donde"><strong>Dónde:</strong> en INSTALLED_APPS, que está casi al principio del archivo. La línea nueva va debajo de la de contratos.</p>
+<div class="comando"><code>INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'contratos',
+    'corsheaders',
+]</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>Buscamos INSTALLED_APPS. Esa lista dice qué piezas de código está usando Django. Al final, debajo de contratos, agregamos corsheaders entre comillas y con su coma. Esta línea registra dentro de Django la app que entiende de CORS. Sin ese registro, las demás líneas nuevas que escribamos hoy son texto muerto: Django no las cargaría nunca.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 3. Insertar el filtro del permiso</h4>
+<p class="donde"><strong>Dónde:</strong> en MIDDLEWARE, que está un poco más abajo. La línea nueva va justo arriba de la de CommonMiddleware.</p>
+<div class="comando"><code>MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>Ahora buscamos MIDDLEWARE. Los middleware son una fila de filtros por la que pasa toda petición cuando entra a Django, en orden, un filtro tras otro. Insertamos corsheaders.middleware.CorsMiddleware justo arriba de la línea de CommonMiddleware. El orden importa: el filtro del permiso tiene que mirar la petición primero. Si otro filtro respondiera antes, la cabecera de permiso nunca se agregaría y el mini fallaría sin entender por qué.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 4. Escribir la lista de orígenes de confianza</h4>
+<p class="donde"><strong>Dónde:</strong> al fondo del archivo, donde está el comentario del reto nueve que dice Conectar CORS.</p>
+<div class="comando"><code>CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>Bajan al fondo del archivo hasta el comentario del reto nueve. Ahí escribimos CORS_ALLOWED_ORIGINS y dentro, entre comillas, las dos direcciones del taller. Dos, no una: porque el panel se puede abrir con la palabra localhost y también con la dirección numérica, y para el navegador esos dos nombres son orígenes distintos, aunque los dos apunten a la misma máquina. Cada uno necesita su permiso propio. Si algún compañero abre su panel de la otra forma y solo escribimos una dirección, el mini le falla y no va a saber por qué: por eso van las dos.</p>
+<p>Y el detalle de seguridad: nunca usamos el asterisco, aunque sea un solo carácter y ahorra líneas. El asterisco significa que cualquier página de internet puede leer esta API. Lo que no está en esta lista no existe: la puerta queda cerrada por defecto y solo se abren los dos orígenes del taller.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 5. Reiniciar y correr el diagnóstico</h4>
+<div class="hablas"><strong>Dices:</strong>
+<p>Guardamos y reiniciamos el servidor: en la terminal Control C para detener, y otra vez runserver para encender. ¿Por qué? Porque Django lee este archivo una sola vez, al arrancar. Hasta que reinicie, tus cambios no existen para el servidor.</p>
+<p>Ya con el servidor nuevo vamos al panel, Mini 9, Correr diagnóstico del portero. Van a ver DOS peticiones, no una: primero un OPTIONS y después la GET. El OPTIONS es el preflight: la pregunta previa del navegador. Antes de mandar la petición real, el navegador pregunta con cortesía: aceptas peticiones desde este origen. Si la lista que acabamos de escribir contiene ese origen, Django responde que sí, y recién ahí viaja la GET. Dos porteros que se preguntan antes de abrir la puerta. Las dos peticiones deben responder doscientos. Si alguna da un código de error, revisamos la lista letra por letra: espacios de más, la diagonal al final del origen, y vuelta a reiniciar el servidor.</p>
+</div>
+</div>
+
+<p class="nota" style="border-left:4px solid var(--amarillo);background:#221d10"><strong>Pregunta de cierre:</strong> ¿por qué no usamos <code>'*'</code> aunque sea más corto? — porque significa «todos los orígenes»: hasta las páginas que NO son del taller podrían leer esta API. La lista corta es igual de fácil y MUCHO más segura. La analogía del portero: no abre por simpático; revisa la lista completa.</p>
+<div class="fondo">
+<p><strong>Por qué DOS orígenes en la lista y no uno (la pregunta "¿no son la misma máquina?"):</strong> la comparación del navegador es por TEXTO, no por significado. Un origen es la cadena completa de la barra de direcciones: protocolo + dirección + puerto, tomada tal cual. <code>http://localhost:5173</code> y <code>http://127.0.0.1:5173</code> llevan a la misma computadora, pero son dos cadenas distintas, y para CORS cuentan como dos orígenes diferentes. ¿Por qué importa? Porque cada petición lleva una cabecera <code>Origin</code> con la cadena EXACTA de la página que la envió. Si el panel del aprendiz se abrió con <code>http://localhost:5173</code>, la cabecera dice eso, y solo esa entrada de la lista hace match. Si otro aprendiz abrió el panel con la IP, dice la otra. El taller no controla cómo abrió cada uno su navegador, por eso la lista acepta los dos nombres. Y cualquier diferencia rompe el match: un espacio, la diagonal final, <code>https</code> en vez de <code>http</code>: el navegador considera que el origen no está en la lista y bloquea. Prueba sencilla para entenderlo: saca una de las dos entradas de la lista, abre el panel de esa forma y mira cómo el mini falla; regrésala y todo vuelve a funcionar.</p>
+<p><strong>Qué resuelve cada una de las tres líneas nuevas:</strong> la 1 (<code>'corsheaders'</code> en INSTALLED_APPS) registra la app: sin este registro, Django ni siquiera carga el código de corsheaders y las demás líneas son texto muerto. La 2 (el middleware) instala un filtro en la fila de filtros por donde pasa TODA petición al entrar a Django: es quien agrega la cabecera <code>Access-Control-Allow-Origin</code> a las respuestas, y quien responde él mismo el OPTIONS del preflight (sin llegar a la vista). Va ANTES de CommonMiddleware porque los filtros corren en orden: si otro filtro respondiera antes (por ejemplo, un redirect), la cabecera de permiso nunca se agregaría. La 3 (<code>CORS_ALLOWED_ORIGINS</code>) es el contenido de esa cabecera: el diccionario de orígenes aceptados. Y el reinicio del <code>runserver</code> existe porque Django lee settings.py UNA sola vez al arrancar: lo que cambies solo vale si el proceso vuelve a arrancar.</p>
+<p><strong>Quién bloquea de verdad:</strong> el bloqueo es SIEMPRE del navegador, del lado de quien pide. Django no puede impedir que la respuesta llegue: solo DECLARA, con la cabecera, quién tiene permiso. Una petición desde Postman o curl no pasa por esto, porque no es un navegador y no aplica la regla de mismo-origen: la misma API que en el panel se cae, en Postman responde el JSON limpiamente. Cuando alguien diga "en Postman funciona y aquí no", ya sabes que el problema está en la regla del navegador, no en el servidor.</p>
+<p><strong>El preflight a fondo:</strong> primero viaja la OPTIONS con cabeceras que describen la petición futura: <code>Access-Control-Request-Method</code> (el GET que quiero hacer después). Si el origen está en la lista, corsheaders responde con <code>Access-Control-Allow-Origin</code> y el navegador da permiso para la GET real. Si no está, la respuesta sale sin esa cabecera y el navegador ni siquiera envía la GET: falla todo de una. OJO con el caso incompleto: si la GET sí viaja y Django responde 200, pero la respuesta de la GET no lleva la cabecera de permiso, el navegador igual niega la entrega al código. Por eso el panel del mini exige AMBAS peticiones (OPTIONS y GET) con 200.</p>
+<p><strong>Por qué el <code>'*'</code> es peligroso:</strong> significa que CUALQUIER página de internet podría leer esta API como si fuera propia. Hoy parece inofensivo: los contratos son públicos. Pero es una puerta que se hereda: si mañana esta API lleva datos de clientes, la estrella ya los expone a cualquier sitio malicioso. Con lista explícita pasa lo contrario: lo que no está en la lista no existe, y la puerta queda cerrada por defecto. Encima, con la estrella el navegador tampoco permite peticiones que envíen credenciales (cookies): otra de las razones para declarar orígenes exactos, que es el estándar profesional.</p>
+<p><strong>CORS, en una frase:</strong> no es contraseñas, ni usuarios, ni HTTPS: solo define QUIÉN puede LEER las respuestas de esta API desde un navegador. Es una capa de seguridad entre varias; no reemplaza a ninguna.</p>
+</div>
+<div class="relevo">Yesid cierra con el permiso abierto. Entra Steven con el Mini 10.</div>
+</section>
+
+<section id="mini10">
+<div class="hora"><h2>Turno 7 · 10:45 a 11:45 — <span class="tag tag-steven">Steven</span>: Mini 10, El Render (map + key)</h2><p>Se explica: cómo pintar los datos de la API en la lista y por qué useEffect y la key.</p></div>
+
+<div class="guion">
+<p><em>(Se explica: el problema del mini)</em> «Con el Mini 8 pedimos. Con el Mini 9 se dio permiso. Ahora falta el final: que ese JSON se convierta en HTML que se ve. La API devuelve un ARREGLO de contratos. En JavaScript, para convertir un arreglo en elementos visuales se usa map: convierte cada dato en un elemento de lista. Y cada elemento lleva una llave única llamada key, para que React sepa distinguir quién es quién cuando redibuja.»</p>
+</div>
+<div class="explica">
+<p><strong>Traducción:</strong> el flujo completo del mini: la API da un arreglo de objetos (cada objeto tiene <code>id_contrato</code>, <code>entidad_compradora</code>, etc.). <code>map</code> toma ese arreglo y produce un arreglo de <code>&lt;li&gt;</code> (uno por contrato) con el mismo orden. La <code>key</code> es el identificador único de cada elemento dibujado. En este taller, la key es el <code>id_contrato</code>, que vino con los datos: no se inventa, no se usa la posición.</p>
+</div>
+
+<h3>Escritura paso a paso con lo que dices</h3>
+
+<div class="paso">
+<h4>Paso 1. Abrir el archivo final</h4>
+<p class="donde"><strong>Dónde:</strong> Frontend, src, features, misiones, dia2. Abre Listado.jsx.</p>
+<div class="hablas"><strong>Dices:</strong>
+<p>El Mini 10 es el final del día: los datos reales de la API pintados en pantalla. Abrimos Listado.jsx y reemplazamos todo el contenido. Tengan a la mano el Mini 9 ya aprobado, porque este archivo solo funciona con la puerta de CORS abierta.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 2. Los dos imports</h4>
+<p class="donde"><strong>Dónde:</strong> al inicio del archivo.</p>
+<div class="comando"><code>import { useEffect, useState } from 'react'
+import { API_URL } from '../../../shared/api'</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>Primer renglón: de React traemos useState, que ya conocemos del contador, y useEffect, que es el nuevo de hoy. Segundo renglón: de la carpeta shared traemos API_URL, la dirección de la API. Esos tres puntos del camino suben de carpeta en carpeta hasta llegar a shared. Importar es mejor que escribir la dirección a mano: si algún día la dirección cambia, se corrige en un solo lugar y no en cada archivo.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 3. El estado que arranca vacío</h4>
+<p class="donde"><strong>Dónde:</strong> dentro de la función Listado, arriba de todo.</p>
+<div class="comando"><code>export default function Listado() {
+  const [contratos, setContratos] = useState([])</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>Creamos el estado del listado. Fíjense en el detalle: useState arranca con corchetes solos, un arreglo vacío. La pantalla abre sin datos y eso no es un error, es el estado inicial. El arreglo vacío es la promesa de que los contratos llegarán del viaje.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 4. El efecto que trae los contratos</h4>
+<p class="donde"><strong>Dónde:</strong> debajo del estado, antes del return.</p>
+<div class="comando"><code>  useEffect(() =&gt; {
+    async function traer() {
+      try {
+        const respuesta = await fetch(`${API_URL}/contratos/`)
+        const datos = await respuesta.json()
+        setContratos(Array.isArray(datos) ? datos : datos.results || [])
+      } catch (error) {
+        console.error('No se pudo traer la lista de contratos.', error)
+      }
+    }
+    traer()
+  }, [])</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>useEffect lleva dos cosas: una función y un arreglo vacío. La función del efecto se ejecuta una sola vez, cuando el componente aparece en pantalla, y el arreglo vacío significa solo al montar. Si pusiéramos el fetch directo en el cuerpo del componente, correría en cada redibujo, cada redibujo dispararía otra petición, y esa otra petición dispararía otro redibujo: bucle infinito. Por eso el fetch va aquí dentro.</p>
+<p>Dentro declaramos traer, una función asíncrona. async es lo que nos deja usar await.</p>
+<p>fetch lanza el viaje y await detiene esta función hasta que llegue la respuesta. Fetch crudo de fábrica, sin ayudas, para entender el flujo completo desde cero. Esto funciona porque el Mini 9 ya abrió la puerta del permiso.</p>
+<p>respuesta.json traduce el texto del viaje a datos de JavaScript. Son dos esperas encadenadas: la primera por el viaje, la segunda por la lectura del cuerpo.</p>
+<p>La línea de guardar lleva una pregunta de seguridad: si lo que llegó ya es una lista, se usa tal cual. Si llegó envuelta con la clave results, se usa results. Y si nada de eso aplica, se guarda una lista vacía para que el programa siga vivo. Eso se llama programación defensiva.</p>
+<p>El catch escribe el error en la consola si el viaje falla, para verlo con calma. Fuera de todo eso, llamamos a traer una sola vez. Y el arreglo vacío del final es el que garantiza que el efecto no se repita nunca más.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 5. Convertir los datos en la lista</h4>
+<p class="donde"><strong>Dónde:</strong> debajo del useEffect, es el return del componente.</p>
+<div class="comando"><code>  return (
+    &lt;ul&gt;
+      {contratos.map((contrato) =&gt; (
+        &lt;li key={contrato.id_contrato} data-id-contrato={contrato.id_contrato}&gt;
+          {contrato.id_contrato}
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  )
+}</code></div>
+<div class="hablas"><strong>Dices:</strong>
+<p>El return dibuja una lista html: una ul con li adentro. Entre llaves llamamos a contratos.map. map recorre el arreglo de contratos y devuelve un li por cada uno, en el mismo orden en que llegaron. Es la manera de convertir datos en elementos visuales.</p>
+<p>Cada li lleva key igual a contrato.id_contrato. La key es la cédula del contrato: viene en los datos y nunca cambia. No usamos la posición en la lista, porque la posición sí cambia: si mañana un contrato sale de la lista, todo lo demás cambia de lugar, y con la posición React se confunde y pinta mal. Con la cédula, React sabe exactamente quién es quién aunque la lista se reordene.</p>
+<p>El atributo data id contrato es lo que lee el juez del panel en cada fila, así que ahí no se improvisa ni se borra. Y entre las etiquetas del li mostramos el id del contrato, que es lo que el juez compara con la API.</p>
+<p>Cerramos el li, el map, el ul, el paréntesis y la función. Revisen los cierres si algo no compila.</p>
+</div>
+</div>
+
+<div class="paso">
+<h4>Paso 6. Guardar y verificar</h4>
+<div class="hablas"><strong>Dices:</strong>
+<p>Guardamos, y Vite recompila solo. Panel, Día 2, Mini 10, Verificar el listado. El juez compara los id que tu lista muestra contra los de la API. Para comprobarlo en vivo: abran la dirección de la API en otra pestaña y cotejen los números en voz alta.</p>
+</div>
+</div>
+
+<div class="correcto"><strong>Se aprueba cuando:</strong> la lista muestra los mismos <code>id_contrato</code> que devuelve la API. Puedes comprobarlo en vivo: abre <code>http://127.0.0.1:8000/api/contratos/</code> en otra pestaña y coteja en voz alta.</div>
+<div class="fondo">
+<p><strong>Por qué existe useEffect:</strong> la función del componente se re-ejecuta en cada repintado y su única tarea es describir el dibujo. Un fetch no es dibujo: es un efecto sobre el mundo exterior (un viaje de red, guardar datos). Hacerlo dentro del cuerpo del componente dispararía una petición en cada repintado; como cada petición guarda estado con <code>setContratos</code>, ese estado dispara otro repintado, y ese repintado otra petición: bucle infinito. useEffect separa ambas responsabilidades: lo que DIBUJA va en el return; lo que EFECTÚA (traer datos, timers, subscripciones) va dentro de useEffect, y solo corre cuando tú lo autorizas.</p>
+<p><strong>Cómo funciona el segundo argumento []:</strong> useEffect recibe la función del efecto y una lista de dependencias. Tras cada repintado, React compara la lista nueva con la anterior: si es idéntica, no vuelve a correr el efecto. Con un arreglo vacío, esa comparación da siempre "igual": el efecto corre UNA única vez, al montarse. Si pusieras <code>[contratos]</code>, correría cada vez que ese estado cambie (aquí sería otro bucle infinito). Es una promesa honesta: este efecto no depende de nada externo, con correr una vez basta.</p>
+<p><strong>Por qué <code>.json()</code> también lleva await:</strong> la respuesta no llega como objeto listo: HTTP entrega texto. <code>respuesta.json()</code> lee el cuerpo completo y lo convierte en datos de JavaScript; esa lectura también tarda, por eso devuelve promesa y lleva await. Son dos esperas encadenadas: una por el viaje, otra por la traducción del cuerpo.</p>
+<p><strong>Qué pasa por dentro con la key:</strong> cuando cambia la lista, React tiene dos dibujos: el anterior y el nuevo. Para actualizar lo mínimo, empareja los elementos de uno con los del otro. Sin identificador, solo puede emparejarlos por posición (el 1 con el 1, el 2 con el 2): si los datos se reordenan, React cree que TODO cambió y destruye y re-crea todo. Con la key (el id_contrato), React reconoce que "este li es el mismo contrato de antes, apenas movido": no lo destruye, no lo toca si sus datos no cambiaron, y solo actualiza lo que de verdad difiere. Menos trabajo del navegador; en listas grandes, la diferencia se nota en la fluidez.</p>
+<p><strong>El ternario defensivo de la línea 12:</strong> la API se puede comportar de dos maneras: devolver la lista pelada <code>[...]</code> o, si el backend activara la paginación, un objeto donde la lista vive en <code>results</code>. <code>Array.isArray(datos)</code> pregunta si ya llegó lista; si no, usa <code>datos.results</code>; el <code>|| []</code> es la red de seguridad: si nada aplica, se guarda una lista vacía y el programa sigue vivo en vez de romperse. Esto no es teórico: en el RETO 14 del taller el backend activa paginación de verdad.</p>
+</div>
+<div class="relevo">Steven termina el mini 10. Ambos vuelven al cierre.</div>
+</section>
+
+<section id="cierre">
+<div class="hora"><h2>Turno 8 · 11:45 a 12:00 — <span class="tag tag-steven">Steven</span> + <span class="tag tag-yesid">Yesid</span>: cierre, dudas y tarea</h2><p>Se explica: la cadena completa del día, la tarea pendiente y qué viene.</p></div>
+
+<div class="flujo">
+<div class="caja"><b>Mini 6</b><br>Componentes (evaluado)<br><span class="tag tag-yesid" style="background:#10395a;color:#9fd8ff">Yesid</span></div><span class="flecha">→</span>
+<div class="caja"><b>Mini 6</b><br>lección línea por línea<br><span class="tag tag-steven">Steven</span></div><span class="flecha">→</span>
+<div class="caja"><b>Mini 7</b><br>useState<br><span class="tag tag-yesid">Yesid</span></div><span class="flecha">→</span>
+<div class="caja"><b>Mini 8</b><br>fetch<br><span class="tag tag-steven">Steven</span></div><span class="flecha">→</span>
+<div class="caja"><b>Mini 9</b><br>CORS<br><span class="tag tag-yesid">Yesid</span></div><span class="flecha">→</span>
+<div class="caja"><b>Mini 10</b><br>map + key<br><span class="tag tag-steven">Steven</span></div>
+</div>
+
+<div class="guion">
+<p><em>(Steven y Yesid a la vez, uno resume y el otro agrega)</em> «Cerramos con la cadena completa: la tarea del Mini 6 demostró que ustedes saben crear componentes sin ayuda. Hoy los minis nos dieron el resto: contador con estado y respuesta del servidor en pantalla, pasando por el permiso del navegador. El Día 3 invierte el viaje: datos desde el navegador hacia la base de datos, con formularios y validaciones.</p>
+<p>La tarea de hoy: aprobar en casa los minis del Día 2 que no quedaron, con la guía <code>docs/04-dia2-el-portero.md</code> del proyecto. Y con una regla: al final, tres aprendices explican en voz alta, con el código proyectado: qué es un componente, qué hace useState, y por qué hay una lista CORS. Esa oratoria es la medida real del taller.»</p>
+</div>
+<div class="explica">
+<p><strong>Traducción del cierre:</strong> el significado del día entero en una frase: ayer ustedes sirven datos con Django; hoy los muestran con React y abren la única puerta que los conecta (CORS). En el Día 3 la conversación va en dirección contraria (del navegador hacia la base de datos), con formularios y validaciones. La explicación oral sin ver el código (pedir la explicación a uno que ya aprobó, como medida de calidad) es el indicador del taller: mejor que 8 minis aprobados sin entender, vale uno que repasó dos veces y explica solo.</p>
+</div>
+
+<div class="fondo">
+<p><strong>El camino completo del dato en un párrafo:</strong> un contrato vive como fila en una tabla de PostgreSQL. Django lo lee con su modelo, el serializer decide qué campos exponer y la API lo entrega como JSON. La respuesta viaja por HTTP hasta el navegador; fetch la recibe, <code>.json()</code> la convierte en datos de JavaScript, <code>useState</code> la guarda y el repintado la convierte en <code>&lt;li&gt;</code> con map y key. Todo el Día 2 fue construir ese camino de punta a punta; la tarea de hoy (aprobar los minis en casa) es que cada aprendiz recree la ruta con sus propias manos. El Día 3 recorre el camino al revés: del formulario en pantalla hasta guardar la fila en la base de datos, con POST en vez de GET y con validaciones.</p>
+<p><strong>Por qué esta separación importa en el trabajo real:</strong> la pantalla y el almacén de datos viven en intendencias distintas, se despliegan en servidores distintos y los corrigen equipos distintos (los que hacen la web y los que escriben el backend). Un equipo puede rehacer el diseño de React sin tocar el backend, y el backend puede agregar tablas sin tocar la pantalla: mientras el contrato de la API (las rutas y los formatos) no cambie, cada lado evoluciona solo. Eso que hoy parece una molestia (dos terminales, dos proyectos) es la arquitectura estándar del gremio.</p>
+</div>
+
+<h3>Preguntas probables con sus respuestas correctas</h3>
+<table><thead><tr><th>Si alguien pregunta…</th><th>Respuesta (anclada al propio código)</th></tr></thead><tbody>
+<tr><td>«¿Por qué dos servidores si es un solo sistema?»</td><td>Separamos pantalla (React, 5173) de datos (Django, 8000): así crecen por separado. Hoy en dos terminales; en el trabajo, en dos servidores distintos</td></tr>
+<tr><td>«¿No puedo sumar con <code>cuenta = cuenta + 1</code>?»</td><td>Cambia en memoria, pero no avisa: la pantalla queda igual. Solo <code>setCuenta</code> avisa y redibuja</td></tr>
+<tr><td>«Mi OPTIONS da 200 pero el GET da 403»</td><td>El origen escrito no coincide con el que envía el navegador: revisa la lista letra por letra y reinicia runserver</td></tr>
+<tr><td>«¿La petición va directo en el componente?»</td><td>No: cada redibujo dispararía otra petición. Va en <code>useEffect(..., [])</code>, una única vez al montarse</td></tr>
+<tr><td>«¿Y si solo hubiera 5 contratos? ¿React vale la pena?»</td><td>La gracia no está en 5, está en cientos de elementos relacionados que se redibujan solos cuando cambian los datos</td></tr>
+</tbody></table>
+
+<div class="correcto"><strong>La meta del día</strong> es que un aprendiz pueda explicar, sin leer el código: qué es un componente, qué hace <code>useState</code>, qué viaje hace <code>fetch</code>, por qué existe la lista de CORS y qué papel cumple la <code>key</code> en <code>map</code>. Los minis aprobados son la consecuencia; la explicación es la meta.</div>
+</section>
+
+</main>
+</body>
+</html>

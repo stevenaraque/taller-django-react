@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Continuación del Día 1 | Minis 4, 5 y CORS</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --fondo: #0b1220;
+      --panel: #111c2e;
+      --borde: #31435d;
+      --texto: #e8eef7;
+      --suave: #aab8ca;
+      --azul: #62c7f4;
+      --verde: #47d7a0;
+      --amarillo: #ffd36a;
+      --rojo: #ff8f8f;
+      --codigo: #07101d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+      background: var(--fondo);
+      color: var(--texto);
+      font: 16px/1.6 "Segoe UI", Arial, sans-serif;
+    }
+    h1, h2 { color: var(--azul); line-height: 1.2; }
+    h1 { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 8px; }
+    h2 { margin-top: 34px; border-bottom: 1px solid var(--borde); padding-bottom: 8px; }
+    h3 { color: var(--amarillo); margin: 24px 0 8px; }
+    p { margin: 8px 0; }
+    a { color: var(--azul); }
+    code, pre { font-family: Consolas, monospace; }
+    code { color: var(--amarillo); }
+    pre {
+      overflow-x: auto;
+      padding: 14px;
+      border: 1px solid var(--borde);
+      border-radius: 8px;
+      background: var(--codigo);
+      color: #e7edf7;
+    }
+    .subtitulo { color: var(--suave); }
+    .bloque, .voz, .nota, .alerta, .correcto {
+      margin: 14px 0;
+      padding: 14px 17px;
+      border: 1px solid var(--borde);
+      border-radius: 9px;
+      background: var(--panel);
+    }
+    .voz { border-left: 4px solid var(--verde); background: #10251f; }
+    .voz strong { display: block; margin-bottom: 4px; color: var(--verde); }
+    .nota { border-left: 4px solid var(--azul); }
+    .alerta { border-left: 4px solid var(--rojo); background: #2b1a20; }
+    .correcto { border-left: 4px solid var(--verde); background: #10251f; }
+    .tiempo { color: var(--suave); }
+    .agenda { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+    .agenda div { padding: 13px 15px; border: 1px solid var(--borde); border-radius: 8px; background: var(--panel); }
+    .agenda strong { color: var(--amarillo); }
+    li { margin: 6px 0; }
+    @media print {
+      :root { color-scheme: light; }
+      body { max-width: none; padding: 0; background: white; color: #172033; }
+      h1, h2, h3 { color: #123b56; }
+      .bloque, .voz, .nota, .alerta, .correcto, pre { break-inside: avoid; }
+      .bloque, .nota { background: #f3f6f9; }
+      .voz, .correcto { background: #edf8f2; }
+      .alerta { background: #fff1f1; }
+      pre { background: #f3f6f9; color: #172033; }
+      code { color: #694b00; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Continuación del Día 1: Minis 4 y 5, CORS</h1>
+    <p class="subtitulo">Guion para las dos horas finales: explicar, programar, comprobar y cerrar.</p>
+    <p class="tiempo">Punto de partida: son las 10:00 y faltan por explicar o verificar los Minis 4 y 5. CORS se adelanta para probarlos desde React.</p>
+  </header>
+
+  <section>
+    <h2>Ruta de 10:00 a 12:00</h2>
+    <div class="agenda">
+      <div><strong>10:00–10:25</strong><br>Mini 4: entender el serializer y su validación.</div>
+      <div><strong>10:25–10:35</strong><br>Conectar Mini 4 con las rutas que se crearán en Mini 5.</div>
+      <div><strong>10:35–10:50</strong><br>Crear y explicar el ViewSet.</div>
+      <div><strong>10:50–11:05</strong><br>Registrar el router y probar la API.</div>
+      <div><strong>11:05–11:35</strong><br>Entender y configurar CORS.</div>
+      <div><strong>11:35–12:00</strong><br>Reiniciar, verificar Minis 4 y 5 y cerrar.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>10:00–10:25 | Mini 4 — El Escudo</h2>
+    <div class="voz">
+      <strong>Di</strong>
+      “El modelo dice qué datos guarda la tabla. El serializer revisa los datos que llegan por la API y también prepara los datos que salen. Hoy vamos a ponerle una regla: el valor de un contrato no puede ser negativo.”
+    </div>
+    <p><strong>Señala:</strong> abre <code>Backend/contratos/serializers.py</code>. El reto pide crear un <code>ModelSerializer</code> para <code>Contrato</code> y poner la regla de valor mínimo en su clase <code>Meta</code>.</p>
+    <pre><code>from rest_framework import serializers
+from .models import Contrato
+
+
+class ContratoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contrato
+        fields = '__all__'
+        extra_kwargs = {'valor_total': {'min_value': 0}}</code></pre>
+    <ul>
+      <li><code>ModelSerializer</code> crea los campos del serializer usando el modelo.</li>
+      <li><code>model = Contrato</code> conecta el serializer con ese modelo.</li>
+      <li><code>fields = '__all__'</code> incluye los campos del modelo en la API.</li>
+      <li><code>extra_kwargs</code> agrega una regla adicional: <code>valor_total</code> debe ser como mínimo cero.</li>
+    </ul>
+    <div class="voz">
+      <strong>Di</strong>
+      “Cuando llega un contrato, el serializer revisa la regla antes de guardarlo. Si el valor es negativo, responde que los datos no son válidos y no crea el registro.”
+    </div>
+    <p><strong>Haz:</strong> deja que escriban el serializer y pregunta qué pasaría si el cliente envía <code>valor_total = -1</code>. Esperamos que Django lo rechace con HTTP 400.</p>
+    <div class="nota">
+      <strong>Precisión para explicar:</strong> el primer ataque es JSON válido, pero incompleto y con un valor incorrecto; comprueba la validación de campos. El segundo es un contrato completo con valor negativo; comprueba específicamente <code>min_value</code>. Es más claro decir “datos inválidos” que “JSON malformado”.
+    </div>
+    <p>El panel necesita que exista <code>/api/contratos/</code>. Si ahora da 404, termina el Mini 5 y vuelve a probar el Mini 4 después de configurar CORS.</p>
+  </section>
+
+  <section>
+    <h2>10:25–11:05 | Mini 5 — El Velocista</h2>
+    <h3>10:25–10:35 | Conectar con lo aprendido</h3>
+    <div class="voz">
+      <strong>Di</strong>
+      “El Mini 4 preparó el serializer y sus reglas. Ahora vamos a crear una dirección de API que use ese serializer para recibir y devolver contratos.”
+    </div>
+    <p><strong>Haz:</strong> pide que alguien explique el recorrido modelo → serializer. Escribe en el tablero:</p>
+    <pre><code>React → petición HTTP → Django → serializer → JSON</code></pre>
+    <div class="voz">
+      <strong>Pregunta al grupo</strong>
+      “¿React consulta directamente PostgreSQL?” Respuesta esperada: no; Django recibe la petición y consulta la base.
+    </div>
+    <p>Confirma que Mini 2 tiene la tabla, Mini 3 muestra el modelo en Admin y Mini 4 tiene listo el serializer. Si algo está pendiente, anótalo para retomarlo después de CORS.</p>
+
+    <h3>10:35–10:50 | Crear la vista</h3>
+    <div class="voz">
+      <strong>Di</strong>
+      “Un endpoint es una dirección de la API. Para la colección de contratos usaremos un ViewSet de Django REST Framework. El ViewSet conecta las operaciones HTTP con nuestro modelo y serializer.”
+    </div>
+    <h3>En <code>Backend/contratos/views.py</code></h3>
+    <p>Agrega los imports y la vista. Conserva el resto del archivo.</p>
+    <pre><code>from rest_framework import viewsets
+from .models import Contrato
+from .serializers import ContratoSerializer
+
+
+class ContratoViewSet(viewsets.ModelViewSet):
+    queryset = Contrato.objects.all()
+    serializer_class = ContratoSerializer</code></pre>
+    <div class="bloque">
+      <strong>Explica:</strong> <code>ModelViewSet</code> trae las operaciones habituales de la API. <code>queryset</code> indica qué contratos consultar y <code>serializer_class</code> cómo validarlos y convertirlos a JSON.
+    </div>
+    <div class="voz">
+      <strong>Di, línea por línea</strong>
+      “La primera línea importa el tipo de vista. Las dos siguientes traen el modelo y el serializer. Creamos <code>ContratoViewSet</code>; le decimos qué contratos manejar y qué serializer usar.”
+    </div>
+    <p><strong>Haz:</strong> dales unos minutos para escribirlo y guardar. Pide a una pareja que señale en el código qué línea elige los datos y cuál elige el serializer.</p>
+    <div class="voz">
+      <strong>Pregunta al grupo</strong>
+      “Si cambiáramos el modelo, ¿qué parte de esta vista nos dice qué registros ofrecer?” Respuesta: <code>queryset</code>.
+    </div>
+
+    <h3>10:50–10:58 | Registrar las rutas</h3>
+    <h3>En <code>Backend/contratos/urls.py</code></h3>
+    <p>Importa el ViewSet, regístralo y añade las rutas del router. No borres la ruta <code>estado/</code>.</p>
+    <pre><code>from .views import EstadoJardinView, ContratoViewSet
+
+router.register('contratos', ContratoViewSet, basename='contrato')
+
+urlpatterns = [
+    path('estado/', EstadoJardinView.as_view(), name='estado-taller'),
+    *router.urls,
+]</code></pre>
+    <div class="voz">
+      <strong>Di</strong>
+      “El router crea las rutas a partir del ViewSet. La configuración principal ya agrega el prefijo <code>api/</code>; junto con <code>contratos/</code>, forma <code>/api/contratos/</code>.”
+    </div>
+    <div class="voz">
+      <strong>Di, mirando el código</strong>
+      “Importamos el ViewSet para que este archivo lo conozca. <code>router.register</code> conecta ese ViewSet con la ruta <code>contratos/</code>. <code>basename</code> es el nombre interno de esas rutas. Conservamos <code>estado/</code>, que usa el panel, y <code>router.urls</code> agrega las rutas nuevas.”
+    </div>
+
+    <p><strong>Haz:</strong> pide que sigan la ruta en los dos archivos: <code>config/urls.py</code> agrega <code>api/</code>; <code>contratos/urls.py</code> agrega <code>contratos/</code>. Juntas forman la dirección completa.</p>
+
+    <h3>10:58–11:05 | Probar y diagnosticar</h3>
+    <ol>
+      <li>Abre <code>http://127.0.0.1:8000/api/contratos/</code>: esperamos HTTP 200.</li>
+      <li>Abre <code>http://127.0.0.1:8000/api/contratos/999999/</code>: esperamos HTTP 404.</li>
+      <li>Después prueba el botón del Mini 5 en React. Si aparece CORS, sigue con el paso siguiente.</li>
+    </ol>
+    <div class="voz">
+      <strong>Di</strong>
+      “El 404 del contrato que no existe es una respuesta válida: Django encontró la ruta, pero no encontró ese registro. Si React muestra CORS, no concluyamos todavía que la ruta está mal.”
+    </div>
+    <p>Si hay error, revisen en orden: imports, nombre <code>ContratoViewSet</code>, registro en el router y prefijo <code>api/</code>. Deja CORS para el bloque siguiente.</p>
+  </section>
+
+  <section>
+    <h2>11:05–12:00 | Conectar CORS y cerrar</h2>
+    <h3>11:05–11:20 | Entender qué está bloqueando el navegador</h3>
+    <div class="voz">
+      <strong>Di</strong>
+      “La ruta responde cuando la abrimos directamente, pero React intenta leerla desde otra dirección. React usa el puerto 5173 y Django el 8000. El navegador aplica CORS para decidir si deja que React lea esa respuesta.”
+    </div>
+    <div class="nota">
+      <strong>Aclara:</strong> que ambos servidores estén en el mismo computador no los convierte en el mismo origen. El protocolo, el nombre del host y el puerto forman el origen. <code>localhost:5173</code> y <code>localhost:8000</code> son distintos.
+    </div>
+    <p><strong>Demuestra:</strong> abre F12 → Console y vuelve a ejecutar la prueba de React. Señala que el mensaje CORS aparece en el navegador. Luego abre la API directamente en otra pestaña: esto permite separar “la ruta responde” de “React puede leerla”.</p>
+    <div class="voz">
+      <strong>Pregunta al grupo</strong>
+      “¿CORS es una conexión a PostgreSQL?” Respuesta: no. Es un permiso para que el navegador lea una respuesta entre orígenes distintos.
+    </div>
+
+    <h3>11:20–11:35 | Configurar el permiso</h3>
+    <div class="voz">
+      <strong>Di</strong>
+      “Django necesita declarar qué orígenes acepta. Permitiremos solo las dos direcciones locales que usamos para abrir Vite.”
+    </div>
+    <p>En <code>Backend/config/settings.py</code>, agrega <code>corsheaders</code> a <code>INSTALLED_APPS</code>:</p>
+    <pre><code>'corsheaders',</code></pre>
+
+    <p>En <code>MIDDLEWARE</code>, ubica su middleware antes de <code>CommonMiddleware</code>:</p>
+    <pre><code>'corsheaders.middleware.CorsMiddleware',
+'django.middleware.common.CommonMiddleware',</code></pre>
+
+    <p>Agrega la lista de orígenes permitidos:</p>
+    <pre><code>CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]</code></pre>
+
+    <div class="nota">
+      <strong>Explica:</strong> el origen incluye protocolo, dirección y puerto. Se permiten los dos nombres locales porque Vite puede abrirse con cualquiera. No uses <code>*</code> para permitir todos los sitios.
+    </div>
+    <div class="alerta">
+      El paquete <code>django-cors-headers</code> ya está en <code>requirements.txt</code>. Si no está instalado en el entorno virtual, ejecuta <code>python -m pip install -r requirements.txt</code> desde <code>Backend/</code>.
+    </div>
+
+    <p><strong>Haz:</strong> que los estudiantes ubiquen cada cambio y expliquen su propósito antes de guardar. Comprueba que el middleware está antes de <code>CommonMiddleware</code> y que los orígenes tienen protocolo y puerto, sin agregar una barra final.</p>
+
+    <h3>11:35–11:50 | Reiniciar y ejecutar el diagnóstico</h3>
+    <ol>
+      <li>En la terminal de Django, pulsa <code>Ctrl+C</code>.</li>
+      <li>Desde <code>Backend/</code>, ejecuta <code>python manage.py check</code>.</li>
+      <li>Vuelve a iniciar: <code>python manage.py runserver</code>.</li>
+      <li>En React, ejecuta el diagnóstico del Mini 9.</li>
+      <li>En F12 → Network, localiza las pruebas <code>OPTIONS</code> y <code>GET</code>. El GET debe responder 200.</li>
+    </ol>
+    <div class="voz">
+      <strong>Di</strong>
+      “Reiniciamos Django porque acabamos de cambiar settings.py. La respuesta confirma que el navegador ya puede leer la API desde el origen autorizado.”
+    </div>
+    <p>Si falla, revisen: que el servidor se reinició, que el origen coincida exactamente con la dirección abierta en Vite y que el middleware esté antes de <code>CommonMiddleware</code>.</p>
+
+    <h3>11:50–12:00 | Repetir las pruebas y cerrar</h3>
+    <div class="voz">
+      <strong>Di</strong>
+      “Ahora que el navegador tiene permiso, volvamos a las pruebas del Día 1. Una misión aprobada demuestra que la pieza funciona en conjunto, no solo que el archivo tiene código.”
+    </div>
+    <ul>
+      <li><strong>Mini 4:</strong> ambos datos inválidos deben recibir HTTP 400.</li>
+      <li><strong>Mini 5:</strong> la colección debe recibir HTTP 200 y el contrato inexistente HTTP 404.</li>
+    </ul>
+    <div class="alerta">
+      Si falla: 404 suele indicar una ruta incompleta; error CORS, un origen o middleware mal configurado; cambios en <code>settings.py</code> requieren reiniciar Django.
+    </div>
+    <div class="correcto">
+      <strong>Checklist:</strong> PostgreSQL conectado (Mini 1); tabla creada (Mini 2); modelo visible en Admin y contrato de prueba (Mini 3); validaciones 400 (Mini 4); API 200/404 y prueba desde React (Mini 5).
+    </div>
+    <div class="voz">
+      <strong>Di</strong>
+      “Hoy conectamos PostgreSQL con Django, modelamos contratos, validamos datos y publicamos una API. También autorizamos a React a leer la respuesta. Antes de irnos, cada equipo debe poder explicar cómo viaja una petición desde React hasta PostgreSQL y de vuelta.”
+    </div>
+    <p><strong>Salida rápida:</strong> pide a dos estudiantes que respondan: “¿Qué crea el router?”, “¿Qué significa el error CORS?” y “¿Por qué el 404 del recurso inexistente es una prueba correcta?”.</p>
+    <p class="nota"><strong>Nota para el instructor:</strong> CORS corresponde al Mini 9 del Día 2; aquí se adelanta para verificar los Minis 4 y 5 antes de cerrar. En la plantilla, <code>settings.py</code> aún tiene el TODO aunque el texto del Mini 9 da CORS por configurado: explica y aplica estos cambios antes del diagnóstico. No modifiques <code>EstadoJardinView</code> ni su andamio CORS.</p>
+  </section>
+</body>
+</html>
